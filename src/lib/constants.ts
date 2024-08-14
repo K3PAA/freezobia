@@ -5,3 +5,11 @@ export const assets = {
   tiles: tiles,
   fire_place: fire_place,
 }
+
+export const allowedKeys = {
+  KeyA: false,
+  KeyD: false,
+  KeyS: false,
+  KeyW: false,
+  Space: false,
+}
