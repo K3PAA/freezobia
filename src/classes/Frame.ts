@@ -1,5 +1,5 @@
 class Frame {
-  frames = 15
+  frames = 60
   fi = 1000 / this.frames
   ft = 0
 
