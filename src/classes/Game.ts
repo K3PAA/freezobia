@@ -13,16 +13,21 @@ class Game {
   constructor({ canvas }: { canvas: HTMLCanvasElement }) {
     this.canvas = canvas
 
-    this.background = new Background()
+    this.background = new Background({ canvas })
     this.frame = new Frame()
-    this.player = new Player({ canvas })
+    this.player = new Player({
+      canvas,
+    })
     this.input = new Input()
   }
 
   update(time: number) {
     if (!this.frame.update(time)) return
 
-    this.player.update(this.input.keys)
+    this.player.update({
+      keys: this.input.keys,
+      offset: this.background.offset,
+    })
   }
 
   draw(c: CanvasRenderingContext2D) {

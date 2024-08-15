@@ -4,12 +4,26 @@ class Background {
   width = 48
   height = 48
   boardWidth = 32
-  boardHeight = 32
+  boardHeight = 24
   tilesImage: HTMLImageElement = new Image()
   backgroundArray: number[][] = this.generateBackgroundArray()
 
-  constructor() {
+  centerBox = {
+    x: this.width * this.boardWidth,
+    y: this.height * this.boardHeight,
+  }
+  offset = {
+    x: 0,
+    y: 0,
+  }
+
+  constructor({ canvas }: { canvas: HTMLCanvasElement }) {
     this.tilesImage.src = assets.tiles
+
+    this.centerBox = {
+      x: this.centerBox.x / 2 - canvas.width / 2,
+      y: this.centerBox.y / 2 - canvas.height / 2,
+    }
   }
 
   generateBackgroundArray() {
@@ -30,6 +44,13 @@ class Background {
   }
 
   draw(c: CanvasRenderingContext2D) {
+    c.save()
+
+    c.translate(
+      -this.centerBox.x - this.offset.x,
+      -this.centerBox.y - this.offset.y
+    )
+
     for (let i = 0; i < this.boardWidth; i++) {
       for (let j = 0; j < this.boardHeight; j++) {
         const tileNumber = this.backgroundArray[i][j]
@@ -47,6 +68,7 @@ class Background {
         )
       }
     }
+    c.restore()
   }
 }
 

@@ -25,9 +25,12 @@ class PlayerState {
 
   updateState(keys: AllowedKeysObject) {
     if (keys.KeyA) this.velocity.x = -this.speed
-    if (keys.KeyD) this.velocity.x = this.speed
+    else if (keys.KeyD) this.velocity.x = this.speed
+    else this.velocity.x = 0
+
     if (keys.KeyW) this.velocity.y = -this.speed
-    if (keys.KeyS) this.velocity.y = this.speed
+    else if (keys.KeyS) this.velocity.y = this.speed
+    else this.velocity.y = 0
 
     if (this.state === 'idle') {
       this.velocity.x = 0
