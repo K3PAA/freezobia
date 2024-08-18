@@ -53,7 +53,6 @@ class Background {
       for (let j = 0; j < this.gridSize; j++) {
         gridRow.push({
           color: randomRGB(),
-          display: j === 1 && i === 1 ? 1 : 0,
         })
       }
       grid.push(gridRow)
@@ -78,31 +77,74 @@ class Background {
 
   update() {
     // left side
-    if (this.offset.x < this.board.position.x) {
-      this.grid[1][0].display = 1
+    if (Math.abs(this.offset.x + this.board.position.x) > this.board.width) {
+      // shift top tiles
+      this.grid[0][2] = this.grid[0][1]
+      this.grid[0][1] = this.grid[0][0]
+      this.grid[0][0] = { color: randomRGB() }
 
-      if (Math.abs(this.offset.x + this.board.position.x) > this.board.width) {
-        this.grid[1][2] = this.grid[1][1]
-        this.grid[1][1] = this.grid[1][0]
-        this.grid[1][0] = { color: randomRGB(), display: 0 }
-        this.offset.x = this.board.width + this.offset.x
-      }
+      // shift middle tiles
+      this.grid[1][2] = this.grid[1][1]
+      this.grid[1][1] = this.grid[1][0]
+      this.grid[1][0] = { color: randomRGB() }
+
+      // shift bottom tiles
+      this.grid[2][2] = this.grid[2][1]
+      this.grid[2][1] = this.grid[2][0]
+      this.grid[2][0] = { color: randomRGB() }
+
+      this.offset.x = this.board.width + this.offset.x
     }
 
     //right side
-    if (-this.offset.x < this.board.position.x) {
-      this.grid[1][2].display = 1
+    if (this.offset.x - this.board.position.x > this.board.width) {
+      this.grid[0][0] = this.grid[0][1]
+      this.grid[0][1] = this.grid[0][2]
+      this.grid[0][2] = { color: randomRGB() }
 
-      if (this.offset.x - this.board.position.x > this.board.width) {
-        this.grid[1][0] = this.grid[1][1]
-        this.grid[1][1] = this.grid[1][2]
-        this.grid[1][2] = { color: randomRGB(), display: 0 }
-        this.offset.x = this.board.width - this.offset.x
-      }
+      this.grid[1][0] = this.grid[1][1]
+      this.grid[1][1] = this.grid[1][2]
+      this.grid[1][2] = { color: randomRGB() }
+
+      this.grid[2][0] = this.grid[2][1]
+      this.grid[2][1] = this.grid[2][2]
+      this.grid[2][2] = { color: randomRGB() }
+
+      this.offset.x = this.board.width - this.offset.x
     }
-    console.log(
-      `o: ${this.offset.x}  x: ${this.board.position.x}, w: ${this.board.width}`
-    )
+
+    // top side
+    if (Math.abs(this.offset.y + this.board.position.y) > this.board.height) {
+      this.grid[2][0] = this.grid[1][0]
+      this.grid[1][0] = this.grid[0][0]
+      this.grid[0][0] = { color: randomRGB() }
+
+      this.grid[2][1] = this.grid[1][1]
+      this.grid[1][1] = this.grid[0][1]
+      this.grid[0][1] = { color: randomRGB() }
+
+      this.grid[2][2] = this.grid[1][2]
+      this.grid[1][2] = this.grid[0][2]
+      this.grid[0][2] = { color: randomRGB() }
+
+      this.offset.y = this.board.height + this.offset.y
+    }
+
+    if (this.offset.y - this.board.position.y > this.board.height) {
+      this.grid[0][0] = this.grid[1][0]
+      this.grid[1][0] = this.grid[2][0]
+      this.grid[2][0] = { color: randomRGB() }
+
+      this.grid[0][1] = this.grid[1][1]
+      this.grid[1][1] = this.grid[2][1]
+      this.grid[2][1] = { color: randomRGB() }
+
+      this.grid[0][2] = this.grid[1][2]
+      this.grid[1][2] = this.grid[2][2]
+      this.grid[2][2] = { color: randomRGB() }
+
+      this.offset.y = this.board.height - this.offset.y
+    }
   }
 
   generateBackgroundArray() {
@@ -127,8 +169,6 @@ class Background {
 
     for (let i = -1; i < this.gridSize - 1; i++) {
       for (let j = -1; j < this.gridSize - 1; j++) {
-        if (this.grid[i + 1][j + 1].display === 0) continue
-
         c.fillStyle = this.grid[i + 1][j + 1].color
         c.fillRect(
           this.board.position.x + this.board.width * j - this.offset.x,
