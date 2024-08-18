@@ -28,6 +28,8 @@ class Game {
       keys: this.input.keys,
       offset: this.background.offset,
     })
+
+    this.background.update()
   }
 
   draw(c: CanvasRenderingContext2D) {

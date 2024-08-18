@@ -41,8 +41,6 @@ class Player extends PlayerState {
 
     this.inCenterBox()
 
-    console.log(this.collision)
-
     if (!this.collision.left && !this.collision.right) {
       this.position.x += this.velocity.x
     } else {
@@ -95,7 +93,7 @@ class Player extends PlayerState {
   }
 
   draw(c: CanvasRenderingContext2D) {
-    c.fillStyle = '#000'
+    c.fillStyle = '#fff'
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     this.drawCenterBox(c)
