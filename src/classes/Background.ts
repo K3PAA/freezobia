@@ -93,104 +93,89 @@ class Background {
   update() {
     // left
     if (!this.testGrid[1][0].render && this.offset.x < this.board.position.x) {
-      console.log('left')
       this.testGrid[1][0].render = true
     } else if (
       this.testGrid[1][0].render &&
       this.offset.x > this.board.position.x
     ) {
-      console.log('stop left')
       this.testGrid[1][0].render = false
     }
 
     // top
     if (!this.testGrid[0][1].render && this.offset.y < this.board.position.y) {
-      console.log('top')
       this.testGrid[0][1].render = true
     } else if (
       this.testGrid[0][1].render &&
       this.offset.y > this.board.position.y
     ) {
-      console.log('stop top')
       this.testGrid[0][1].render = false
     }
 
     // right
     if (!this.testGrid[1][2].render && -this.offset.x < this.board.position.x) {
-      console.log('right')
       this.testGrid[1][2].render = true
     } else if (
       this.testGrid[1][2].render &&
       -this.offset.x > this.board.position.x
     ) {
-      console.log('stop right')
       this.testGrid[1][2].render = false
-
-      console.log(this.testGrid)
     }
 
     // bottom
     if (!this.testGrid[2][1].render && -this.offset.y < this.board.position.y) {
-      console.log('bottom')
       this.testGrid[2][1].render = true
     } else if (
       this.testGrid[2][1].render &&
       -this.offset.y > this.board.position.y
     ) {
-      console.log('stop bottom')
       this.testGrid[2][1].render = false
-
-      console.log(this.testGrid)
     }
 
-    if (this.testGrid[0][1].render) {
-      if (!this.testGrid[0][0].render && this.testGrid[1][0].render) {
-        console.log('start top left')
-        this.testGrid[0][0].render = true
-      } else if (!this.testGrid[0][2].render && this.testGrid[1][2].render) {
-        console.log('start top right')
-        this.testGrid[0][2].render = true
-      }
-    } else if (this.testGrid[0][0].render && !this.testGrid[0][1].render) {
+    // corners
+    const visibleCorners = {
+      topLeft: this.testGrid[0][1].render && this.testGrid[1][0].render,
+      topRight: this.testGrid[0][1].render && this.testGrid[1][2].render,
+      bottomLeft: this.testGrid[2][1].render && this.testGrid[1][0].render,
+      bottomRight: this.testGrid[2][1].render && this.testGrid[1][2].render,
+    }
+
+    if (!this.testGrid[0][0].render && visibleCorners.topLeft) {
+      this.testGrid[0][0].render = true
+    } else if (this.testGrid[0][0] && !visibleCorners.topLeft) {
       this.testGrid[0][0].render = false
-      console.log('stop top left')
-    } else if (this.testGrid[0][2].render && !this.testGrid[0][1].render) {
+    }
+
+    if (!this.testGrid[0][2].render && visibleCorners.topRight) {
+      this.testGrid[0][2].render = true
+    } else if (this.testGrid[0][2] && !visibleCorners.topRight) {
       this.testGrid[0][2].render = false
-      console.log('stop top right')
     }
 
-    if (this.testGrid[2][1].render) {
-      if (!this.testGrid[2][0].render && this.testGrid[1][0].render) {
-        console.log('start bottom left')
-        this.testGrid[2][0].render = true
-      } else if (!this.testGrid[2][2].render && this.testGrid[1][2].render) {
-        console.log('start bottom right')
-        this.testGrid[2][2].render = true
-      }
-    } else if (this.testGrid[2][0].render && !this.testGrid[2][1].render) {
+    if (!this.testGrid[2][0].render && visibleCorners.bottomLeft) {
+      this.testGrid[2][0].render = true
+    } else if (this.testGrid[2][0] && !visibleCorners.bottomLeft) {
       this.testGrid[2][0].render = false
-      console.log('stop bottom left')
-    } else if (this.testGrid[2][2].render && !this.testGrid[2][1].render) {
-      this.testGrid[2][2].render = false
-      console.log('stop bottom right')
     }
 
-    // if (
-    //   !this.testGrid[0][0].render &&
-    //   this.testGrid[1][0].render &&
-    //   this.testGrid[0][1].render
-    // ) {
-    //   console.log('render top left')
-    //   this.testGrid[0][0].render = true
-    // } else if (
-    //   this.testGrid[0][0].render &&
-    //   (!this.testGrid[1][0].render || !this.testGrid[0][1].render)
-    // ) {
-    //   console.log('stop render top left')
-    //   this.testGrid[0][0].render = false
-    // }
+    if (!this.testGrid[2][2].render && visibleCorners.bottomRight) {
+      this.testGrid[2][2].render = true
+    } else if (this.testGrid[2][2] && !visibleCorners.bottomRight) {
+      this.testGrid[2][2].render = false
+    }
+
+    // console.log(this.renderGridAmounts())
 
     this.handleGridShift()
+  }
+
+  renderGridAmounts() {
+    let count = 0
+    this.testGrid.forEach((row) => {
+      row.forEach((el) => {
+        if (el.render) count++
+      })
+    })
+    return count
   }
 
   handleGridShift() {
@@ -216,7 +201,6 @@ class Background {
   }
 
   shiftGrid(direction: 'left' | 'right' | 'up' | 'down') {
-    console.log('shiftGrid', direction)
     const size = this.gridSize
     for (let i = 0; i < size; i++) {
       if (direction === 'left' || direction === 'right') {
