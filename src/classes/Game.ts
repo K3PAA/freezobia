@@ -2,6 +2,7 @@ import Frame from './Frame'
 import Background from './Background'
 import Player from './Player'
 import Input from './Input'
+import playerImg from "../assets/char_running.png";
 
 class Game {
   canvas: HTMLCanvasElement
@@ -17,6 +18,7 @@ class Game {
     this.frame = new Frame()
     this.player = new Player({
       canvas,
+      imgSrc: playerImg
     })
     this.input = new Input()
   }
@@ -26,6 +28,7 @@ class Game {
 
     this.player.update({
       keys: this.input.keys,
+      mousePos: this.input.mousePos,
       offset: this.background.offset,
     })
 
