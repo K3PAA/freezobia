@@ -1,6 +1,6 @@
 import { assets } from '../lib/constants'
 import { Box, Point } from '../lib/types'
-import { randomRGB } from '../lib/utils'
+import { randomRGB, randomRGBA } from '../lib/utils'
 
 class Background {
   canvas: HTMLCanvasElement
@@ -18,6 +18,7 @@ class Background {
   offset: Point
   // grid = this.generateTestGrid()
   grid = this.generateGrid()
+  testGrid = this.generateTestGrid()
 
   constructor({ canvas }: { canvas: HTMLCanvasElement }) {
     this.canvas = canvas
@@ -47,7 +48,7 @@ class Background {
       const gridRow = []
       for (let j = 0; j < this.gridSize; j++) {
         gridRow.push({
-          color: randomRGB(),
+          color: randomRGBA(),
         })
       }
       grid.push(gridRow)
@@ -96,7 +97,7 @@ class Background {
 
     if (this.offset.x - this.board.position.x > this.board.width) {
       this.shiftGrid('right')
-      this.updateOffset('x', this.board.width - this.offset.x)
+      this.updateOffset('x', this.board.position.x)
     }
 
     if (Math.abs(this.offset.y + this.board.position.y) > this.board.height) {
@@ -106,18 +107,17 @@ class Background {
 
     if (this.offset.y - this.board.position.y > this.board.height) {
       this.shiftGrid('down')
-      this.updateOffset('y', this.board.height - this.offset.y)
+      this.updateOffset('y', this.board.position.y)
     }
   }
 
   shiftGrid(direction: 'left' | 'right' | 'up' | 'down') {
+    console.log('shiftGrid', direction)
     const size = this.gridSize
     for (let i = 0; i < size; i++) {
       if (direction === 'left' || direction === 'right') {
-        console.log('shift - left / right')
         this.shiftRow(i, direction)
       } else {
-        console.log('shift - up / down')
         this.shiftColumn(i, direction)
       }
     }
@@ -127,13 +127,17 @@ class Background {
     if (direction === 'left') {
       for (let i = 2; i > 0; i--) {
         this.grid[row][i] = this.grid[row][i - 1]
+        this.testGrid[row][i] = this.testGrid[row][i - 1]
       }
       this.grid[row][0] = this.generateBackgroundArray()
+      this.testGrid[row][0] = { color: randomRGBA() }
     } else {
       for (let i = 0; i < 2; i++) {
         this.grid[row][i] = this.grid[row][i + 1]
+        this.testGrid[row][i] = this.testGrid[row][i + 1]
       }
       this.grid[row][2] = this.generateBackgroundArray()
+      this.testGrid[row][2] = { color: randomRGBA() }
     }
   }
 
@@ -141,13 +145,17 @@ class Background {
     if (direction === 'up') {
       for (let i = 2; i > 0; i--) {
         this.grid[i][col] = this.grid[i - 1][col]
+        this.testGrid[i][col] = this.testGrid[i - 1][col]
       }
       this.grid[0][col] = this.generateBackgroundArray()
+      this.testGrid[0][col] = { color: randomRGBA() }
     } else {
       for (let i = 0; i < 2; i++) {
         this.grid[i][col] = this.grid[i + 1][col]
+        this.testGrid[i][col] = this.testGrid[i + 1][col]
       }
       this.grid[2][col] = this.generateBackgroundArray()
+      this.testGrid[2][col] = { color: randomRGBA() }
     }
   }
 
@@ -171,13 +179,28 @@ class Background {
               0,
               16,
               16,
-              j * this.tileSize + this.board.width * y - this.offset.x,
-              i * this.tileSize + this.board.height * x - this.offset.y,
+
+              i * this.tileSize +
+                this.board.position.x +
+                this.board.width * y -
+                this.offset.x,
+              j * this.tileSize +
+                this.board.position.y +
+                this.board.height * x -
+                this.offset.y,
               this.tileSize,
               this.tileSize
             )
           }
         }
+
+        c.fillStyle = this.testGrid[x + 1][y + 1].color
+        c.fillRect(
+          this.board.position.x + this.board.width * y - this.offset.x,
+          this.board.position.y + this.board.height * x - this.offset.y,
+          this.board.width,
+          this.board.height
+        )
       }
     }
 
