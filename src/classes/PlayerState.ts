@@ -12,6 +12,7 @@ class PlayerState {
   }
 
   determineState(keys: AllowedKeysObject) {
+    console.log(this.state)
     switch (true) {
       case keys.KeyA || keys.KeyD || keys.KeyW || keys.KeyS:
         this.state = 'run'
