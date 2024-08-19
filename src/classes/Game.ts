@@ -33,9 +33,6 @@ class Game {
   }
 
   draw(c: CanvasRenderingContext2D) {
-    c.fillStyle = '#fff'
-    c.fillRect(0, 0, this.canvas.width, this.canvas.height)
-
     this.background.draw(c)
     this.player.draw(c)
   }
