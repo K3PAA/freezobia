@@ -67,10 +67,10 @@ class Player extends PlayerState {
   }
 
   inCenterBox() {
-    if (this.position.x < this.centerBox.position.x) {
+    if (this.position.x + this.velocity.x < this.centerBox.position.x) {
       this.collision.left = true
     } else if (
-      this.position.x + this.width >
+      this.position.x + this.width + this.velocity.x >
       this.centerBox.position.x + this.centerBox.width
     ) {
       this.collision.right = true
@@ -79,10 +79,10 @@ class Player extends PlayerState {
       this.collision.right = false
     }
 
-    if (this.position.y < this.centerBox.position.y) {
+    if (this.position.y + this.velocity.y < this.centerBox.position.y) {
       this.collision.top = true
     } else if (
-      this.position.y + this.height >
+      this.position.y + this.height + this.velocity.y >
       this.centerBox.position.y + this.centerBox.height
     ) {
       this.collision.bottom = true
