@@ -1,6 +1,6 @@
 import { assets } from '../lib/constants'
 import { Box, Point } from '../lib/types'
-import { randomRGB, randomRGBA } from '../lib/utils'
+import { randomRGBA } from '../lib/utils'
 
 class Background {
   canvas: HTMLCanvasElement
@@ -49,6 +49,7 @@ class Background {
       for (let j = 0; j < this.gridSize; j++) {
         gridRow.push({
           color: randomRGBA(),
+          render: j === 1 && i === 1 ? true : false,
         })
       }
       grid.push(gridRow)
@@ -90,6 +91,109 @@ class Background {
   }
 
   update() {
+    // left
+    if (!this.testGrid[1][0].render && this.offset.x < this.board.position.x) {
+      console.log('left')
+      this.testGrid[1][0].render = true
+    } else if (
+      this.testGrid[1][0].render &&
+      this.offset.x > this.board.position.x
+    ) {
+      console.log('stop left')
+      this.testGrid[1][0].render = false
+    }
+
+    // top
+    if (!this.testGrid[0][1].render && this.offset.y < this.board.position.y) {
+      console.log('top')
+      this.testGrid[0][1].render = true
+    } else if (
+      this.testGrid[0][1].render &&
+      this.offset.y > this.board.position.y
+    ) {
+      console.log('stop top')
+      this.testGrid[0][1].render = false
+    }
+
+    // right
+    if (!this.testGrid[1][2].render && -this.offset.x < this.board.position.x) {
+      console.log('right')
+      this.testGrid[1][2].render = true
+    } else if (
+      this.testGrid[1][2].render &&
+      -this.offset.x > this.board.position.x
+    ) {
+      console.log('stop right')
+      this.testGrid[1][2].render = false
+
+      console.log(this.testGrid)
+    }
+
+    // bottom
+    if (!this.testGrid[2][1].render && -this.offset.y < this.board.position.y) {
+      console.log('bottom')
+      this.testGrid[2][1].render = true
+    } else if (
+      this.testGrid[2][1].render &&
+      -this.offset.y > this.board.position.y
+    ) {
+      console.log('stop bottom')
+      this.testGrid[2][1].render = false
+
+      console.log(this.testGrid)
+    }
+
+    if (this.testGrid[0][1].render) {
+      if (!this.testGrid[0][0].render && this.testGrid[1][0].render) {
+        console.log('start top left')
+        this.testGrid[0][0].render = true
+      } else if (!this.testGrid[0][2].render && this.testGrid[1][2].render) {
+        console.log('start top right')
+        this.testGrid[0][2].render = true
+      }
+    } else if (this.testGrid[0][0].render && !this.testGrid[0][1].render) {
+      this.testGrid[0][0].render = false
+      console.log('stop top left')
+    } else if (this.testGrid[0][2].render && !this.testGrid[0][1].render) {
+      this.testGrid[0][2].render = false
+      console.log('stop top right')
+    }
+
+    if (this.testGrid[2][1].render) {
+      if (!this.testGrid[2][0].render && this.testGrid[1][0].render) {
+        console.log('start bottom left')
+        this.testGrid[2][0].render = true
+      } else if (!this.testGrid[2][2].render && this.testGrid[1][2].render) {
+        console.log('start bottom right')
+        this.testGrid[2][2].render = true
+      }
+    } else if (this.testGrid[2][0].render && !this.testGrid[2][1].render) {
+      this.testGrid[2][0].render = false
+      console.log('stop bottom left')
+    } else if (this.testGrid[2][2].render && !this.testGrid[2][1].render) {
+      this.testGrid[2][2].render = false
+      console.log('stop bottom right')
+    }
+
+    // if (
+    //   !this.testGrid[0][0].render &&
+    //   this.testGrid[1][0].render &&
+    //   this.testGrid[0][1].render
+    // ) {
+    //   console.log('render top left')
+    //   this.testGrid[0][0].render = true
+    // } else if (
+    //   this.testGrid[0][0].render &&
+    //   (!this.testGrid[1][0].render || !this.testGrid[0][1].render)
+    // ) {
+    //   console.log('stop render top left')
+    //   this.testGrid[0][0].render = false
+    // }
+
+    this.handleGridShift()
+  }
+
+  handleGridShift() {
     if (Math.abs(this.offset.x + this.board.position.x) > this.board.width) {
       this.shiftGrid('left')
       this.updateOffset('x', this.board.width + this.offset.x)
@@ -130,14 +234,14 @@ class Background {
         this.testGrid[row][i] = this.testGrid[row][i - 1]
       }
       this.grid[row][0] = this.generateBackgroundArray()
-      this.testGrid[row][0] = { color: randomRGBA() }
+      this.testGrid[row][0] = { color: randomRGBA(), render: false }
     } else {
       for (let i = 0; i < 2; i++) {
         this.grid[row][i] = this.grid[row][i + 1]
         this.testGrid[row][i] = this.testGrid[row][i + 1]
       }
       this.grid[row][2] = this.generateBackgroundArray()
-      this.testGrid[row][2] = { color: randomRGBA() }
+      this.testGrid[row][2] = { color: randomRGBA(), render: false }
     }
   }
 
@@ -148,14 +252,14 @@ class Background {
         this.testGrid[i][col] = this.testGrid[i - 1][col]
       }
       this.grid[0][col] = this.generateBackgroundArray()
-      this.testGrid[0][col] = { color: randomRGBA() }
+      this.testGrid[0][col] = { color: randomRGBA(), render: false }
     } else {
       for (let i = 0; i < 2; i++) {
         this.grid[i][col] = this.grid[i + 1][col]
         this.testGrid[i][col] = this.testGrid[i + 1][col]
       }
       this.grid[2][col] = this.generateBackgroundArray()
-      this.testGrid[2][col] = { color: randomRGBA() }
+      this.testGrid[2][col] = { color: randomRGBA(), render: false }
     }
   }
 
@@ -168,6 +272,7 @@ class Background {
 
     for (let x = -1; x < this.gridSize - 1; x++) {
       for (let y = -1; y < this.gridSize - 1; y++) {
+        const shouldRender = this.testGrid[x + 1][y + 1].render
         const backgroundArray = this.grid[x + 1][y + 1]
 
         for (let i = 0; i < this.boardDimensions.y; i++) {
@@ -194,13 +299,15 @@ class Background {
           }
         }
 
-        c.fillStyle = this.testGrid[x + 1][y + 1].color
-        c.fillRect(
-          this.board.position.x + this.board.width * y - this.offset.x,
-          this.board.position.y + this.board.height * x - this.offset.y,
-          this.board.width,
-          this.board.height
-        )
+        if (shouldRender) {
+          c.fillStyle = this.testGrid[x + 1][y + 1].color
+          c.fillRect(
+            this.board.position.x + this.board.width * y - this.offset.x,
+            this.board.position.y + this.board.height * x - this.offset.y,
+            this.board.width,
+            this.board.height
+          )
+        }
       }
     }
 
