@@ -3,8 +3,7 @@ import { AllowedKeysObject, Point } from '../lib/types'
 type PlayerStates = 'idle' | 'run' | 'shoot'
 
 class PlayerState {
-  speed = 10
-
+  speed = 5
   velocity: Point = { x: 0, y: 0 }
   state: PlayerStates = 'idle'
 
