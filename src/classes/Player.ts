@@ -1,9 +1,8 @@
-import { AllowedKeysObject, Box, Point } from "../lib/types";
+import { AllowedKeysObject, Box, Point, SpriteType } from "../lib/types";
 import Sprite from "./Sprite";
 import gunImg from "../assets/gun_gun_0.png";
 import { lerp } from "../lib/functions";
-
-type PlayerStates = "idle" | "run" | "shoot";
+import { SPRITES, STATES, Idle, Running } from "./PlayerState";
 
 class Player extends Sprite {
 	canvas: HTMLCanvasElement;
@@ -13,7 +12,7 @@ class Player extends Sprite {
 	height = 3 * 8 * 3;
 	offSet: Point = { x: 0, y: 32 };
 	position: Point = { x: 0, y: 0 };
-	acceleration: Point = { x: 0.5, y: 0.1 };
+	// acceleration: Point = { x: 0.5, y: 0.1 };
 	velocity: Point = { x: 0, y: 0 };
 
 	collision = {
@@ -26,11 +25,13 @@ class Player extends Sprite {
 	speed = 5;
 	direction = 1;
 
-	state: PlayerStates = "idle";
 	playerGun: Sprite;
 	mouse: Point;
 	gunAngle: number;
 	targetAngle: number;
+	state: any
+	previousState: any
+	states: any[]
 
 	constructor({
 		canvas,
@@ -43,8 +44,9 @@ class Player extends Sprite {
 		height,
 		offSet,
 		direction,
-	}: any) {
+	}: SpriteType) {
 		super({
+			canvas,
 			position,
 			imgSrc,
 			scale,
@@ -57,10 +59,12 @@ class Player extends Sprite {
 		});
 		this.canvas = canvas;
 
+		//* player centering
 		this.position.x = this.canvas.width / 2 - this.width / 2;
 		this.position.y = this.canvas.height / 2 - this.height / 2;
 
 		this.playerGun = new Sprite({
+			canvas,
 			position: {
 				x: this.position.x,
 				y: this.position.y,
@@ -83,6 +87,12 @@ class Player extends Sprite {
 		this.gunAngle = 0;
 		this.targetAngle = 0;
 
+		this.state = null
+		this.previousState = null
+		this.states = [new Idle(this), new Running(this)]
+        this.setState(STATES.IDLE)
+		this.setSprite(SPRITES.IDLE)
+
 		this.centerBox = {
 			position: {
 				x: this.canvas.width / 2 - this.canvas.width / 4 / 2,
@@ -93,7 +103,7 @@ class Player extends Sprite {
 		};
 	}
 
-	update({
+	update = ({
 		keys,
 		mousePos,
 		offset,
@@ -101,57 +111,36 @@ class Player extends Sprite {
 		keys: AllowedKeysObject;
 		mousePos: Point;
 		offset: Point;
-	}) {
+	}) => {
+		this.state.input(keys)
+
+		//* mouse position
 		this.mouse = {
 			x: mousePos.x,
 			y: mousePos.y,
 		};
 
+		//* gun target angle
 		this.targetAngle = Math.atan2(
 			this.mouse.y - (this.position.y + this.height / 2),
 			this.mouse.x - (this.position.x + this.width / 2)
 		);
 
+		//* gun rotation speed and angle
 		const lerpSpeed = 0.15;
 		this.gunAngle = lerp(this.gunAngle, this.targetAngle, lerpSpeed);
 
+		//* changing direction
 		if (mousePos.x >= this.position.x + this.width / 2) {
 			this.direction = 1;
 		} else {
 			this.direction = -1;
 		}
 
-		switch (true) {
-			case keys.KeyW || keys.KeyS:
-				this.state = "run";
-				break;
-			case keys.KeyA:
-				this.state = "run";
-				// this.direction = -1;
-				break;
-			case keys.KeyD || keys.KeyW || keys.KeyS:
-				this.state = "run";
-				// this.direction = 1;
-				break;
-			default:
-				this.state = "idle";
-		}
-
-		if (keys.KeyA) this.velocity.x = -this.speed;
-		else if (keys.KeyD) this.velocity.x = this.speed;
-		else this.velocity.x = 0;
-
-		if (keys.KeyW) this.velocity.y = -this.speed;
-		else if (keys.KeyS) this.velocity.y = this.speed;
-		else this.velocity.y = 0;
-
-		if (this.state === "idle") {
-			this.velocity.x = 0;
-			this.velocity.y = 0;
-		}
-
+		//* checking if the player is in the box
 		this.inCenterBox();
 
+		//* player collision right and left
 		if (!this.collision.left && !this.collision.right) {
 			this.position.x += this.velocity.x;
 		} else {
@@ -164,6 +153,7 @@ class Player extends Sprite {
 			offset.x += this.velocity.x;
 		}
 
+		//* player collision top and down
 		if (!this.collision.top && !this.collision.bottom) {
 			this.position.y += this.velocity.y;
 		} else {
@@ -177,7 +167,23 @@ class Player extends Sprite {
 		}
 	}
 
-	inCenterBox() {
+	setState = (state: any) => {
+		//* setting player state
+        this.previousState = this.state
+        this.state = this.states[state]
+        if (this.previousState !== this.state) {
+            this.framesCurrent = 0
+        }
+    }
+
+    setSprite = (sprite: any) => {
+		//* setting player sprite
+        this.image.src = sprite.imageSrc
+        this.columns = sprite.columns
+        this.maxFrames = sprite.maxFrames
+    }
+
+	inCenterBox = () => {
 		if (this.position.x + this.velocity.x < this.centerBox.position.x) {
 			this.collision.left = true;
 		} else if (
@@ -203,15 +209,19 @@ class Player extends Sprite {
 		}
 	}
 
-	draw(c: CanvasRenderingContext2D) {
-		// c.fillStyle = "#fff";
-		// c.fillRect(this.position.x, this.position.y, this.width, this.height);
+	draw = (c: CanvasRenderingContext2D) => {
+		//* hitbox of player
+		c.fillStyle = "#fff";
+		c.fillRect(this.position.x, this.position.y, this.width, this.height);
 
+		//* drawing player
 		this.drawSprite(c);
 		this.animateFrames();
 
+		//* drawing centerbox
 		this.drawCenterBox(c);
 
+		//* drawing weapon sight
 		c.beginPath();
 		c.moveTo(
 			this.position.x + this.width / 2,
@@ -221,19 +231,14 @@ class Player extends Sprite {
 			this.position.x + this.width / 2,
 			this.position.y + this.height / 2,
 			100,
-			this.gunAngle - 0.7,
-			this.gunAngle + 0.3
+			this.gunAngle - 0.6,
+			this.gunAngle + 0.6
 		);
-		c.lineTo(
-			this.position.x + this.width / 2,
-			this.position.y + this.height / 2
-		);
-		c.fillStyle = "rgb(0, 0, 0, 0.2)";
+		c.fillStyle = "rgb(0, 0, 0, 0.15)";
 		c.fill();
-		c.stroke();
-
 		c.save();
 
+		//* gun movement
 		c.translate(
 			this.position.x + this.width / 2,
 			this.position.y + this.height / 2
@@ -241,21 +246,22 @@ class Player extends Sprite {
 		c.rotate(this.gunAngle);
 		c.scale(-1, this.direction);
 
+		//* gun position
 		this.playerGun.position = {
 			x: -this.playerGun.width / 2,
 			y: -this.playerGun.height / 2,
 		};
+
+		//* drawing gun
 		this.playerGun.drawSprite(c);
-
 		c.restore();
-
-		this.playerGun.position = {
-			x: this.position.x,
-			y: this.position.y,
-		};
 	}
 
-	drawCenterBox(c: CanvasRenderingContext2D) {
+	attack = () => {
+
+	}
+
+	drawCenterBox = (c: CanvasRenderingContext2D) => {
 		c.fillStyle = "rgba(155, 155, 0, 0.2)";
 		c.fillRect(
 			this.centerBox.position.x,

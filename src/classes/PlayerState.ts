@@ -1,43 +1,86 @@
-import { AllowedKeysObject, Point } from '../lib/types'
+import { AllowedKeysObject } from "../lib/types";
+import idle from "../assets/char_idle_new.png"
+import run from "../assets/char_run.png"
 
-type PlayerStates = 'idle' | 'run' | 'shoot'
+const SPRITES = {
+	IDLE: {
+		imageSrc: idle,
+		columns: 8,
+		maxFrames: 8
+	},
+	RUNNING: {
+		imageSrc: run,
+		columns: 8,
+		maxFrames: 8
+	},
+};
 
-class PlayerState {
-  speed = 10
+const STATES = {
+	IDLE: 0,
+	RUNNING: 1,
+};
 
-  velocity: Point = { x: 0, y: 0 }
-  state: PlayerStates = 'idle'
-
-  constructor() {
-    this.state = 'idle'
-  }
-
-  determineState(keys: AllowedKeysObject) {
-    console.log(this.state)
-    switch (true) {
-      case keys.KeyA || keys.KeyD || keys.KeyW || keys.KeyS:
-        this.state = 'run'
-        break
-
-      default:
-        this.state = 'idle'
-    }
-  }
-
-  updateState(keys: AllowedKeysObject) {
-    if (keys.KeyA) this.velocity.x = -this.speed
-    else if (keys.KeyD) this.velocity.x = this.speed
-    else this.velocity.x = 0
-
-    if (keys.KeyW) this.velocity.y = -this.speed
-    else if (keys.KeyS) this.velocity.y = this.speed
-    else this.velocity.y = 0
-
-    if (this.state === 'idle') {
-      this.velocity.x = 0
-      this.velocity.y = 0
-    }
-  }
+class State {
+	player: any;
+	state: any;
+	constructor({ player, state }: any) {
+		this.player = player;
+		this.state = state;
+	}
 }
 
-export default PlayerState
+class Idle extends State {
+	constructor(player: any) {
+		super({
+			player,
+			state: "IDLE",
+		});
+	}
+
+	input = (keys: AllowedKeysObject) => {
+    if (!keys.KeyW && !keys.KeyA && !keys.KeyS && !keys.KeyD) {
+			this.player.setState(STATES.IDLE);
+      this.player.setSprite(SPRITES.IDLE);
+      this.player.velocity.x = 0
+      this.player.velocity.y = 0
+		}
+		if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
+			this.player.setState(STATES.RUNNING);
+      this.player.setSprite(SPRITES.RUNNING)
+		}
+	};
+}
+
+class Running extends State {
+	constructor(player: any) {
+		super({
+			player,
+			state: "RUNNING",
+		});
+	}
+
+	input = (keys: AllowedKeysObject) => {
+    if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
+			this.player.setState(STATES.RUNNING);
+      this.player.setSprite(SPRITES.RUNNING)
+		}
+    if (keys.KeyA) {
+      this.player.velocity.x = -this.player.speed
+    }
+    if (keys.KeyD) {
+      this.player.velocity.x = this.player.speed
+    }
+    if (keys.KeyW) {
+      this.player.velocity.y = -this.player.speed
+    }
+    if (keys.KeyS) {
+      this.player.velocity.y = this.player.speed
+    }
+    if (!keys.KeyW && !keys.KeyA && !keys.KeyS && !keys.KeyD) {
+			this.player.setState(STATES.IDLE);
+      this.player.setSprite(SPRITES.IDLE)
+		}
+	};
+}
+
+export { SPRITES, STATES, Idle, Running };

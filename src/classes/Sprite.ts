@@ -1,4 +1,4 @@
-import { Point } from "../lib/types"
+import { Point, SpriteType } from "../lib/types"
 
 class Sprite {
     position: Point
@@ -11,10 +11,10 @@ class Sprite {
     framesHold: number
     width: number
     height: number
-    direction: number
+    direction: number | undefined
     offSet: Point
 
-    constructor ({ position, imgSrc, scale = 1, columns = 1, maxFrames = 1, framesCurrent = 0, width, height, offSet, direction }: any) {
+    constructor ({ position, imgSrc, scale = 1, columns = 1, maxFrames = 1, framesCurrent = 0, width, height, offSet, direction }: SpriteType) {
         this.position = position
         this.image = new Image()
         this.image.src = imgSrc
