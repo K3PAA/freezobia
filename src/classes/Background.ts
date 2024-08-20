@@ -7,8 +7,8 @@ class Background {
 
   tileSize = 64
   boardDimensions: Point = {
-    x: 30,
-    y: 20,
+    x: 24,
+    y: 24,
   }
 
   gridSize = 3
@@ -136,6 +136,14 @@ class Background {
     }
 
     this.handleGridShift()
+
+    this.grid.forEach((row) => {
+      row.forEach((item) => {
+        item.backgroundArray.interactiveArray.forEach((x) => {
+          x.update()
+        })
+      })
+    })
   }
 
   handleGridShift() {

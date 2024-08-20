@@ -1,3 +1,4 @@
+import { assets, resourcesMapping } from '../lib/constants'
 import { Point } from '../lib/types'
 import Tile from './Tile'
 
@@ -44,15 +45,11 @@ class BackgroundArray {
 
     const campfire = {
       position: {
-        x:
-          Math.floor(Math.random() * (this.boardDimensions.x - 10) + 5) *
-          this.tileSize,
-        y:
-          Math.floor(Math.random() * (this.boardDimensions.y - 10) + 5) *
-          this.tileSize,
+        x: Math.floor(Math.random() * (this.boardDimensions.x - 10) + 5),
+        y: Math.floor(Math.random() * (this.boardDimensions.y - 10) + 5),
       },
-      width: 3 * this.tileSize,
-      height: 3 * this.tileSize,
+      width: 3,
+      height: 3,
     }
 
     interactiveArray.push(
@@ -62,14 +59,32 @@ class BackgroundArray {
         position: campfire.position,
         width: campfire.width,
         height: campfire.height,
+        src: assets.fire_place,
       })
     )
 
-    for (let i = 0; i < this.boardDimensions.y; i++) {
-      for (let j = 0; j < this.boardDimensions.x; j++) {
-        if (this.backgroundArray[i][j]) continue
-        const zeroOrOne = Math.floor(Math.random() * 1.05)
+    for (let i = 1; i < this.boardDimensions.y - 1; i++) {
+      for (let j = 1; j < this.boardDimensions.x - 1; j++) {
+        if (
+          this.backgroundArray[i][j] ||
+          (campfire.position.x >= j &&
+            campfire.position.x < j + campfire.width + 1) ||
+          (campfire.position.y >= i &&
+            campfire.position.y < i + campfire.height + 1)
+        )
+          continue
+        const zeroOrOne = Math.floor(Math.random() * 1.2)
         if (!zeroOrOne) continue
+
+        interactiveArray.push(
+          new Tile({
+            tileSize: this.tileSize,
+            type: 'snow_tree',
+            position: { x: j, y: i },
+            mapping: resourcesMapping.tree_snow,
+            src: assets.resources,
+          })
+        )
       }
     }
 
