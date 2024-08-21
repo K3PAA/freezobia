@@ -1,111 +1,105 @@
-import { Point } from '../lib/types'
+import { Point, ResourceTypes } from '../lib/types'
 import { assets } from '../lib/constants'
+import Frame from './Frame'
 
-class Tile {
+export class FirePlace {
   image = new Image()
   fire = new Image()
-  frame = 1
-  count = 0
+  frame = new Frame({ fps: 5, maxFrame: 5, currentFrame: 1 })
 
   tileSize: number
-  type: string
   position: Point
-  width?: number
-  height?: number
-
-  mapping?: {
-    position: Point
-    width: number
-    height: number
-  }
+  width: number
+  height: number
 
   constructor({
     tileSize,
-    type,
     position,
     width,
     height,
-    mapping,
-    src,
   }: {
     tileSize: number
-    type: string
     position: Point
-    width?: number
-    height?: number
-    src: string
-    mapping?: {
-      position: Point
-      width: number
-      height: number
-    }
+    width: number
+    height: number
   }) {
     this.tileSize = tileSize
-    this.type = type
     this.position = position
-
     this.width = width
     this.height = height
-    this.mapping = mapping
 
-    this.image.src = src
-    this.fire.src = type === 'fire_place' ? assets.fire : ''
+    this.image.src = assets.fire_place
+    this.fire.src = assets.fire
   }
 
-  update() {
-    this.count++
-
-    if (this.count > 5) {
-      this.count = 0
-      this.frame++
-
-      if (this.frame === 5) this.frame = 1
+  update(time: number) {
+    if (this.frame.timeElapsed(time)) {
+      this.frame.updateFrame(1)
     }
   }
 
   draw(c: CanvasRenderingContext2D, shift: Point) {
-    if (this.image.src) {
-      c.drawImage(
-        this.image,
-        this.mapping ? this.mapping.position.x * 16 : 0,
-        this.mapping ? this.mapping.position.y * 16 : 0,
-        this.mapping ? this.mapping.width * 16 : this.image.width,
-        this.mapping ? this.mapping.height * 16 : this.image.height,
-        this.position.x * this.tileSize + shift.x,
-        this.position.y * this.tileSize + shift.y,
-        this.mapping
-          ? this.mapping.width * this.tileSize
-          : this.width! * this.tileSize,
-        this.mapping
-          ? this.mapping.height * this.tileSize
-          : this.height! * this.tileSize
-      )
-    }
+    this.drawFirePlace(c, shift)
+    this.drawCircleRangeIndicator(c, shift)
+    this.drawFire(c, shift)
+  }
 
-    if (this.type === 'fire_place') {
-      c.beginPath()
-      c.arc(
-        this.position.x * this.tileSize + shift.x + 1.5 * this.tileSize,
-        this.position.y * this.tileSize + shift.y + 1.5 * this.tileSize,
-        250,
-        0,
-        2 * Math.PI
-      )
-      c.stroke()
+  drawFirePlace(c: CanvasRenderingContext2D, shift: Point) {
+    c.drawImage(
+      this.image,
+      0,
+      0,
+      this.image.width,
+      this.image.height,
+      this.position.x * this.tileSize + shift.x,
+      this.position.y * this.tileSize + shift.y,
+      this.width * this.tileSize,
+      this.height * this.tileSize
+    )
+  }
 
-      c.drawImage(
-        this.fire,
-        16 * this.frame,
-        0,
-        16,
-        16,
-        this.position.x * this.tileSize + shift.x + this.tileSize - 16,
-        this.position.y * this.tileSize + shift.y + this.tileSize / 2,
-        this.tileSize * 1.5,
-        this.tileSize * 1.5
-      )
-    }
+  drawCircleRangeIndicator(c: CanvasRenderingContext2D, shift: Point) {
+    c.beginPath()
+    c.arc(
+      this.position.x * this.tileSize + shift.x + 1.5 * this.tileSize,
+      this.position.y * this.tileSize + shift.y + 1.5 * this.tileSize,
+      250,
+      0,
+      2 * Math.PI
+    )
+    c.setLineDash([4, 16])
+    c.stroke()
+  }
+
+  drawFire(c: CanvasRenderingContext2D, shift: Point) {
+    c.drawImage(
+      this.fire,
+      16 * this.frame.currentFrame!,
+      0,
+      16,
+      16,
+      this.position.x * this.tileSize + shift.x + this.tileSize - 16,
+      this.position.y * this.tileSize + shift.y + this.tileSize / 2,
+      this.tileSize * 1.5,
+      this.tileSize * 1.5
+    )
   }
 }
 
-export default Tile
+// export class Resource {
+//   type: ResourceTypes
+
+//   constructor({
+//     tileSize,
+//     position,
+//     type,
+//   }: {
+//     tileSize: number
+//     position: Point
+//     type: ResourceTypes
+//   }) {
+//     super({ tileSize, position })
+
+//     this.type = type
+//   }
+// }
