@@ -37,6 +37,11 @@ class Frame {
     this.currentFrame++
     if (this.currentFrame === this.maxFrame) this.currentFrame = startFrame
   }
+
+  setFPS(fps: number) {
+    this.fps = fps
+    this.fi = 1000 / this.fps
+  }
 }
 
 export default Frame

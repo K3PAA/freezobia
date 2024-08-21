@@ -1,34 +1,45 @@
-import { Point, SpriteType } from "../lib/types"
+import { Point, SpriteType } from '../lib/types'
 
 class Sprite {
-    position: Point
-    image: HTMLImageElement
-    scale: number
-    columns: number
-    maxFrames: number
-    framesCurrent: number
-    framesElapsed: number
-    framesHold: number
-    width: number
-    height: number
-    direction: number | undefined
-    offSet: Point
+  position: Point
+  image: HTMLImageElement
+  scale: number
+  columns: number
+  maxFrames: number
+  framesCurrent: number
+  framesElapsed: number
+  framesHold: number
+  width: number
+  height: number
+  direction: number | undefined
+  offSet: Point
 
-    constructor ({ position, imgSrc, scale = 1, columns = 1, maxFrames = 1, framesCurrent = 0, width, height, offSet, direction }: SpriteType) {
-        this.position = position
-        this.image = new Image()
-        this.image.src = imgSrc!
-        this.scale = scale
-        this.columns = columns
-        this.maxFrames = maxFrames
-        this.framesCurrent = framesCurrent
-        this.framesElapsed = 0
-        this.framesHold = 5
-        this.width = width
-        this.height = height
-        this.direction = direction
-        this.offSet = offSet
-    }
+  constructor({
+    position,
+    imgSrc,
+    scale = 1,
+    columns = 1,
+    maxFrames = 1,
+    framesCurrent = 0,
+    width,
+    height,
+    offSet,
+    direction,
+  }: SpriteType) {
+    this.position = position
+    this.image = new Image()
+    this.image.src = imgSrc!
+    this.scale = scale
+    this.columns = columns
+    this.maxFrames = maxFrames
+    this.framesCurrent = framesCurrent
+    this.framesElapsed = 0
+    this.framesHold = 5
+    this.width = width
+    this.height = height
+    this.direction = direction
+    this.offSet = offSet
+  }
 
   drawSprite = (c: CanvasRenderingContext2D) => {
     let frameWidth = this.image.width / this.columns
@@ -58,11 +69,8 @@ class Sprite {
   }
 
   animateFrames = () => {
-    this.framesElapsed++
     if (this.framesCurrent < this.maxFrames - 1) {
-      if (this.framesElapsed % this.framesHold === 0) {
-        this.framesCurrent++
-      }
+      this.framesCurrent++
     } else {
       this.framesCurrent = 0
     }
