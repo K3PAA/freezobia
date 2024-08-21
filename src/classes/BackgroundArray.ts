@@ -1,5 +1,6 @@
 // import { assets, resourcesMapping } from '../lib/constants'
-import { Point } from '../lib/types'
+import { BLOCKED_TILE, resourcesMapping } from '../lib/constants'
+import { Point, ResourceTypes } from '../lib/types'
 import { FirePlace, Resource } from './Tile'
 
 class BackgroundArray {
@@ -73,14 +74,39 @@ class BackgroundArray {
           this.inCenter({ x: j, y: i })
         )
           continue
-        const zeroOrOne = Math.floor(Math.random() * 1.2)
+        const zeroOrOne = Math.floor(Math.random() * 1.1) + 1
         if (!zeroOrOne) continue
+
+        const options = Object.keys(resourcesMapping) as ResourceTypes[]
+        const randomOption = options[Math.floor(Math.random() * options.length)]
+        const randomOptionSize = {
+          width: resourcesMapping[randomOption].width,
+          height: resourcesMapping[randomOption].height,
+        }
+
+        // to change
+        if (
+          this.backgroundArray[i + 1][j + 1] === BLOCKED_TILE ||
+          this.backgroundArray[i + 1][j] === BLOCKED_TILE ||
+          this.backgroundArray[i][j + 1] === BLOCKED_TILE
+        )
+          continue
+
+        if (randomOptionSize.width === 2 && randomOptionSize.height === 2) {
+          this.backgroundArray[i][j + 1] = BLOCKED_TILE
+          this.backgroundArray[i + 1][j] = BLOCKED_TILE
+          this.backgroundArray[i + 1][j + 1] = BLOCKED_TILE
+        } else if (randomOptionSize.width === 2) {
+          this.backgroundArray[i][j + 1] = BLOCKED_TILE
+        } else if (randomOptionSize.height === 2) {
+          this.backgroundArray[i + 1][j] = BLOCKED_TILE
+        }
 
         interactiveArray.push(
           new Resource({
             tileSize: this.tileSize,
             position: { x: j, y: i },
-            type: 'tree_snow',
+            type: randomOption,
           })
         )
       }
@@ -93,10 +119,10 @@ class BackgroundArray {
     { x, y }: Point
   ) {
     return (
-      campfire.position.x <= x &&
+      campfire.position.x <= x + 1 &&
       x < campfire.width + campfire.position.x &&
       campfire.position.y <= y + 1 &&
-      y < campfire.height + campfire.position.y - 1
+      y < campfire.height + campfire.position.y
     )
   }
   inCenter({ x, y }: Point) {

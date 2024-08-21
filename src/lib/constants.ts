@@ -27,16 +27,38 @@ export const resourcesMapping = {
     height: 2,
   },
   rock: {
-    position: { x: 3, y: 0 },
+    position: { x: 4, y: 0 },
     width: 1,
     height: 1,
   },
   small_rock: {
-    position: { x: 3, y: 1 },
+    position: { x: 4, y: 1 },
+    width: 1,
+    height: 1,
+  },
+  rock_red: {
+    position: { x: 6, y: 0 },
+    width: 1,
+    height: 1,
+  },
+  rock_yellow: {
+    position: { x: 7, y: 0 },
+    width: 1,
+    height: 1,
+  },
+  rock_black: {
+    position: { x: 6, y: 1 },
+    width: 1,
+    height: 1,
+  },
+  rock_blue: {
+    position: { x: 7, y: 1 },
     width: 1,
     height: 1,
   },
 }
+
+export const BLOCKED_TILE = 100
 
 export const allowedKeys = {
   KeyA: false,
