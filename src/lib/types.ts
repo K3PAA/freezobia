@@ -5,7 +5,7 @@ export type Box = { position: Point; width: number; height: number }
 export type SpriteType = {
     canvas: HTMLCanvasElement,
     position: Point,
-    imgSrc: string,
+    imgSrc?: string,
     scale: number,
     columns?: number,
     maxFrames?: number,

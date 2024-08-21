@@ -8,11 +8,6 @@ class Player extends Sprite {
 	canvas: HTMLCanvasElement;
 	centerBox: Box;
 
-	width = 2 * 8 * 3;
-	height = 3 * 8 * 3;
-	offSet: Point = { x: 0, y: 32 };
-	position: Point = { x: 0, y: 0 };
-	// acceleration: Point = { x: 0.5, y: 0.1 };
 	velocity: Point = { x: 0, y: 0 };
 
 	collision = {

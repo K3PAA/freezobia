@@ -17,7 +17,7 @@ class Sprite {
     constructor ({ position, imgSrc, scale = 1, columns = 1, maxFrames = 1, framesCurrent = 0, width, height, offSet, direction }: SpriteType) {
         this.position = position
         this.image = new Image()
-        this.image.src = imgSrc
+        this.image.src = imgSrc!
         this.scale = scale
         this.columns = columns
         this.maxFrames = maxFrames

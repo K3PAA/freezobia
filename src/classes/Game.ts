@@ -24,11 +24,11 @@ class Game {
 			},
 			width: 2 * 8 * 3,
 			height: 3 * 8 * 3,
-      offSet: {
-        x: 0,
-        y: 32,
-      },
-      scale: 3,
+			offSet: {
+				x: 0,
+				y: 32,
+			},
+			scale: 3,
 			imgSrc: playerImg,
 		});
 		this.input = new Input();
