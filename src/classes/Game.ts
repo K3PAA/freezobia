@@ -26,7 +26,6 @@ class Game {
       keys: this.input.keys,
       mousePos: this.input.mousePos,
       offset: this.background.offset,
-      time: time,
     })
 
     this.background.update(time)

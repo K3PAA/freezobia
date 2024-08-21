@@ -1,5 +1,5 @@
-import { Point, ResourceTypes } from '../lib/types'
-import { assets } from '../lib/constants'
+import { Box, Point, ResourceTypes } from '../lib/types'
+import { assets, resourcesMapping } from '../lib/constants'
 import Frame from './Frame'
 
 export class FirePlace {
@@ -86,20 +86,42 @@ export class FirePlace {
   }
 }
 
-// export class Resource {
-//   type: ResourceTypes
+export class Resource {
+  image = new Image()
 
-//   constructor({
-//     tileSize,
-//     position,
-//     type,
-//   }: {
-//     tileSize: number
-//     position: Point
-//     type: ResourceTypes
-//   }) {
-//     super({ tileSize, position })
+  type: ResourceTypes
+  tileSize: number
+  position: Point
+  mapping: Box
 
-//     this.type = type
-//   }
-// }
+  constructor({
+    tileSize,
+    position,
+    type,
+  }: {
+    tileSize: number
+    position: Point
+    type: ResourceTypes
+  }) {
+    this.tileSize = tileSize
+    this.position = position
+    this.type = type
+
+    this.image.src = assets.resources
+    this.mapping = resourcesMapping[type]
+  }
+
+  draw(c: CanvasRenderingContext2D, shift: Point) {
+    c.drawImage(
+      this.image,
+      this.mapping.position.x * 16,
+      this.mapping.position.y * 16,
+      this.mapping.width * 16,
+      this.mapping.height * 16,
+      this.position.x * this.tileSize + shift.x,
+      this.position.y * this.tileSize + shift.y,
+      this.mapping.width * this.tileSize,
+      this.mapping.height * this.tileSize
+    )
+  }
+}
