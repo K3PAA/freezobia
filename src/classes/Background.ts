@@ -1,6 +1,7 @@
 import { assets } from '../lib/constants'
 import { Box, Point } from '../lib/types'
 import BackgroundArray from './BackgroundArray'
+import Frame from './Frame'
 
 class Background {
   canvas: HTMLCanvasElement
@@ -18,6 +19,7 @@ class Background {
   offset: Point
 
   grid = this.generateGrid()
+  frames = new Frame({ fps: 15 })
 
   constructor({ canvas }: { canvas: HTMLCanvasElement }) {
     this.canvas = canvas
@@ -62,7 +64,22 @@ class Background {
     })
   }
 
-  update() {
+  update(time: number) {
+    if (this.frames.timeElapsed(time)) {
+      this.handleGridInView()
+      this.handleGridShift()
+    }
+
+    this.grid.forEach((row) => {
+      row.forEach((item) => {
+        item.backgroundArray.interactiveArray.forEach((x) => {
+          x.update(time)
+        })
+      })
+    })
+  }
+
+  handleGridInView() {
     // left
     if (!this.grid[1][0].render && this.offset.x < this.board.position.x) {
       this.grid[1][0].render = true
@@ -134,16 +151,6 @@ class Background {
     } else if (this.grid[2][2] && !visibleCorners.bottomRight) {
       this.grid[2][2].render = false
     }
-
-    this.handleGridShift()
-
-    this.grid.forEach((row) => {
-      row.forEach((item) => {
-        item.backgroundArray.interactiveArray.forEach((x) => {
-          x.update()
-        })
-      })
-    })
   }
 
   handleGridShift() {
@@ -262,8 +269,6 @@ class Background {
             x: this.board.position.x + this.board.width * y - this.offset.x,
             y: this.board.position.y + this.board.height * x - this.offset.y,
           })
-
-          console.log(this.board.position.x + this.board.width * y)
         })
       }
     }

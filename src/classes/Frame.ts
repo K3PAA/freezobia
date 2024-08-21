@@ -1,16 +1,41 @@
 class Frame {
-  frames = 60
-  fi = 1000 / this.frames
-  ft = 0
+  fps: number
+  fi: number
+  ft: number
 
-  constructor() {}
+  maxFrame?: number
+  currentFrame?: number
 
-  update(time: number) {
+  constructor({
+    fps,
+    maxFrame,
+    currentFrame,
+  }: {
+    fps: number
+    maxFrame?: number
+    currentFrame?: number
+  }) {
+    this.fps = fps
+    this.fi = 1000 / this.fps
+    this.ft = 0
+
+    this.maxFrame = maxFrame
+    this.currentFrame = currentFrame
+  }
+
+  timeElapsed(time: number) {
     this.ft += time
     if (this.ft >= this.fi) {
       this.ft = 0
     }
     return this.ft === 0
+  }
+
+  updateFrame(startFrame = 0) {
+    if (!this.maxFrame || !this.currentFrame) return
+
+    this.currentFrame++
+    if (this.currentFrame === this.maxFrame) this.currentFrame = startFrame
   }
 }
 

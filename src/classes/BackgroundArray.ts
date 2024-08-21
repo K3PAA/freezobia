@@ -1,11 +1,11 @@
-import { assets, resourcesMapping } from '../lib/constants'
+// import { assets, resourcesMapping } from '../lib/constants'
 import { Point } from '../lib/types'
-import Tile from './Tile'
+import { FirePlace } from './Tile'
 
 class BackgroundArray {
   boardDimensions: Point
   backgroundArray: number[][]
-  interactiveArray: Tile[] = []
+  interactiveArray: FirePlace[] = []
   tileSize: number
 
   constructor({
@@ -41,7 +41,7 @@ class BackgroundArray {
   }
 
   generateInteractiveTiles() {
-    const interactiveArray: Tile[] = []
+    const interactiveArray: FirePlace[] = []
 
     const campfire = {
       position: {
@@ -53,13 +53,11 @@ class BackgroundArray {
     }
 
     interactiveArray.push(
-      new Tile({
+      new FirePlace({
         tileSize: this.tileSize,
-        type: 'fire_place',
         position: campfire.position,
         width: campfire.width,
         height: campfire.height,
-        src: assets.fire_place,
       })
     )
 
@@ -76,15 +74,13 @@ class BackgroundArray {
         const zeroOrOne = Math.floor(Math.random() * 1.2)
         if (!zeroOrOne) continue
 
-        interactiveArray.push(
-          new Tile({
-            tileSize: this.tileSize,
-            type: 'snow_tree',
-            position: { x: j, y: i },
-            mapping: resourcesMapping.tree_snow,
-            src: assets.resources,
-          })
-        )
+        // interactiveArray.push(
+        //   new Resource({
+        //     tileSize: this.tileSize,
+        //     position: { x: j, y: i },
+        //     type: 'snow_tree',
+        //   })
+        // )
       }
     }
 
