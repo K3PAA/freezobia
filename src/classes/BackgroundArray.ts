@@ -1,5 +1,8 @@
-// import { assets, resourcesMapping } from '../lib/constants'
-import { BLOCKED_TILE, resourcesMapping } from '../lib/constants'
+import {
+  BLOCKED_TILE,
+  resourcesMapping,
+  resourcesTotalChances,
+} from '../lib/constants'
 import { Point, ResourceTypes } from '../lib/types'
 import { FirePlace, Resource } from './Tile'
 
@@ -66,27 +69,26 @@ class BackgroundArray {
       })
     )
 
-    for (let i = 1; i < this.boardDimensions.y - 1; i++) {
-      for (let j = 1; j < this.boardDimensions.x - 1; j++) {
+    for (let i = 0; i < this.boardDimensions.y - 1; i++) {
+      for (let j = 0; j < this.boardDimensions.x - 1; j++) {
         if (
           this.backgroundArray[i][j] ||
           this.inCampfireRange(campfire, { x: j, y: i }) ||
           this.inCenter({ x: j, y: i })
         )
           continue
-        const zeroOrOne = Math.floor(Math.random() * 1.1) + 1
+        const zeroOrOne = Math.floor(Math.random() * 1.25)
         if (!zeroOrOne) continue
 
-        const options = Object.keys(resourcesMapping) as ResourceTypes[]
-        const randomOption = options[Math.floor(Math.random() * options.length)]
+        const randomKey = this.getRandomChanceIndex()
+
         const randomOptionSize = {
-          width: resourcesMapping[randomOption].width,
-          height: resourcesMapping[randomOption].height,
+          width: resourcesMapping[randomKey].width,
+          height: resourcesMapping[randomKey].height,
         }
 
         // to change
         if (
-          this.backgroundArray[i + 1][j + 1] === BLOCKED_TILE ||
           this.backgroundArray[i + 1][j] === BLOCKED_TILE ||
           this.backgroundArray[i][j + 1] === BLOCKED_TILE
         )
@@ -106,7 +108,7 @@ class BackgroundArray {
           new Resource({
             tileSize: this.tileSize,
             position: { x: j, y: i },
-            type: randomOption,
+            type: randomKey,
           })
         )
       }
@@ -114,15 +116,16 @@ class BackgroundArray {
 
     return interactiveArray
   }
+
   inCampfireRange(
     campfire: { position: Point; width: number; height: number },
     { x, y }: Point
   ) {
     return (
-      campfire.position.x <= x + 1 &&
-      x < campfire.width + campfire.position.x &&
-      campfire.position.y <= y + 1 &&
-      y < campfire.height + campfire.position.y
+      campfire.position.x - 1 <= x + 1 &&
+      x < campfire.width + campfire.position.x + 1 &&
+      campfire.position.y - 1 <= y + 1 &&
+      y < campfire.height + campfire.position.y + 1
     )
   }
   inCenter({ x, y }: Point) {
@@ -133,6 +136,23 @@ class BackgroundArray {
       y <= this.boardDimensions.y / 2 &&
       y >= this.boardDimensions.y / 2 - 2
     )
+  }
+
+  getRandomChanceValue() {
+    return Math.floor(Math.random() * resourcesTotalChances)
+  }
+
+  getRandomChanceIndex(): ResourceTypes {
+    const randomChanceValue = this.getRandomChanceValue()
+
+    let total = 0
+
+    for (const key in resourcesMapping) {
+      total += resourcesMapping[key as ResourceTypes].chance
+      if (total >= randomChanceValue) return key as ResourceTypes
+    }
+
+    return 'tree'
   }
 }
 
