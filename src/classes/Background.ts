@@ -2,6 +2,7 @@ import { assets } from '../lib/constants'
 import { Box, Point } from '../lib/types'
 import BackgroundArray from './BackgroundArray'
 import Frame from './Frame'
+import { FirePlace } from './Tile'
 
 class Background {
   canvas: HTMLCanvasElement
@@ -73,7 +74,7 @@ class Background {
     this.grid.forEach((row) => {
       row.forEach((item) => {
         item.backgroundArray.interactiveArray.forEach((x) => {
-          x.update(time)
+          if (x instanceof FirePlace) x.update(time)
         })
       })
     })
