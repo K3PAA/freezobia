@@ -1,6 +1,7 @@
 import { Box, Point, ResourceTypes } from '../lib/types'
 import { assets, resourcesMapping } from '../lib/constants'
 import Frame from './Frame'
+import { randomRGBA } from '../lib/utils'
 
 export class FirePlace {
   image = new Image()
