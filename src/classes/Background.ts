@@ -48,7 +48,7 @@ class Background {
       const gridRow = []
       for (let j = 0; j < this.gridSize; j++) {
         gridRow.push({
-          backgroundArray: this.generateBackgroundArray(),
+          backgroundArray: this.generateBackgroundArray(j === 1 && i === 1),
           render: j === 1 && i === 1 ? true : false,
         })
       }
@@ -58,8 +58,9 @@ class Background {
     return grid
   }
 
-  generateBackgroundArray() {
+  generateBackgroundArray(centerArray = false) {
     return new BackgroundArray({
+      centerArray,
       boardDimensions: this.boardDimensions,
       tileSize: this.tileSize,
     })

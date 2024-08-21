@@ -7,16 +7,20 @@ class BackgroundArray {
   backgroundArray: number[][]
   interactiveArray: (FirePlace | Resource)[] = []
   tileSize: number
+  centerArray: boolean
 
   constructor({
     boardDimensions,
     tileSize,
+    centerArray,
   }: {
     boardDimensions: Point
     tileSize: number
+    centerArray: boolean
   }) {
     this.tileSize = tileSize
     this.boardDimensions = boardDimensions
+    this.centerArray = centerArray
 
     this.backgroundArray = this.generateFloorTiles()
     this.interactiveArray = this.generateInteractiveTiles()
@@ -65,10 +69,8 @@ class BackgroundArray {
       for (let j = 1; j < this.boardDimensions.x - 1; j++) {
         if (
           this.backgroundArray[i][j] ||
-          (campfire.position.x >= j &&
-            campfire.position.x < j + campfire.width + 1) ||
-          (campfire.position.y >= i &&
-            campfire.position.y < i + campfire.height + 1)
+          this.inCampfireRange(campfire, { x: j, y: i }) ||
+          this.inCenter({ x: j, y: i })
         )
           continue
         const zeroOrOne = Math.floor(Math.random() * 1.2)
@@ -85,6 +87,26 @@ class BackgroundArray {
     }
 
     return interactiveArray
+  }
+  inCampfireRange(
+    campfire: { position: Point; width: number; height: number },
+    { x, y }: Point
+  ) {
+    return (
+      campfire.position.x <= x &&
+      x < campfire.width + campfire.position.x &&
+      campfire.position.y <= y + 1 &&
+      y < campfire.height + campfire.position.y - 1
+    )
+  }
+  inCenter({ x, y }: Point) {
+    return (
+      this.centerArray &&
+      x <= this.boardDimensions.x / 2 &&
+      x >= this.boardDimensions.x / 2 - 1 &&
+      y <= this.boardDimensions.y / 2 &&
+      y >= this.boardDimensions.y / 2 - 2
+    )
   }
 }
 
