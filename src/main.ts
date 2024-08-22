@@ -17,7 +17,7 @@ window.addEventListener('load', () => {
     prevTimeStamp = timeStamp
 
     game.update(timeStampDiff)
-    game.draw(c)
+    game.draw({ c: c, time: timeStampDiff })
 
     requestAnimationFrame(animate)
   }

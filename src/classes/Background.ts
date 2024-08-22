@@ -20,7 +20,7 @@ class Background {
   offset: Point
 
   grid = this.generateGrid()
-  frames = new Frame({ fps: 15 })
+  frames = new Frame({ fps: 30 })
 
   constructor({ canvas }: { canvas: HTMLCanvasElement }) {
     this.canvas = canvas
