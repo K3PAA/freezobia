@@ -30,6 +30,8 @@ class Player extends Sprite {
   states: any[]
   frame = new Frame({ fps: 15 })
 
+  moveFrame = new Frame({ fps: 60 })
+
   constructor({
     canvas,
     position,
@@ -114,6 +116,8 @@ class Player extends Sprite {
     if (this.frame.timeElapsed(time)) {
       this.animateFrames()
     }
+
+    if (!this.moveFrame.timeElapsed(time)) return
 
     this.state.input(keys)
 
