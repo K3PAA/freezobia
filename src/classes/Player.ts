@@ -2,8 +2,9 @@ import { AllowedKeysObject, Box, Point, SpriteType } from '../lib/types'
 import Sprite from './Sprite'
 import gunImg from '../assets/gun_gun_0.png'
 import { lerp } from '../lib/functions'
-import { SPRITES, STATES, Idle, Running } from './PlayerState'
+import { SPRITES, STATES, Idle, Running, Attack } from './PlayerState'
 import Frame from './Frame'
+import Bullet from './Bullet'
 
 class Player extends Sprite {
   canvas: HTMLCanvasElement
@@ -18,6 +19,8 @@ class Player extends Sprite {
     bottom: false,
   }
 
+  playerHitBoxRadius: any
+
   speed = 5
   direction = 1
 
@@ -29,6 +32,7 @@ class Player extends Sprite {
   previousState: any
   states: any[]
   frame = new Frame({ fps: 15 })
+  bullets: any
 
   constructor({
     canvas,
@@ -60,6 +64,8 @@ class Player extends Sprite {
     this.position.x = this.canvas.width / 2 - this.width / 2
     this.position.y = this.canvas.height / 2 - this.height / 2
 
+	this.playerHitBoxRadius = Math.max(this.width, this.height) / 2
+
     this.playerGun = new Sprite({
       canvas,
       position: {
@@ -76,6 +82,8 @@ class Player extends Sprite {
       height: 20,
     })
 
+    this.bullets = []
+
     this.mouse = {
       x: 0,
       y: 0,
@@ -86,7 +94,7 @@ class Player extends Sprite {
 
     this.state = null
     this.previousState = null
-    this.states = [new Idle(this), new Running(this)]
+    this.states = [new Idle(this), new Running(this), new Attack(this)]
     this.setState(STATES.IDLE)
     this.setSprite(SPRITES.IDLE)
 
@@ -181,6 +189,7 @@ class Player extends Sprite {
     this.image.src = sprite.imageSrc
     this.columns = sprite.columns
     this.maxFrames = sprite.maxFrames
+    this.frame.setFPS(sprite.fps)
   }
 
   inCenterBox = () => {
@@ -210,9 +219,33 @@ class Player extends Sprite {
   }
 
   draw = (c: CanvasRenderingContext2D) => {
+	//* hitbox of player
+    c.beginPath()
+    c.arc(
+      this.position.x + this.width / 2,
+      this.position.y + this.height / 2,
+      this.playerHitBoxRadius,
+      0,
+      2 * Math.PI
+    )
+    c.fillStyle = 'rgba(0, 255, 255)'
+    c.fill()
+
     //* hitbox of player
     c.fillStyle = '#fff'
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
+
+    //! change directory
+    this.bullets.map((bullet: any) => {
+      bullet.draw(c)
+      bullet.update()
+      if (
+        Math.abs(bullet.position.x - this.position.x - this.width / 2) > 750 ||
+        Math.abs(bullet.position.y - this.position.y - this.height / 2) > 750
+      ) {
+        this.bullets.splice(this.bullets.indexOf(bullet), 1)
+      }
+    })
 
     //* drawing player
     this.drawSprite(c)
@@ -226,18 +259,28 @@ class Player extends Sprite {
       this.position.x + this.width / 2,
       this.position.y + this.height / 2
     )
-    c.arc(
-      this.position.x + this.width / 2,
-      this.position.y + this.height / 2,
-      100,
-      this.gunAngle - 0.6,
-      this.gunAngle + 0.6
-    )
+    if (this.state.state === 'RUNNING') {
+      c.arc(
+        this.position.x + this.width / 2,
+        this.position.y + this.height / 2,
+        100,
+        this.gunAngle - 0.6,
+        this.gunAngle + 0.6
+      )
+    } else {
+      c.arc(
+        this.position.x + this.width / 2,
+        this.position.y + this.height / 2,
+        200,
+        this.gunAngle - 0.15,
+        this.gunAngle + 0.15
+      )
+    }
     c.fillStyle = 'rgb(0, 0, 0, 0.15)'
     c.fill()
-    c.save()
 
     //* gun movement
+    c.save()
     c.translate(
       this.position.x + this.width / 2,
       this.position.y + this.height / 2
@@ -256,7 +299,24 @@ class Player extends Sprite {
     c.restore()
   }
 
-  attack = () => {}
+  attack = () => {
+    const bullet = new Bullet({
+      canvas: this.canvas,
+      position: {
+        x: this.position.x + this.width / 2,
+        y: this.position.y + this.height / 2,
+      },
+      width: 4,
+      height: 8,
+      offSet: {
+        x: 0,
+        y: 0,
+      },
+      scale: 1,
+      angle: this.gunAngle,
+    })
+    this.bullets.push(bullet)
+  }
 
   drawCenterBox = (c: CanvasRenderingContext2D) => {
     c.fillStyle = 'rgba(155, 155, 0, 0.2)'

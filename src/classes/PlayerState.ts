@@ -13,13 +13,20 @@ const SPRITES = {
     imageSrc: run,
     columns: 8,
     maxFrames: 8,
-    fps: 6,
+    fps: 8,
+  },
+  ATTACK: {
+    imageSrc: run,
+    columns: 8,
+    maxFrames: 8,
+    fps: 1,
   },
 }
 
 const STATES = {
   IDLE: 0,
   RUNNING: 1,
+  ATTACK: 2,
 }
 
 class State {
@@ -43,14 +50,15 @@ class Idle extends State {
     if (!keys.KeyW && !keys.KeyA && !keys.KeyS && !keys.KeyD) {
       this.player.setState(STATES.IDLE)
       this.player.setSprite(SPRITES.IDLE)
-      this.player.frame.setFPS(SPRITES.IDLE.fps)
 
       this.player.velocity.x = 0
       this.player.velocity.y = 0
     }
+    if (keys.Space) {
+      this.player.setState(STATES.ATTACK)
+    }
     if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
       this.player.setState(STATES.RUNNING)
-      this.player.setSprite(SPRITES.RUNNING)
     }
   }
 }
@@ -67,25 +75,45 @@ class Running extends State {
     if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
       this.player.setState(STATES.RUNNING)
       this.player.setSprite(SPRITES.RUNNING)
-      this.player.frame.setFPS(SPRITES.RUNNING.fps)
+
+      if (keys.KeyA) {
+        this.player.velocity.x = -this.player.speed
+      }
+      if (keys.KeyD) {
+        this.player.velocity.x = this.player.speed
+      }
+      if (keys.KeyW) {
+        this.player.velocity.y = -this.player.speed
+      }
+      if (keys.KeyS) {
+        this.player.velocity.y = this.player.speed
+      }
     }
-    if (keys.KeyA) {
-      this.player.velocity.x = -this.player.speed
-    }
-    if (keys.KeyD) {
-      this.player.velocity.x = this.player.speed
-    }
-    if (keys.KeyW) {
-      this.player.velocity.y = -this.player.speed
-    }
-    if (keys.KeyS) {
-      this.player.velocity.y = this.player.speed
-    }
+    // if (keys.Space) {
+    //   this.player.setState(STATES.ATTACK)
+    // }
     if (!keys.KeyW && !keys.KeyA && !keys.KeyS && !keys.KeyD) {
       this.player.setState(STATES.IDLE)
-      this.player.setSprite(SPRITES.IDLE)
     }
   }
 }
 
-export { SPRITES, STATES, Idle, Running }
+class Attack extends State {
+  constructor(player: any) {
+    super({
+      player,
+      state: 'ATTACK',
+    })
+  }
+
+  input = (keys: AllowedKeysObject) => {
+    this.player.setState(STATES.ATTACK)
+    this.player.setState(SPRITES.ATTACK)
+    this.player.attack()
+    if (!keys.KeyW && !keys.KeyA && !keys.KeyS && !keys.KeyD) {
+      this.player.setState(STATES.IDLE)
+    }
+  }
+}
+
+export { SPRITES, STATES, Idle, Running, Attack }
