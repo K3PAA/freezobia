@@ -45,7 +45,8 @@ class Game {
     this.background.update(time)
   }
 
-  draw(c: CanvasRenderingContext2D) {
+  draw({ c, time }: { c: CanvasRenderingContext2D; time: number }) {
+    if (!this.frame.timeElapsed(time)) return
     this.background.draw(c)
     this.player.draw(c)
   }

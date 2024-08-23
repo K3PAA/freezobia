@@ -1,4 +1,4 @@
-import { assets } from '../lib/constants'
+import { assets, BLOCKED_TILE } from '../lib/constants'
 import { Box, Point } from '../lib/types'
 import BackgroundArray from './BackgroundArray'
 import Frame from './Frame'
@@ -20,7 +20,7 @@ class Background {
   offset: Point
 
   grid = this.generateGrid()
-  frames = new Frame({ fps: 15 })
+  frames = new Frame({ fps: 30 })
 
   constructor({ canvas }: { canvas: HTMLCanvasElement }) {
     this.canvas = canvas
@@ -48,7 +48,7 @@ class Background {
       const gridRow = []
       for (let j = 0; j < this.gridSize; j++) {
         gridRow.push({
-          backgroundArray: this.generateBackgroundArray(),
+          backgroundArray: this.generateBackgroundArray(j === 1 && i === 1),
           render: j === 1 && i === 1 ? true : false,
         })
       }
@@ -58,8 +58,9 @@ class Background {
     return grid
   }
 
-  generateBackgroundArray() {
+  generateBackgroundArray(centerArray = false) {
     return new BackgroundArray({
+      centerArray,
       boardDimensions: this.boardDimensions,
       tileSize: this.tileSize,
     })
@@ -240,25 +241,25 @@ class Background {
         const singleArray = this.grid[x + 1][y + 1].backgroundArray
 
         if (!shouldRender) continue
+        const shift = {
+          x: this.board.position.x + this.board.width * y - this.offset.x,
+          y: this.board.position.y + this.board.height * x - this.offset.y,
+        }
 
         for (let i = 0; i < this.boardDimensions.y; i++) {
           for (let j = 0; j < this.boardDimensions.x; j++) {
             const tileNumber = singleArray.backgroundArray[i][j]
+            const activeTile = tileNumber === BLOCKED_TILE ? 0 : tileNumber
+
             c.drawImage(
               this.tilesImage,
-              tileNumber * 16,
+              activeTile * 16,
               0,
               16,
               16,
 
-              j * this.tileSize +
-                this.board.position.x +
-                this.board.width * y -
-                this.offset.x,
-              i * this.tileSize +
-                this.board.position.y +
-                this.board.height * x -
-                this.offset.y,
+              j * this.tileSize + shift.x,
+              i * this.tileSize + shift.y,
               this.tileSize,
               this.tileSize
             )
@@ -266,10 +267,7 @@ class Background {
         }
 
         singleArray.interactiveArray.forEach((el) => {
-          el.draw(c, {
-            x: this.board.position.x + this.board.width * y - this.offset.x,
-            y: this.board.position.y + this.board.height * x - this.offset.y,
-          })
+          el.draw(c, shift)
         })
       }
     }
