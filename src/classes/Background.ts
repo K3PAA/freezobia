@@ -1,7 +1,6 @@
 import { assets, BLOCKED_TILE } from '../lib/constants'
-import { Box, Point } from '../lib/types'
-import BackgroundArray from './BackgroundArray'
-import Frame from './Frame'
+import { Point } from '../lib/types'
+import BackgroundGrid from './BackgroundGrid'
 import { FirePlace } from './Tile'
 
 class Background {
@@ -16,220 +15,29 @@ class Background {
   gridSize = 3
   tilesImage: HTMLImageElement = new Image()
 
-  board: Box
-  offset: Point
-
-  grid = this.generateGrid()
-  frames = new Frame({ fps: 30 })
+  grid: BackgroundGrid
 
   constructor({ canvas }: { canvas: HTMLCanvasElement }) {
     this.canvas = canvas
     this.tilesImage.src = assets.tiles
-
-    this.board = {
-      width: this.tileSize * this.boardDimensions.x,
-      height: this.tileSize * this.boardDimensions.y,
-      position: {
-        x: canvas.width / 2 - (this.tileSize * this.boardDimensions.x) / 2,
-        y: canvas.height / 2 - (this.tileSize * this.boardDimensions.y) / 2,
-      },
-    }
-
-    this.offset = {
-      x: 0,
-      y: 0,
-    }
-  }
-
-  generateGrid() {
-    const grid = []
-
-    for (let i = 0; i < this.gridSize; i++) {
-      const gridRow = []
-      for (let j = 0; j < this.gridSize; j++) {
-        gridRow.push({
-          backgroundArray: this.generateBackgroundArray(j === 1 && i === 1),
-          render: j === 1 && i === 1 ? true : false,
-        })
-      }
-      grid.push(gridRow)
-    }
-
-    return grid
-  }
-
-  generateBackgroundArray(centerArray = false) {
-    return new BackgroundArray({
-      centerArray,
+    this.grid = new BackgroundGrid({
+      gridSize: this.gridSize,
       boardDimensions: this.boardDimensions,
       tileSize: this.tileSize,
+      canvas: this.canvas,
     })
   }
 
   update(time: number) {
-    if (this.frames.timeElapsed(time)) {
-      this.handleGridInView()
-      this.handleGridShift()
-    }
+    this.grid.update(time)
 
-    this.grid.forEach((row) => {
+    this.grid.tilesArray.forEach((row) => {
       row.forEach((item) => {
-        item.backgroundArray.interactiveArray.forEach((x) => {
-          if (x instanceof FirePlace) x.update(time)
+        item.backgroundArray.interactiveArray.forEach((tile) => {
+          if (tile instanceof FirePlace) tile.update(time)
         })
       })
     })
-  }
-
-  handleGridInView() {
-    // left
-    if (!this.grid[1][0].render && this.offset.x < this.board.position.x) {
-      this.grid[1][0].render = true
-    } else if (
-      this.grid[1][0].render &&
-      this.offset.x > this.board.position.x
-    ) {
-      this.grid[1][0].render = false
-    }
-
-    // top
-    if (!this.grid[0][1].render && this.offset.y < this.board.position.y) {
-      this.grid[0][1].render = true
-    } else if (
-      this.grid[0][1].render &&
-      this.offset.y > this.board.position.y
-    ) {
-      this.grid[0][1].render = false
-    }
-
-    // right
-    if (!this.grid[1][2].render && -this.offset.x < this.board.position.x) {
-      this.grid[1][2].render = true
-    } else if (
-      this.grid[1][2].render &&
-      -this.offset.x > this.board.position.x
-    ) {
-      this.grid[1][2].render = false
-    }
-
-    // bottom
-    if (!this.grid[2][1].render && -this.offset.y < this.board.position.y) {
-      this.grid[2][1].render = true
-    } else if (
-      this.grid[2][1].render &&
-      -this.offset.y > this.board.position.y
-    ) {
-      this.grid[2][1].render = false
-    }
-
-    // corners
-    const visibleCorners = {
-      topLeft: this.grid[0][1].render && this.grid[1][0].render,
-      topRight: this.grid[0][1].render && this.grid[1][2].render,
-      bottomLeft: this.grid[2][1].render && this.grid[1][0].render,
-      bottomRight: this.grid[2][1].render && this.grid[1][2].render,
-    }
-
-    if (!this.grid[0][0].render && visibleCorners.topLeft) {
-      this.grid[0][0].render = true
-    } else if (this.grid[0][0] && !visibleCorners.topLeft) {
-      this.grid[0][0].render = false
-    }
-
-    if (!this.grid[0][2].render && visibleCorners.topRight) {
-      this.grid[0][2].render = true
-    } else if (this.grid[0][2] && !visibleCorners.topRight) {
-      this.grid[0][2].render = false
-    }
-
-    if (!this.grid[2][0].render && visibleCorners.bottomLeft) {
-      this.grid[2][0].render = true
-    } else if (this.grid[2][0] && !visibleCorners.bottomLeft) {
-      this.grid[2][0].render = false
-    }
-
-    if (!this.grid[2][2].render && visibleCorners.bottomRight) {
-      this.grid[2][2].render = true
-    } else if (this.grid[2][2] && !visibleCorners.bottomRight) {
-      this.grid[2][2].render = false
-    }
-  }
-
-  handleGridShift() {
-    if (Math.abs(this.offset.x + this.board.position.x) > this.board.width) {
-      this.shiftGrid('left')
-      this.updateOffset('x', this.board.width + this.offset.x)
-    }
-
-    if (this.offset.x - this.board.position.x > this.board.width) {
-      this.shiftGrid('right')
-      this.updateOffset('x', this.board.position.x)
-    }
-
-    if (Math.abs(this.offset.y + this.board.position.y) > this.board.height) {
-      this.shiftGrid('up')
-      this.updateOffset('y', this.board.height + this.offset.y)
-    }
-
-    if (this.offset.y - this.board.position.y > this.board.height) {
-      this.shiftGrid('down')
-      this.updateOffset('y', this.board.position.y)
-    }
-  }
-
-  shiftGrid(direction: 'left' | 'right' | 'up' | 'down') {
-    const size = this.gridSize
-    for (let i = 0; i < size; i++) {
-      if (direction === 'left' || direction === 'right') {
-        this.shiftRow(i, direction)
-      } else {
-        this.shiftColumn(i, direction)
-      }
-    }
-  }
-
-  shiftRow(row: number, direction: 'left' | 'right') {
-    if (direction === 'left') {
-      for (let i = 2; i > 0; i--) {
-        this.grid[row][i] = this.grid[row][i - 1]
-      }
-      this.grid[row][0] = {
-        backgroundArray: this.generateBackgroundArray(),
-        render: false,
-      }
-    } else {
-      for (let i = 0; i < 2; i++) {
-        this.grid[row][i] = this.grid[row][i + 1]
-      }
-      this.grid[row][2] = {
-        backgroundArray: this.generateBackgroundArray(),
-        render: false,
-      }
-    }
-  }
-
-  shiftColumn(col: number, direction: 'up' | 'down') {
-    if (direction === 'up') {
-      for (let i = 2; i > 0; i--) {
-        this.grid[i][col] = this.grid[i - 1][col]
-      }
-      this.grid[0][col] = {
-        backgroundArray: this.generateBackgroundArray(),
-        render: false,
-      }
-    } else {
-      for (let i = 0; i < 2; i++) {
-        this.grid[i][col] = this.grid[i + 1][col]
-      }
-      this.grid[2][col] = {
-        backgroundArray: this.generateBackgroundArray(),
-        render: false,
-      }
-    }
-  }
-
-  updateOffset(direction: 'x' | 'y', value: number) {
-    this.offset[direction] = value
   }
 
   draw(c: CanvasRenderingContext2D) {
@@ -237,13 +45,15 @@ class Background {
 
     for (let x = -1; x < this.gridSize - 1; x++) {
       for (let y = -1; y < this.gridSize - 1; y++) {
-        const shouldRender = this.grid[x + 1][y + 1].render
-        const singleArray = this.grid[x + 1][y + 1].backgroundArray
+        const shouldRender = this.grid.tilesArray[x + 1][y + 1].render
+        const singleArray = this.grid.tilesArray[x + 1][y + 1].backgroundArray
 
         if (!shouldRender) continue
+
+        const { board, offset } = this.grid
         const shift = {
-          x: this.board.position.x + this.board.width * y - this.offset.x,
-          y: this.board.position.y + this.board.height * x - this.offset.y,
+          x: board.position.x + board.width * y - offset.x,
+          y: board.position.y + this.grid.board.height * x - offset.y,
         }
 
         for (let i = 0; i < this.boardDimensions.y; i++) {
