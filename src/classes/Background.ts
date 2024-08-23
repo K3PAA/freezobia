@@ -1,7 +1,7 @@
 import { assets, BLOCKED_TILE } from '../lib/constants'
 import { Point } from '../lib/types'
 import BackgroundGrid from './BackgroundGrid'
-import { FirePlace } from './Tile'
+import { Campfire } from './Interactive'
 
 class Background {
   canvas: HTMLCanvasElement
@@ -34,7 +34,7 @@ class Background {
     this.grid.tilesArray.forEach((row) => {
       row.forEach((item) => {
         item.backgroundArray.interactiveArray.forEach((tile) => {
-          if (tile instanceof FirePlace) tile.update(time)
+          if (tile instanceof Campfire) tile.update(time)
         })
       })
     })

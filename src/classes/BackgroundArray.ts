@@ -4,12 +4,12 @@ import {
   resourcesTotalChances,
 } from '../lib/constants'
 import { Point, ResourceTypes } from '../lib/types'
-import { FirePlace, Resource } from './Tile'
+import { Campfire, Resource } from './Interactive'
 
 class BackgroundArray {
   boardDimensions: Point
   backgroundArray: number[][]
-  interactiveArray: (FirePlace | Resource)[] = []
+  interactiveArray: (Campfire | Resource)[] = []
   tileSize: number
   centerArray: boolean
 
@@ -49,7 +49,7 @@ class BackgroundArray {
   }
 
   generateInteractiveTiles() {
-    const interactiveArray: (FirePlace | Resource)[] = []
+    const interactiveArray: (Campfire | Resource)[] = []
 
     const campfire = {
       position: {
@@ -61,7 +61,7 @@ class BackgroundArray {
     }
 
     interactiveArray.push(
-      new FirePlace({
+      new Campfire({
         tileSize: this.tileSize,
         position: campfire.position,
         width: campfire.width,
