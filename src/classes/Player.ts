@@ -60,7 +60,7 @@ class Player extends Sprite {
 
     //* player centering
     this.position.x = this.canvas.width / 2 - this.width / 2
-    this.position.y = this.canvas.height / 2 - this.height / 2
+    this.position.y = this.canvas.height / 2 - this.height / 2 - this.height
 
     this.playerGun = new Sprite({
       canvas,
@@ -222,7 +222,7 @@ class Player extends Sprite {
     this.drawSprite(c)
 
     //* drawing centerbox
-    this.drawCenterBox(c)
+    // this.drawCenterBox(c)
 
     //* drawing weapon sight
     c.beginPath()
