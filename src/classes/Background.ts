@@ -61,18 +61,28 @@ class Background {
             const tileNumber = singleArray.backgroundArray[i][j]
             const activeTile = tileNumber === BLOCKED_TILE ? 0 : tileNumber
 
-            c.drawImage(
-              this.tilesImage,
-              activeTile * 16,
-              0,
-              16,
-              16,
+            if (activeTile === 101) {
+              c.fillStyle = 'red'
+              c.fillRect(
+                j * this.tileSize + shift.x,
+                i * this.tileSize + shift.y,
+                this.tileSize,
+                this.tileSize
+              )
+            } else {
+              c.drawImage(
+                this.tilesImage,
+                activeTile * 16,
+                0,
+                16,
+                16,
 
-              j * this.tileSize + shift.x,
-              i * this.tileSize + shift.y,
-              this.tileSize,
-              this.tileSize
-            )
+                j * this.tileSize + shift.x,
+                i * this.tileSize + shift.y,
+                this.tileSize,
+                this.tileSize
+              )
+            }
           }
         }
 

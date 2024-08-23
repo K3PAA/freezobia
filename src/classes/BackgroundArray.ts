@@ -51,15 +51,7 @@ class BackgroundArray {
   generateInteractiveTiles() {
     const interactiveArray: (Campfire | Resource)[] = []
 
-    const campfire = {
-      position: {
-        x: Math.floor(Math.random() * (this.boardDimensions.x - 10) + 5),
-        y: Math.floor(Math.random() * (this.boardDimensions.y - 10) + 5),
-      },
-      width: 3,
-      height: 3,
-    }
-
+    const campfire = this.createCampfire()
     interactiveArray.push(
       new Campfire({
         tileSize: this.tileSize,
@@ -73,10 +65,10 @@ class BackgroundArray {
       for (let j = 0; j < this.boardDimensions.x - 1; j++) {
         if (
           this.backgroundArray[i][j] ||
-          this.inCampfireRange(campfire, { x: j, y: i }) ||
-          this.inCenter({ x: j, y: i })
+          this.inCampfireRange(campfire, { x: j, y: i })
         )
           continue
+
         const zeroOrOne = Math.floor(Math.random() * 1.25)
         if (!zeroOrOne) continue
 
@@ -117,24 +109,38 @@ class BackgroundArray {
     return interactiveArray
   }
 
+  createCampfire() {
+    const randomcCampfirePosition = (dimension: 'x' | 'y') => {
+      return Math.floor(
+        Math.random() * (this.boardDimensions[dimension] - 6) + 3
+      )
+    }
+
+    const campfire = {
+      position: {
+        x: this.centerArray
+          ? this.boardDimensions.x / 2 - 1.5
+          : randomcCampfirePosition('x'),
+        y: this.centerArray
+          ? this.boardDimensions.y / 2 - 0.5
+          : randomcCampfirePosition('y'),
+      },
+      width: 3,
+      height: 3,
+    }
+
+    return campfire
+  }
+
   inCampfireRange(
     campfire: { position: Point; width: number; height: number },
     { x, y }: Point
   ) {
     return (
-      campfire.position.x - 1 <= x + 1 &&
-      x < campfire.width + campfire.position.x + 1 &&
-      campfire.position.y - 1 <= y + 1 &&
-      y < campfire.height + campfire.position.y + 1
-    )
-  }
-  inCenter({ x, y }: Point) {
-    return (
-      this.centerArray &&
-      x <= this.boardDimensions.x / 2 &&
-      x >= this.boardDimensions.x / 2 - 1 &&
-      y <= this.boardDimensions.y / 2 &&
-      y >= this.boardDimensions.y / 2 - 2
+      campfire.position.x - 2 <= x + 1 &&
+      x < campfire.width + campfire.position.x + 2 &&
+      campfire.position.y - 2 <= y + 1 &&
+      y < campfire.height + campfire.position.y + 2
     )
   }
 
