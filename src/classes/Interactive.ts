@@ -1,12 +1,13 @@
 import { Box, Point, ResourceTypes } from '../lib/types'
 import { assets, resourcesMapping } from '../lib/constants'
 import Frame from './Frame'
-import { randomRGBA } from '../lib/utils'
 
-export class FirePlace {
-  image = new Image()
+export class Campfire {
+  construction = new Image()
   fire = new Image()
-  frame = new Frame({ fps: 5, maxFrame: 5, currentFrame: 1 })
+  wood = new Image()
+
+  frame = new Frame({ fps: 5, maxFrame: 4, currentFrame: 0 })
 
   tileSize: number
   position: Point
@@ -29,29 +30,31 @@ export class FirePlace {
     this.width = width
     this.height = height
 
-    this.image.src = assets.fire_place
-    this.fire.src = assets.fire
+    this.construction.src = assets.campfire.construction
+    this.fire.src = assets.campfire.fire
+    this.wood.src = assets.campfire.wood
   }
 
   update(time: number) {
     if (this.frame.timeElapsed(time)) {
-      this.frame.updateFrame(1)
+      this.frame.updateFrame()
     }
   }
 
   draw(c: CanvasRenderingContext2D, shift: Point) {
     this.drawFirePlace(c, shift)
     this.drawCircleRangeIndicator(c, shift)
+    this.drawWood(c, shift)
     this.drawFire(c, shift)
   }
 
   drawFirePlace(c: CanvasRenderingContext2D, shift: Point) {
     c.drawImage(
-      this.image,
+      this.construction,
       0,
       0,
-      this.image.width,
-      this.image.height,
+      this.construction.width,
+      this.construction.height,
       this.position.x * this.tileSize + shift.x,
       this.position.y * this.tileSize + shift.y,
       this.width * this.tileSize,
@@ -70,6 +73,20 @@ export class FirePlace {
     )
     c.setLineDash([4, 16])
     c.stroke()
+  }
+
+  drawWood(c: CanvasRenderingContext2D, shift: Point) {
+    c.drawImage(
+      this.wood,
+      0,
+      0,
+      16,
+      16,
+      this.position.x * this.tileSize + shift.x + this.tileSize - 16,
+      this.position.y * this.tileSize + shift.y + this.tileSize / 2,
+      this.tileSize * 1.5,
+      this.tileSize * 1.5
+    )
   }
 
   drawFire(c: CanvasRenderingContext2D, shift: Point) {

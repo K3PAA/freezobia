@@ -1,12 +1,16 @@
-import tiles from '../assets/snow/tiles.png'
-import fire_place from '../assets/snow/fire_place.png'
-import fire from '../assets/snow/fire.png'
-import resources from '../assets/snow/resources.png'
+import tiles from '../assets/compressed/tiles.png'
+import resources from '../assets/compressed/resources.png'
+import wood from '../assets/compressed/wood.png'
+import flames from '../assets/compressed/flames.png'
+import construction from '../assets/compressed/construction.png'
 
 export const assets = {
   tiles: tiles,
-  fire_place: fire_place,
-  fire: fire,
+  campfire: {
+    wood: wood,
+    fire: flames,
+    construction: construction,
+  },
   resources: resources,
 }
 
