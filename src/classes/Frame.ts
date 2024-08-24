@@ -32,7 +32,8 @@ class Frame {
   }
 
   updateFrame(startFrame = 0) {
-    if (!this.maxFrame || !this.currentFrame) return
+    if (!this.maxFrame || (!this.currentFrame && this.currentFrame !== 0))
+      return
 
     this.currentFrame++
     if (this.currentFrame === this.maxFrame) this.currentFrame = startFrame
