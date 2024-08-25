@@ -13,6 +13,7 @@ export class Campfire {
   position: Point
   width: number
   height: number
+  radius = 250
 
   constructor({
     tileSize,
@@ -55,19 +56,19 @@ export class Campfire {
       0,
       this.construction.width,
       this.construction.height,
-      this.position.x * this.tileSize + shift.x,
-      this.position.y * this.tileSize + shift.y,
-      this.width * this.tileSize,
-      this.height * this.tileSize
+      this.position.x + shift.x,
+      this.position.y + shift.y,
+      this.width,
+      this.height
     )
   }
 
   drawCircleRangeIndicator(c: CanvasRenderingContext2D, shift: Point) {
     c.beginPath()
     c.arc(
-      this.position.x * this.tileSize + shift.x + 1.5 * this.tileSize,
-      this.position.y * this.tileSize + shift.y + 1.5 * this.tileSize,
-      250,
+      this.position.x + shift.x + 1.5 * this.tileSize,
+      this.position.y + shift.y + 1.5 * this.tileSize,
+      this.radius,
       0,
       2 * Math.PI
     )
@@ -82,8 +83,8 @@ export class Campfire {
       0,
       16,
       16,
-      this.position.x * this.tileSize + shift.x + this.tileSize - 16,
-      this.position.y * this.tileSize + shift.y + this.tileSize / 2,
+      this.position.x + shift.x + this.tileSize - 16,
+      this.position.y + shift.y + this.tileSize / 2,
       this.tileSize * 1.5,
       this.tileSize * 1.5
     )
@@ -96,8 +97,8 @@ export class Campfire {
       0,
       16,
       16,
-      this.position.x * this.tileSize + shift.x + this.tileSize - 16,
-      this.position.y * this.tileSize + shift.y + this.tileSize / 2,
+      this.position.x + shift.x + this.tileSize - 16,
+      this.position.y + shift.y + this.tileSize / 2,
       this.tileSize * 1.5,
       this.tileSize * 1.5
     )
@@ -132,14 +133,14 @@ export class Resource {
   draw(c: CanvasRenderingContext2D, shift: Point) {
     c.drawImage(
       this.image,
-      this.mapping.position.x * 16,
-      this.mapping.position.y * 16,
-      this.mapping.width * 16,
-      this.mapping.height * 16,
-      this.position.x * this.tileSize + shift.x,
-      this.position.y * this.tileSize + shift.y,
-      this.mapping.width * this.tileSize,
-      this.mapping.height * this.tileSize
+      this.mapping.position.x,
+      this.mapping.position.y,
+      this.mapping.width,
+      this.mapping.height,
+      this.position.x + shift.x,
+      this.position.y + shift.y,
+      (this.mapping.width / 16) * this.tileSize,
+      (this.mapping.height / 16) * this.tileSize
     )
   }
 }

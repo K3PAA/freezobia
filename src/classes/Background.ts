@@ -1,10 +1,11 @@
 import { assets, BLOCKED_TILE } from '../lib/constants'
-import { Point } from '../lib/types'
+import { Box, Point } from '../lib/types'
 import BackgroundGrid from './BackgroundGrid'
 import { Campfire } from './Interactive'
 
 class Background {
   canvas: HTMLCanvasElement
+  offset: Point
 
   tileSize = 64
   boardDimensions: Point = {
@@ -15,21 +16,41 @@ class Background {
   gridSize = 3
   tilesImage: HTMLImageElement = new Image()
 
+  board: Box
   grid: BackgroundGrid
 
   constructor({ canvas }: { canvas: HTMLCanvasElement }) {
     this.canvas = canvas
     this.tilesImage.src = assets.tiles
+
+    this.board = {
+      width: this.tileSize * this.boardDimensions.x,
+      height: this.tileSize * this.boardDimensions.y,
+      position: {
+        x: canvas.width / 2 - (this.tileSize * this.boardDimensions.x) / 2,
+        y: canvas.height / 2 - (this.tileSize * this.boardDimensions.y) / 2,
+      },
+    }
+
     this.grid = new BackgroundGrid({
       gridSize: this.gridSize,
       boardDimensions: this.boardDimensions,
       tileSize: this.tileSize,
-      canvas: this.canvas,
+      board: this.board,
     })
+
+    this.offset = {
+      x: 0,
+      y: 0,
+    }
   }
 
   update(time: number) {
-    this.grid.update(time)
+    this.grid.update({
+      time,
+      offset: this.offset,
+      updateOffset: this.updateOffset.bind(this),
+    })
 
     this.grid.tilesArray.forEach((row) => {
       row.forEach((item) => {
@@ -38,6 +59,11 @@ class Background {
         })
       })
     })
+  }
+
+  updateOffset(direction: 'x' | 'y', value: number) {
+    console.log(this)
+    this.offset[direction] = value
   }
 
   draw(c: CanvasRenderingContext2D) {
@@ -50,10 +76,10 @@ class Background {
 
         if (!shouldRender) continue
 
-        const { board, offset } = this.grid
+        const { board } = this.grid
         const shift = {
-          x: board.position.x + board.width * y - offset.x,
-          y: board.position.y + this.grid.board.height * x - offset.y,
+          x: board.position.x + board.width * y - this.offset.x,
+          y: board.position.y + board.height * x - this.offset.y,
         }
 
         for (let i = 0; i < this.boardDimensions.y; i++) {

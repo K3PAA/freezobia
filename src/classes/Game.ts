@@ -4,6 +4,7 @@ import Input from './Input'
 import playerImg from '../assets/char_run.png'
 import Frame from './Frame'
 import Transition from './Transition'
+import Collision from './Collision'
 
 class Game {
   canvas: HTMLCanvasElement
@@ -11,6 +12,7 @@ class Game {
   player: Player
   input: Input
   transition: Transition
+  collision: Collision
 
   frame = new Frame({ fps: 60 })
   isPlaying = false
@@ -36,9 +38,25 @@ class Game {
       imgSrc: playerImg,
     })
     this.input = new Input()
+    this.collision = new Collision()
   }
 
   update(time: number) {
+    // this.updateTransition(time)
+
+    // if (!this.isPlaying) return
+
+    this.player.update({
+      keys: this.input.keys,
+      mousePos: this.input.mousePos,
+      offset: this.background.offset,
+      time: time,
+    })
+
+    this.background.update(time)
+  }
+
+  updateTransition(time: number) {
     if (
       !this.isPlaying &&
       this.input.keys.Space &&
@@ -48,17 +66,6 @@ class Game {
     }
     if (this.transition.activeTransition) this.transition.update(time)
     if (this.transition.animationFinish) this.isPlaying = true
-
-    if (!this.isPlaying) return
-
-    this.player.update({
-      keys: this.input.keys,
-      mousePos: this.input.mousePos,
-      offset: this.background.grid.offset,
-      time: time,
-    })
-
-    this.background.update(time)
   }
 
   draw({ c, time }: { c: CanvasRenderingContext2D; time: number }) {
@@ -68,6 +75,12 @@ class Game {
     this.drawEyeEffect(c)
 
     this.transition.draw(c)
+
+    this.collision.checkPlayerWithElementsCollision({
+      player: this.player,
+      elements: this.background.grid.tilesArray,
+      c: c,
+    })
   }
 
   drawEyeEffect(c: CanvasRenderingContext2D) {

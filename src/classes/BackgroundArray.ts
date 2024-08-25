@@ -65,7 +65,10 @@ class BackgroundArray {
       for (let j = 0; j < this.boardDimensions.x - 1; j++) {
         if (
           this.backgroundArray[i][j] ||
-          this.inCampfireRange(campfire, { x: j, y: i })
+          this.inCampfireRange(campfire, {
+            x: j * this.tileSize,
+            y: i * this.tileSize,
+          })
         )
           continue
 
@@ -86,23 +89,28 @@ class BackgroundArray {
         )
           continue
 
-        if (randomOptionSize.width === 2 && randomOptionSize.height === 2) {
+        if (
+          randomOptionSize.width / 16 === 2 &&
+          randomOptionSize.height / 16 === 2
+        ) {
           this.backgroundArray[i][j + 1] = BLOCKED_TILE
           this.backgroundArray[i + 1][j] = BLOCKED_TILE
           this.backgroundArray[i + 1][j + 1] = BLOCKED_TILE
-        } else if (randomOptionSize.width === 2) {
+        } else if (randomOptionSize.width / 16 === 2) {
           this.backgroundArray[i][j + 1] = BLOCKED_TILE
-        } else if (randomOptionSize.height === 2) {
+        } else if (randomOptionSize.height / 16 === 2) {
           this.backgroundArray[i + 1][j] = BLOCKED_TILE
         }
 
         interactiveArray.push(
           new Resource({
             tileSize: this.tileSize,
-            position: { x: j, y: i },
+            position: { x: j * this.tileSize, y: i * this.tileSize },
             type: randomKey,
           })
         )
+
+        // console.log(interactiveArray)
       }
     }
 
@@ -111,22 +119,23 @@ class BackgroundArray {
 
   createCampfire() {
     const randomcCampfirePosition = (dimension: 'x' | 'y') => {
-      return Math.floor(
-        Math.random() * (this.boardDimensions[dimension] - 6) + 3
+      return (
+        Math.floor(Math.random() * (this.boardDimensions[dimension] - 6) + 3) *
+        this.tileSize
       )
     }
 
     const campfire = {
       position: {
         x: this.centerArray
-          ? this.boardDimensions.x / 2 - 1.5
+          ? (this.boardDimensions.x / 2 - 1.5) * this.tileSize
           : randomcCampfirePosition('x'),
         y: this.centerArray
-          ? this.boardDimensions.y / 2 - 0.5
+          ? (this.boardDimensions.y / 2 - 0.5) * this.tileSize
           : randomcCampfirePosition('y'),
       },
-      width: 3,
-      height: 3,
+      width: 3 * this.tileSize,
+      height: 3 * this.tileSize,
     }
 
     return campfire
@@ -137,10 +146,10 @@ class BackgroundArray {
     { x, y }: Point
   ) {
     return (
-      campfire.position.x - 2 <= x + 1 &&
-      x < campfire.width + campfire.position.x + 2 &&
-      campfire.position.y - 2 <= y + 1 &&
-      y < campfire.height + campfire.position.y + 2
+      campfire.position.x - 3 * this.tileSize < x &&
+      x < campfire.width + campfire.position.x + 2 * this.tileSize &&
+      campfire.position.y - 3 * this.tileSize < y &&
+      y < campfire.height + campfire.position.y + 2 * this.tileSize
     )
   }
 
