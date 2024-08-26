@@ -12,6 +12,7 @@ class BackgroundArray {
   interactiveArray: (Campfire | Resource)[] = []
   tileSize: number
   centerArray: boolean
+  shift: Point = { x: 0, y: 0 }
 
   constructor({
     boardDimensions,
@@ -28,6 +29,10 @@ class BackgroundArray {
 
     this.backgroundArray = this.generateFloorTiles()
     this.interactiveArray = this.generateInteractiveTiles()
+  }
+
+  setShift(shift: Point) {
+    this.shift = shift
   }
 
   generateFloorTiles() {
@@ -72,7 +77,7 @@ class BackgroundArray {
         )
           continue
 
-        const zeroOrOne = Math.floor(Math.random() * 1.25)
+        const zeroOrOne = Math.floor(Math.random() * 1.0001)
         if (!zeroOrOne) continue
 
         const randomKey = this.getRandomChanceIndex()
@@ -109,19 +114,24 @@ class BackgroundArray {
             type: randomKey,
           })
         )
-
-        // console.log(interactiveArray)
       }
     }
 
     return interactiveArray
   }
 
+  update({ time }: { time: number }) {
+    this.interactiveArray.forEach((tile) => {
+      tile.setShift(this.shift)
+      if (tile instanceof Campfire) tile.update({ time })
+    })
+  }
+
   createCampfire() {
     const randomcCampfirePosition = (dimension: 'x' | 'y') => {
       return (
-        Math.floor(Math.random() * (this.boardDimensions[dimension] - 6) + 3) *
-        this.tileSize
+        Math.floor(Math.random() * (this.boardDimensions[dimension] - 6)) +
+        3 * this.tileSize
       )
     }
 

@@ -53,7 +53,7 @@ class Game {
       time: time,
     })
 
-    this.background.update(time)
+    this.background.update({ time, player: this.player })
   }
 
   updateTransition(time: number) {
@@ -75,12 +75,6 @@ class Game {
     this.drawEyeEffect(c)
 
     this.transition.draw(c)
-
-    this.collision.checkPlayerWithElementsCollision({
-      player: this.player,
-      elements: this.background.grid.tilesArray,
-      c: c,
-    })
   }
 
   drawEyeEffect(c: CanvasRenderingContext2D) {

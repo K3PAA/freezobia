@@ -1,7 +1,8 @@
 import { assets, BLOCKED_TILE } from '../lib/constants'
 import { Box, Point } from '../lib/types'
 import BackgroundGrid from './BackgroundGrid'
-import { Campfire } from './Interactive'
+import Collision from './Collision'
+import Player from './Player'
 
 class Background {
   canvas: HTMLCanvasElement
@@ -15,6 +16,7 @@ class Background {
 
   gridSize = 3
   tilesImage: HTMLImageElement = new Image()
+  collision: Collision = new Collision()
 
   board: Box
   grid: BackgroundGrid
@@ -45,24 +47,36 @@ class Background {
     }
   }
 
-  update(time: number) {
+  update({ time, player }: { time: number; player: Player }) {
+    for (let x = -1; x < this.gridSize - 1; x++) {
+      for (let y = -1; y < this.gridSize - 1; y++) {
+        const shouldRender = this.grid.tilesArray[x + 1][y + 1].render
+
+        if (!shouldRender) continue
+        const singleArray = this.grid.tilesArray[x + 1][y + 1].backgroundArray
+
+        const { board } = this.grid
+        const shift = {
+          x: board.position.x + board.width * y - this.offset.x,
+          y: board.position.y + board.height * x - this.offset.y,
+        }
+
+        singleArray.setShift(shift)
+        singleArray.update({ time })
+        singleArray.interactiveArray.forEach((tile) => {
+          this.collision.tileWithPlayer({ tile: tile, player: player })
+        })
+      }
+    }
+
     this.grid.update({
       time,
       offset: this.offset,
       updateOffset: this.updateOffset.bind(this),
     })
-
-    this.grid.tilesArray.forEach((row) => {
-      row.forEach((item) => {
-        item.backgroundArray.interactiveArray.forEach((tile) => {
-          if (tile instanceof Campfire) tile.update(time)
-        })
-      })
-    })
   }
 
   updateOffset(direction: 'x' | 'y', value: number) {
-    console.log(this)
     this.offset[direction] = value
   }
 
@@ -76,44 +90,27 @@ class Background {
 
         if (!shouldRender) continue
 
-        const { board } = this.grid
-        const shift = {
-          x: board.position.x + board.width * y - this.offset.x,
-          y: board.position.y + board.height * x - this.offset.y,
-        }
-
         for (let i = 0; i < this.boardDimensions.y; i++) {
           for (let j = 0; j < this.boardDimensions.x; j++) {
             const tileNumber = singleArray.backgroundArray[i][j]
             const activeTile = tileNumber === BLOCKED_TILE ? 0 : tileNumber
 
-            if (activeTile === 101) {
-              c.fillStyle = 'red'
-              c.fillRect(
-                j * this.tileSize + shift.x,
-                i * this.tileSize + shift.y,
-                this.tileSize,
-                this.tileSize
-              )
-            } else {
-              c.drawImage(
-                this.tilesImage,
-                activeTile * 16,
-                0,
-                16,
-                16,
-
-                j * this.tileSize + shift.x,
-                i * this.tileSize + shift.y,
-                this.tileSize,
-                this.tileSize
-              )
-            }
+            c.drawImage(
+              this.tilesImage,
+              activeTile * 16,
+              0,
+              16,
+              16,
+              j * this.tileSize + singleArray.shift.x,
+              i * this.tileSize + singleArray.shift.y,
+              this.tileSize,
+              this.tileSize
+            )
           }
         }
 
         singleArray.interactiveArray.forEach((el) => {
-          el.draw(c, shift)
+          el.draw(c)
         })
       }
     }
