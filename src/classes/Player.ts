@@ -19,6 +19,8 @@ class Player extends Sprite {
     bottom: false,
   }
 
+  aboutToCollide = false
+
   playerHitBoxRadius: any
   centerPoint: Point
 

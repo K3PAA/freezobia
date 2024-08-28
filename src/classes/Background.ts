@@ -1,4 +1,4 @@
-import { assets, BLOCKED_TILE } from '../lib/constants'
+import { assets, BLOCKED_TILE, GAME_TILE_SIZE } from '../lib/constants'
 import { Box, Point } from '../lib/types'
 import BackgroundGrid from './BackgroundGrid'
 import Collision from './Collision'
@@ -8,7 +8,7 @@ class Background {
   canvas: HTMLCanvasElement
   offset: Point
 
-  tileSize = 64
+  tileSize = GAME_TILE_SIZE
   boardDimensions: Point = {
     x: 24,
     y: 24,

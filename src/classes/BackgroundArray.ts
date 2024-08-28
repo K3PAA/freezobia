@@ -77,7 +77,7 @@ class BackgroundArray {
         )
           continue
 
-        const zeroOrOne = Math.floor(Math.random() * 1.0001)
+        const zeroOrOne = Math.floor(Math.random() * 1.01)
         if (!zeroOrOne) continue
 
         const randomKey = this.getRandomChanceIndex()

@@ -68,12 +68,10 @@ class Game {
     if (this.transition.animationFinish) this.isPlaying = true
   }
 
-  draw({ c, time }: { c: CanvasRenderingContext2D; time: number }) {
-    if (!this.frame.timeElapsed(time)) return
+  draw(c: CanvasRenderingContext2D) {
     this.background.draw(c)
     this.player.draw(c)
     this.drawEyeEffect(c)
-
     this.transition.draw(c)
   }
 

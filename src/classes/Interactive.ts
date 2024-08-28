@@ -145,7 +145,7 @@ export class Resource extends Interactive {
   image = new Image()
 
   type: ResourceTypes
-  mapping: Box
+  mapping: (typeof resourcesMapping)[ResourceTypes]
 
   constructor({
     tileSize,
@@ -166,6 +166,11 @@ export class Resource extends Interactive {
   }
 
   draw(c: CanvasRenderingContext2D) {
+    this.drawResource(c)
+    this.drawResource(c)
+  }
+
+  drawResource(c: CanvasRenderingContext2D) {
     c.drawImage(
       this.image,
       this.mapping.position.x,
@@ -176,6 +181,16 @@ export class Resource extends Interactive {
       this.position.y + this.shift.y,
       (this.mapping.width / 16) * this.tileSize,
       (this.mapping.height / 16) * this.tileSize
+    )
+  }
+
+  drawCollisionBox(c: CanvasRenderingContext2D) {
+    c.fillStyle = 'rgba(255, 0, 0, 0.2)'
+    c.fillRect(
+      this.position.x + this.mapping.box.x + this.shift.x,
+      this.position.y + this.mapping.box.y + this.shift.y,
+      this.mapping.box.width,
+      this.mapping.box.height
     )
   }
 }
