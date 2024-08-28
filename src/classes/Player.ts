@@ -19,7 +19,10 @@ class Player extends Sprite {
     bottom: false,
   }
 
+  aboutToCollide = false
+
   playerHitBoxRadius: any
+  centerPoint: Point
 
   speed = 5
   direction = 1
@@ -66,7 +69,7 @@ class Player extends Sprite {
     this.position.x = this.canvas.width / 2 - this.width / 2
     this.position.y = this.canvas.height / 2 - this.height / 2 - this.height
 
-	this.playerHitBoxRadius = Math.max(this.width, this.height) / 2
+    this.playerHitBoxRadius = Math.max(this.width, this.height) / 3
 
     this.playerGun = new Sprite({
       canvas,
@@ -107,6 +110,10 @@ class Player extends Sprite {
       },
       width: this.canvas.width / 4,
       height: this.canvas.height / 2,
+    }
+    this.centerPoint = {
+      x: this.position.x + this.width / 2,
+      y: this.position.y + this.height / 2,
     }
   }
 
@@ -158,6 +165,7 @@ class Player extends Sprite {
     //* player collision right and left
     if (!this.collision.left && !this.collision.right) {
       this.position.x += this.velocity.x
+      this.centerPoint.x += this.velocity.x
     } else {
       if (
         (this.collision.left && this.velocity.x > 0) ||
@@ -171,6 +179,7 @@ class Player extends Sprite {
     //* player collision top and down
     if (!this.collision.top && !this.collision.bottom) {
       this.position.y += this.velocity.y
+      this.centerPoint.y += this.velocity.y
     } else {
       if (
         (this.collision.top && this.velocity.y > 0) ||
@@ -223,21 +232,21 @@ class Player extends Sprite {
   }
 
   draw = (c: CanvasRenderingContext2D) => {
-	//* hitbox of player
+    //* hitbox of player
+    c.fillStyle = '#fff'
+    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+
+    //* hitbox of player
     c.beginPath()
     c.arc(
-      this.position.x + this.width / 2,
-      this.position.y + this.height / 2,
+      this.centerPoint.x,
+      this.centerPoint.y,
       this.playerHitBoxRadius,
       0,
       2 * Math.PI
     )
     c.fillStyle = 'rgba(0, 255, 255)'
     c.fill()
-
-    //* hitbox of player
-    c.fillStyle = '#fff'
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     //! change directory
     this.bullets.map((bullet: any) => {

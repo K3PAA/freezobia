@@ -36,7 +36,6 @@ class Transition {
     )
 
     this.width = lerp(this.width, this.canvas.width / 2, 0.07)
-    console.log(this.width.toFixed(1), this.position.x.toFixed(1))
 
     if (this.position.x >= this.canvas.width) {
       this.animationFinish = true
