@@ -1,4 +1,4 @@
-import { Point, ResourceTypes } from '../lib/types'
+import { Box, Point, ResourceTypes } from '../lib/types'
 import { assets, RESOURCE_SIZE, resourcesMapping } from '../lib/constants'
 import Frame from './Frame'
 
@@ -147,6 +147,8 @@ export class Resource extends Interactive {
   type: ResourceTypes
   mapping: (typeof resourcesMapping)[ResourceTypes]
 
+  strictBox: Box
+
   constructor({
     tileSize,
     position,
@@ -163,6 +165,15 @@ export class Resource extends Interactive {
 
     this.image.src = assets.resources
     this.mapping = resourcesMapping[type]
+
+    this.strictBox = {
+      position: {
+        x: this.position.x + this.mapping.box.x,
+        y: this.position.y + this.mapping.box.y,
+      },
+      width: this.mapping.box.width,
+      height: this.mapping.box.height,
+    }
   }
 
   draw(c: CanvasRenderingContext2D) {
@@ -187,8 +198,8 @@ export class Resource extends Interactive {
   drawCollisionBox(c: CanvasRenderingContext2D) {
     c.fillStyle = 'rgba(255, 0, 0, 0.2)'
     c.fillRect(
-      this.position.x + this.mapping.box.x + this.shift.x,
-      this.position.y + this.mapping.box.y + this.shift.y,
+      this.strictBox.position.x + this.shift.x,
+      this.strictBox.position.y + this.shift.y,
       this.mapping.box.width,
       this.mapping.box.height
     )

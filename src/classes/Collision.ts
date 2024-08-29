@@ -11,31 +11,56 @@ export default class Collision {
     }
 
     if (tile instanceof Resource) {
-      if (
-        rectangleCollision(
-          {
-            position: {
-              x: tile.position.x + tile.mapping.box.x + tile.shift.x,
-              y: tile.position.y + tile.mapping.box.y + tile.shift.y,
-            },
-            width: tile.mapping.box.width,
-            height: tile.mapping.box.height,
+      this.playerWithResource({ player, tile })
+    }
+  }
+
+  playerWithResource({ player, tile }: { player: Player; tile: Resource }) {
+    if (
+      rectangleCollision(
+        {
+          position: {
+            x: tile.strictBox.position.x + tile.shift.x,
+            y: tile.strictBox.position.y + tile.shift.y,
           },
-          {
-            position: {
-              x: player.position.x + player.velocity.x,
-              y: player.position.y + player.velocity.y,
-            },
-            width: player.width - Math.abs(player.velocity.x),
-            height: player.height - Math.abs(player.velocity.y),
-          }
-        )
-      ) {
-        player.position.x -= player.velocity.x
-        player.centerPoint.x -= player.velocity.x
-        player.position.y -= player.velocity.y
-        player.centerPoint.y -= player.velocity.y
-      }
+          width: tile.mapping.box.width,
+          height: tile.mapping.box.height,
+        },
+        {
+          position: {
+            x: player.position.x + player.velocity.x,
+            y: player.position.y,
+          },
+          width: player.width - Math.abs(player.velocity.x),
+          height: player.height - Math.abs(player.velocity.y),
+        }
+      )
+    ) {
+      player.position.x -= player.velocity.x
+      player.centerPoint.x -= player.velocity.x
+    }
+    if (
+      rectangleCollision(
+        {
+          position: {
+            x: tile.strictBox.position.x + tile.shift.x,
+            y: tile.strictBox.position.y + tile.shift.y,
+          },
+          width: tile.mapping.box.width,
+          height: tile.mapping.box.height,
+        },
+        {
+          position: {
+            x: player.position.x,
+            y: player.position.y + player.velocity.y,
+          },
+          width: player.width - Math.abs(player.velocity.x),
+          height: player.height - Math.abs(player.velocity.y),
+        }
+      )
+    ) {
+      player.position.y -= player.velocity.y
+      player.centerPoint.y -= player.velocity.y
     }
   }
 

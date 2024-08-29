@@ -48,6 +48,8 @@ class Background {
   }
 
   update({ time, player }: { time: number; player: Player }) {
+    this.grid.update()
+
     for (let x = -1; x < this.gridSize - 1; x++) {
       for (let y = -1; y < this.gridSize - 1; y++) {
         const shouldRender = this.grid.tilesArray[x + 1][y + 1].render
@@ -70,8 +72,6 @@ class Background {
         })
       }
     }
-
-    this.grid.update()
   }
 
   draw(c: CanvasRenderingContext2D) {
