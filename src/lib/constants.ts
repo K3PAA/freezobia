@@ -14,7 +14,7 @@ export const assets = {
   resources: resources,
 }
 
-const RESOURCE_SIZE = 16
+export const RESOURCE_SIZE = 16
 export const GAME_TILE_SIZE = 64
 export const RESOURCE_RATIO = GAME_TILE_SIZE / RESOURCE_SIZE
 

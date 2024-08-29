@@ -1,12 +1,17 @@
-import { assets, BLOCKED_TILE, GAME_TILE_SIZE } from '../lib/constants'
+import {
+  assets,
+  BLOCKED_TILE,
+  GAME_TILE_SIZE,
+  RESOURCE_SIZE,
+} from '../lib/constants'
 import { Box, Point } from '../lib/types'
 import BackgroundGrid from './BackgroundGrid'
 import Collision from './Collision'
+import { Campfire } from './Interactive'
 import Player from './Player'
 
 class Background {
   canvas: HTMLCanvasElement
-  offset: Point
 
   tileSize = GAME_TILE_SIZE
   boardDimensions: Point = {
@@ -40,11 +45,6 @@ class Background {
       tileSize: this.tileSize,
       board: this.board,
     })
-
-    this.offset = {
-      x: 0,
-      y: 0,
-    }
   }
 
   update({ time, player }: { time: number; player: Player }) {
@@ -57,38 +57,29 @@ class Background {
 
         const { board } = this.grid
         const shift = {
-          x: board.position.x + board.width * y - this.offset.x,
-          y: board.position.y + board.height * x - this.offset.y,
+          x: board.position.x + board.width * y - this.grid.offset.x,
+          y: board.position.y + board.height * x - this.grid.offset.y,
         }
 
         singleArray.setShift(shift)
-        singleArray.update({ time })
+
         singleArray.interactiveArray.forEach((tile) => {
+          tile.setShift(shift)
+          if (tile instanceof Campfire) tile.update({ time })
           this.collision.tileWithPlayer({ tile: tile, player: player })
         })
       }
     }
 
-    this.grid.update({
-      time,
-      offset: this.offset,
-      updateOffset: this.updateOffset.bind(this),
-    })
-  }
-
-  updateOffset(direction: 'x' | 'y', value: number) {
-    this.offset[direction] = value
+    this.grid.update()
   }
 
   draw(c: CanvasRenderingContext2D) {
-    c.save()
-
     for (let x = -1; x < this.gridSize - 1; x++) {
       for (let y = -1; y < this.gridSize - 1; y++) {
         const shouldRender = this.grid.tilesArray[x + 1][y + 1].render
-        const singleArray = this.grid.tilesArray[x + 1][y + 1].backgroundArray
-
         if (!shouldRender) continue
+        const singleArray = this.grid.tilesArray[x + 1][y + 1].backgroundArray
 
         for (let i = 0; i < this.boardDimensions.y; i++) {
           for (let j = 0; j < this.boardDimensions.x; j++) {
@@ -97,10 +88,10 @@ class Background {
 
             c.drawImage(
               this.tilesImage,
-              activeTile * 16,
+              activeTile * RESOURCE_SIZE,
               0,
-              16,
-              16,
+              RESOURCE_SIZE,
+              RESOURCE_SIZE,
               j * this.tileSize + singleArray.shift.x,
               i * this.tileSize + singleArray.shift.y,
               this.tileSize,
@@ -114,8 +105,6 @@ class Background {
         })
       }
     }
-
-    c.restore()
   }
 }
 

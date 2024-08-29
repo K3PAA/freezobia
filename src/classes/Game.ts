@@ -49,7 +49,7 @@ class Game {
     this.player.update({
       keys: this.input.keys,
       mousePos: this.input.mousePos,
-      offset: this.background.offset,
+      offset: this.background.grid.offset,
       time: time,
     })
 
