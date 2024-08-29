@@ -3,7 +3,7 @@ import Sprite from './Sprite'
 
 class Bullet extends Sprite {
   velocity: Point = { x: 0, y: 0 }
-  speed = 5
+  speed = 10
   direction = 1
   angle: any
 

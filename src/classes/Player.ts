@@ -36,7 +36,10 @@ class Player extends Sprite {
   states: any[]
   frame = new Frame({ fps: 15 })
   bullets: any
+  bulletsAmount: number
+  isAttacking: boolean
 
+  attackFrame = new Frame({ fps: 4 })
   moveFrame = new Frame({ fps: 60 })
 
   constructor({
@@ -88,6 +91,9 @@ class Player extends Sprite {
     })
 
     this.bullets = []
+    this.bulletsAmount = 2
+
+    this.isAttacking = false
 
     this.mouse = {
       x: 0,
@@ -130,6 +136,17 @@ class Player extends Sprite {
   }) => {
     if (this.frame.timeElapsed(time)) {
       this.animateFrames()
+    }
+
+    if (this.bulletsAmount <= 0) {
+      this.attackFrame.setFPS(0.75)
+      this.bulletsAmount = 6
+    }
+
+    if (this.attackFrame.timeElapsed(time)) {
+      this.isAttacking = true
+      this.attackFrame.updateFrame(0)
+      this.attackFrame.setFPS(2)
     }
 
     if (!this.moveFrame.timeElapsed(time)) return
@@ -272,23 +289,23 @@ class Player extends Sprite {
       this.position.x + this.width / 2,
       this.position.y + this.height / 2
     )
-    if (this.state.state === 'RUNNING') {
-      c.arc(
-        this.position.x + this.width / 2,
-        this.position.y + this.height / 2,
-        100,
-        this.gunAngle - 0.6,
-        this.gunAngle + 0.6
-      )
-    } else {
-      c.arc(
-        this.position.x + this.width / 2,
-        this.position.y + this.height / 2,
-        200,
-        this.gunAngle - 0.15,
-        this.gunAngle + 0.15
-      )
-    }
+    // if (this.state.state === 'RUNNING') {
+    //   c.arc(
+    //     this.position.x + this.width / 2,
+    //     this.position.y + this.height / 2,
+    //     100,
+    //     this.gunAngle - 0.6,
+    //     this.gunAngle + 0.6
+    //   )
+    // } else {
+    c.arc(
+      this.position.x + this.width / 2,
+      this.position.y + this.height / 2,
+      200,
+      this.gunAngle - 0.15,
+      this.gunAngle + 0.15
+    )
+    // }
     c.fillStyle = 'rgb(0, 0, 0, 0.15)'
     c.fill()
 
@@ -303,7 +320,7 @@ class Player extends Sprite {
 
     //* gun position
     this.playerGun.position = {
-      x: -this.playerGun.width / 2,
+      x: -this.playerGun.width,
       y: -this.playerGun.height / 2,
     }
 
@@ -313,22 +330,26 @@ class Player extends Sprite {
   }
 
   attack = () => {
-    const bullet = new Bullet({
-      canvas: this.canvas,
-      position: {
-        x: this.position.x + this.width / 2,
-        y: this.position.y + this.height / 2,
-      },
-      width: 4,
-      height: 8,
-      offSet: {
-        x: 0,
-        y: 0,
-      },
-      scale: 1,
-      angle: this.gunAngle,
-    })
-    this.bullets.push(bullet)
+    if (this.isAttacking) {
+      const bullet = new Bullet({
+        canvas: this.canvas,
+        position: {
+          x: this.position.x + this.width / 2,
+          y: this.position.y + this.height / 2,
+        },
+        width: 4,
+        height: 8,
+        offSet: {
+          x: 0,
+          y: 0,
+        },
+        scale: 1,
+        angle: this.gunAngle,
+      })
+      this.bulletsAmount -= 1
+      this.gunAngle -= this.direction / 2
+      this.bullets.push(bullet)
+    }
   }
 
   drawCenterBox = (c: CanvasRenderingContext2D) => {

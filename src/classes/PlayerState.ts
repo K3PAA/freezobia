@@ -19,7 +19,7 @@ const SPRITES = {
     imageSrc: run,
     columns: 8,
     maxFrames: 8,
-    fps: 1,
+    fps: 100,
   },
 }
 
@@ -76,6 +76,9 @@ class Running extends State {
       this.player.setState(STATES.RUNNING)
       this.player.setSprite(SPRITES.RUNNING)
 
+      this.player.velocity.x = 0
+      this.player.velocity.y = 0
+
       if (keys.KeyA) {
         this.player.velocity.x = -this.player.speed
       }
@@ -89,9 +92,9 @@ class Running extends State {
         this.player.velocity.y = this.player.speed
       }
     }
-    // if (keys.Space) {
-    //   this.player.setState(STATES.ATTACK)
-    // }
+    if (keys.Space) {
+      this.player.setState(STATES.ATTACK)
+    }
     if (!keys.KeyW && !keys.KeyA && !keys.KeyS && !keys.KeyD) {
       this.player.setState(STATES.IDLE)
     }
@@ -108,11 +111,14 @@ class Attack extends State {
 
   input = (keys: AllowedKeysObject) => {
     this.player.setState(STATES.ATTACK)
-    this.player.setState(SPRITES.ATTACK)
-    this.player.attack()
-    if (!keys.KeyW && !keys.KeyA && !keys.KeyS && !keys.KeyD) {
-      this.player.setState(STATES.IDLE)
+    if (this.player.isAttacking) {
+      this.player.attack()
+      this.player.isAttacking = false
     }
+    if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
+      this.player.setState(STATES.RUNNING)
+    }
+    this.player.setState(STATES.IDLE)
   }
 }
 
