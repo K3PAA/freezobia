@@ -1,5 +1,6 @@
 import {
   BLOCKED_TILE,
+  RESOURCE_SIZE,
   resourcesMapping,
   resourcesTotalChances,
 } from '../lib/constants'
@@ -77,7 +78,7 @@ class BackgroundArray {
         )
           continue
 
-        const zeroOrOne = Math.floor(Math.random() * 1.01)
+        const zeroOrOne = Math.floor(Math.random() * 1.2)
         if (!zeroOrOne) continue
 
         const randomKey = this.getRandomChanceIndex()
@@ -95,15 +96,15 @@ class BackgroundArray {
           continue
 
         if (
-          randomOptionSize.width / 16 === 2 &&
-          randomOptionSize.height / 16 === 2
+          randomOptionSize.width / RESOURCE_SIZE === 2 &&
+          randomOptionSize.height / RESOURCE_SIZE === 2
         ) {
           this.backgroundArray[i][j + 1] = BLOCKED_TILE
           this.backgroundArray[i + 1][j] = BLOCKED_TILE
           this.backgroundArray[i + 1][j + 1] = BLOCKED_TILE
-        } else if (randomOptionSize.width / 16 === 2) {
+        } else if (randomOptionSize.width / RESOURCE_SIZE === 2) {
           this.backgroundArray[i][j + 1] = BLOCKED_TILE
-        } else if (randomOptionSize.height / 16 === 2) {
+        } else if (randomOptionSize.height / RESOURCE_SIZE === 2) {
           this.backgroundArray[i + 1][j] = BLOCKED_TILE
         }
 
@@ -118,13 +119,6 @@ class BackgroundArray {
     }
 
     return interactiveArray
-  }
-
-  update({ time }: { time: number }) {
-    this.interactiveArray.forEach((tile) => {
-      tile.setShift(this.shift)
-      if (tile instanceof Campfire) tile.update({ time })
-    })
   }
 
   createCampfire() {

@@ -1,6 +1,5 @@
 import { Box, Point } from '../lib/types'
 import BackgroundArray from './BackgroundArray'
-import Frame from './Frame'
 
 type Tile = {
   backgroundArray: BackgroundArray
@@ -8,12 +7,12 @@ type Tile = {
 }
 
 class BackgroundGrid {
+  offset: Point
   gridSize: number
   tileSize: number
 
   tilesArray: Tile[][]
   boardDimensions: Point
-  defaultFrames = new Frame({ fps: 30 })
 
   board: Box
 
@@ -33,6 +32,10 @@ class BackgroundGrid {
     this.boardDimensions = boardDimensions
 
     this.tilesArray = this.generateTiles()
+    this.offset = {
+      x: 0,
+      y: 0,
+    }
 
     this.board = board
   }
@@ -63,47 +66,37 @@ class BackgroundGrid {
     })
   }
 
-  update({
-    time,
-    offset,
-    updateOffset,
-  }: {
-    time: number
-    offset: Point
-    updateOffset: (a: 'x' | 'y', b: number) => void
-  }) {
-    if (this.defaultFrames.timeElapsed(time)) {
-      this.updateGridVisibility(offset)
-      this.handleGridShift({ offset, updateOffset })
-    }
+  update() {
+    this.updateGridVisibility()
+    this.handleGridShift()
   }
 
-  updateGridVisibility(offset: Point) {
-    this.updateEdges(offset)
+  updateGridVisibility() {
+    this.updateEdges()
     this.updateCorners()
   }
 
-  updateEdges(offset: Point) {
+  updateEdges() {
     const edges = [
       {
         name: 'left',
         tile: this.tilesArray[1][0],
-        condition: () => offset.x < this.board.position.x,
+        condition: () => this.offset.x < this.board.position.x,
       },
       {
         name: 'top',
         tile: this.tilesArray[0][1],
-        condition: () => offset.y < this.board.position.y,
+        condition: () => this.offset.y < this.board.position.y,
       },
       {
         name: 'right',
         tile: this.tilesArray[1][2],
-        condition: () => -offset.x < this.board.position.x,
+        condition: () => -this.offset.x < this.board.position.x,
       },
       {
         name: 'bottom',
         tile: this.tilesArray[2][1],
-        condition: () => -offset.y < this.board.position.y,
+        condition: () => -this.offset.y < this.board.position.y,
       },
     ]
 
@@ -155,31 +148,25 @@ class BackgroundGrid {
     }
   }
 
-  handleGridShift({
-    offset,
-    updateOffset,
-  }: {
-    offset: Point
-    updateOffset: (a: 'x' | 'y', b: number) => void
-  }) {
-    if (Math.abs(offset.x + this.board.position.x) > this.board.width) {
+  handleGridShift() {
+    if (Math.abs(this.offset.x + this.board.position.x) > this.board.width) {
       this.shiftGrid('left')
-      updateOffset('x', this.board.width + offset.x)
+      this.updateOffset('x', this.board.width + this.offset.x)
     }
 
-    if (offset.x - this.board.position.x > this.board.width) {
+    if (this.offset.x - this.board.position.x > this.board.width) {
       this.shiftGrid('right')
-      updateOffset('x', this.board.position.x)
+      this.updateOffset('x', this.board.position.x)
     }
 
-    if (Math.abs(offset.y + this.board.position.y) > this.board.height) {
+    if (Math.abs(this.offset.y + this.board.position.y) > this.board.height) {
       this.shiftGrid('up')
-      updateOffset('y', this.board.height + offset.y)
+      this.updateOffset('y', this.board.height + this.offset.y)
     }
 
-    if (offset.y - this.board.position.y > this.board.height) {
+    if (this.offset.y - this.board.position.y > this.board.height) {
       this.shiftGrid('down')
-      updateOffset('y', this.board.position.y)
+      this.updateOffset('y', this.board.position.y)
     }
   }
 
@@ -232,6 +219,10 @@ class BackgroundGrid {
         render: false,
       }
     }
+  }
+
+  updateOffset(direction: 'x' | 'y', value: number) {
+    this.offset[direction] = value
   }
 }
 

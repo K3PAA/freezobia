@@ -1,5 +1,5 @@
-import { Box, Point, ResourceTypes } from '../lib/types'
-import { assets, resourcesMapping } from '../lib/constants'
+import { Point, ResourceTypes } from '../lib/types'
+import { assets, RESOURCE_SIZE, resourcesMapping } from '../lib/constants'
 import Frame from './Frame'
 
 export class Interactive {
@@ -179,8 +179,8 @@ export class Resource extends Interactive {
       this.mapping.height,
       this.position.x + this.shift.x,
       this.position.y + this.shift.y,
-      (this.mapping.width / 16) * this.tileSize,
-      (this.mapping.height / 16) * this.tileSize
+      (this.mapping.width / RESOURCE_SIZE) * this.tileSize,
+      (this.mapping.height / RESOURCE_SIZE) * this.tileSize
     )
   }
 
