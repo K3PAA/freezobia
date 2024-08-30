@@ -1,47 +1,27 @@
 import { AllowedKeysObject, Box, Point, SpriteType } from '../lib/types'
 import Sprite from './Sprite'
-import gunImg from '../assets/gun.png'
-import { lerp } from '../lib/functions'
 import { SPRITES, STATES, Idle, Running, Attack } from './PlayerState'
 import Frame from './Frame'
-import Bullet from './Bullet'
+import Gun from './Gun'
 
 class Player extends Sprite {
   canvas: HTMLCanvasElement
   centerBox: Box
-
   velocity: Point = { x: 0, y: 0 }
   health = 100
-
-  collision = {
-    left: false,
-    right: false,
-    top: false,
-    bottom: false,
-  }
-
+  collision = { left: false, right: false, top: false, bottom: false }
   aboutToCollide = false
-
   playerHitBoxRadius: any
   centerPoint: Point
-
   speed = 5
   direction = 1
-
-  playerGun: Sprite
-  mouse: Point
-  gunAngle: number
-  targetAngle: number
   state: any
   previousState: any
   states: any[]
   frame = new Frame({ fps: 15 })
-  bullets: any
-  bulletsAmount: number
-  isAttacking: boolean
-
-  attackFrame = new Frame({ fps: 6 })
   moveFrame = new Frame({ fps: 60 })
+  gun: Gun
+  isAttacking: boolean
 
   constructor({
     canvas,
@@ -75,34 +55,8 @@ class Player extends Sprite {
 
     this.playerHitBoxRadius = Math.max(this.width, this.height) / 3
 
-    this.playerGun = new Sprite({
-      canvas,
-      position: {
-        x: this.position.x,
-        y: this.position.y,
-      },
-      imgSrc: gunImg,
-      scale: 3,
-      offSet: {
-        x: 0,
-        y: 5,
-      },
-      width: 10,
-      height: 20,
-    })
-
-    this.bullets = []
-    this.bulletsAmount = 2
-
+    this.gun = new Gun(this, this.canvas, this.direction)
     this.isAttacking = false
-
-    this.mouse = {
-      x: 0,
-      y: 0,
-    }
-
-    this.gunAngle = 0
-    this.targetAngle = 0
 
     this.state = null
     this.previousState = null
@@ -139,36 +93,16 @@ class Player extends Sprite {
       this.animateFrames()
     }
 
-    if (this.bulletsAmount <= 0) {
-      this.attackFrame.setFPS(0.75)
-      this.bulletsAmount = 6
-    }
+    this.gun.updateGun(mousePos)
 
-    if (this.attackFrame.timeElapsed(time)) {
+    if (this.gun.attackFrame.timeElapsed(time)) {
       this.isAttacking = true
-      this.attackFrame.updateFrame(0)
-      this.attackFrame.setFPS(6)
+      this.gun.attackFrame.setFPS(2)
     }
 
     if (!this.moveFrame.timeElapsed(time)) return
 
     this.state.input(keys)
-
-    //* mouse position
-    this.mouse = {
-      x: mousePos.x,
-      y: mousePos.y,
-    }
-
-    //* gun target angle
-    this.targetAngle = Math.atan2(
-      this.mouse.y - (this.position.y + this.height / 2),
-      this.mouse.x - (this.position.x + this.width / 2)
-    )
-
-    //* gun rotation speed and angle
-    const lerpSpeed = 0.15
-    this.gunAngle = lerp(this.gunAngle, this.targetAngle, lerpSpeed)
 
     //* changing direction
     if (mousePos.x >= this.position.x + this.width / 2) {
@@ -267,89 +201,18 @@ class Player extends Sprite {
     c.fill()
 
     //! change directory
-    this.bullets.map((bullet: any) => {
-      bullet.draw(c)
-      bullet.update()
-      if (
-        Math.abs(bullet.position.x - this.position.x - this.width / 2) > 750 ||
-        Math.abs(bullet.position.y - this.position.y - this.height / 2) > 750
-      ) {
-        this.bullets.splice(this.bullets.indexOf(bullet), 1)
-      }
-    })
+    this.gun.updateBullets(c, this.position)
 
     //* drawing player
     this.drawSprite(c)
 
-    //* drawing centerbox
-    // this.drawCenterBox(c)
-
-    //* drawing weapon sight
-    c.beginPath()
-    c.moveTo(
-      this.position.x + this.width / 2,
-      this.position.y + this.height / 2
-    )
-    // if (this.state.state === 'RUNNING') {
-    //   c.arc(
-    //     this.position.x + this.width / 2,
-    //     this.position.y + this.height / 2,
-    //     100,
-    //     this.gunAngle - 0.6,
-    //     this.gunAngle + 0.6
-    //   )
-    // } else {
-    c.arc(
-      this.position.x + this.width / 2,
-      this.position.y + this.height / 2,
-      200,
-      this.gunAngle - 0.15,
-      this.gunAngle + 0.15
-    )
-    // }
-    c.fillStyle = 'rgb(0, 0, 0, 0.15)'
-    c.fill()
-
     //* gun movement
-    c.save()
-    c.translate(
-      this.position.x + this.width / 2,
-      this.position.y + this.height / 2
-    )
-    c.rotate(this.gunAngle)
-    c.scale(-1, this.direction)
-
-    //* gun position
-    this.playerGun.position = {
-      x: -this.playerGun.width,
-      y: -this.playerGun.height / 2,
-    }
-
-    //* drawing gun
-    this.playerGun.drawSprite(c)
-    c.restore()
+    this.gun.drawGun(c)
   }
 
   attack = () => {
     if (this.isAttacking) {
-      const bullet = new Bullet({
-        canvas: this.canvas,
-        position: {
-          x: this.position.x + this.width / 2,
-          y: this.position.y + this.height / 2,
-        },
-        width: 4,
-        height: 8,
-        offSet: {
-          x: 0,
-          y: 0,
-        },
-        scale: 1,
-        angle: this.gunAngle,
-      })
-      this.bulletsAmount -= 1
-      this.gunAngle -= this.direction / 2
-      this.bullets.push(bullet)
+      this.gun.attack()
     }
   }
 
