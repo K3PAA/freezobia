@@ -7,7 +7,7 @@ import {
 import { Box, Point } from '../lib/types'
 import BackgroundGrid from './BackgroundGrid'
 import Collision from './Collision'
-import { Campfire } from './Interactive'
+import { Campfire, Resource } from './Interactive'
 import Player from './Player'
 
 class Background {
@@ -74,7 +74,7 @@ class Background {
     }
   }
 
-  draw(c: CanvasRenderingContext2D) {
+  drawTileWithCampfire(c: CanvasRenderingContext2D) {
     for (let x = -1; x < this.gridSize - 1; x++) {
       for (let y = -1; y < this.gridSize - 1; y++) {
         const shouldRender = this.grid.tilesArray[x + 1][y + 1].render
@@ -100,9 +100,28 @@ class Background {
           }
         }
 
-        singleArray.interactiveArray.forEach((el) => {
-          el.draw(c)
-        })
+        for (const tile of singleArray.interactiveArray) {
+          if (tile instanceof Campfire) {
+            tile.draw(c)
+            break
+          }
+        }
+      }
+    }
+  }
+
+  drawInteractiveWithoutCampfire(c: CanvasRenderingContext2D) {
+    for (let x = -1; x < this.gridSize - 1; x++) {
+      for (let y = -1; y < this.gridSize - 1; y++) {
+        const shouldRender = this.grid.tilesArray[x + 1][y + 1].render
+        if (!shouldRender) continue
+        const singleArray = this.grid.tilesArray[x + 1][y + 1].backgroundArray
+
+        for (const tile of singleArray.interactiveArray) {
+          if (tile instanceof Resource) {
+            tile.draw(c)
+          }
+        }
       }
     }
   }
