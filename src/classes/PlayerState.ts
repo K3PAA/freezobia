@@ -1,11 +1,11 @@
 import { AllowedKeysObject } from '../lib/types'
-import idle from '../assets/char_idle_new.png'
+import idle from '../assets/char_idle.png'
 import run from '../assets/char_run.png'
 
 const SPRITES = {
   IDLE: {
     imageSrc: idle,
-    columns: 8,
+    columns: 1,
     maxFrames: 1,
     fps: 1,
   },
@@ -16,10 +16,10 @@ const SPRITES = {
     fps: 8,
   },
   ATTACK: {
-    imageSrc: run,
-    columns: 8,
-    maxFrames: 8,
-    fps: 100,
+    imageSrc: '',
+    columns: 1,
+    maxFrames: 1,
+    fps: 1,
   },
 }
 
