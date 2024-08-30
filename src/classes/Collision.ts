@@ -70,10 +70,11 @@ export default class Collision {
         Math.pow(tile.center.y + tile.shift.y - player.centerPoint.y, 2)
     )
 
-    if (player.playerHitBoxRadius + tile.radius >= distance) {
+    if (
+      player.playerHitBoxRadius + tile.radius >= distance &&
+      tile.activeTime > 0
+    ) {
       tile.active = true
-    } else {
-      tile.active = false
     }
   }
 }
