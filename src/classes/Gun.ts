@@ -1,6 +1,6 @@
 import { Point } from '../lib/types'
 import Sprite from './Sprite'
-import gunImg from '../assets/gun.png'
+import gunImg from '../assets/compressed/player/gun.webp'
 import Bullet from './Bullet'
 import { lerp } from '../lib/functions'
 import Frame from './Frame'

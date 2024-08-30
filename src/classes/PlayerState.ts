@@ -1,6 +1,6 @@
 import { AllowedKeysObject } from '../lib/types'
 import idle from '../assets/char_idle.png'
-import run from '../assets/char_run.png'
+import run from '../assets/compressed/player/char_run.webp'
 
 const SPRITES = {
   IDLE: {
