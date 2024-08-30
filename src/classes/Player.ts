@@ -1,6 +1,6 @@
 import { AllowedKeysObject, Box, Point, SpriteType } from '../lib/types'
 import Sprite from './Sprite'
-import gunImg from '../assets/gun.png'
+import gunImg from '../assets/compressed/player/gun.webp'
 import { lerp } from '../lib/functions'
 import { SPRITES, STATES, Idle, Running, Attack } from './PlayerState'
 import Frame from './Frame'
