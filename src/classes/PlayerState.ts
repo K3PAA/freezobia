@@ -110,22 +110,22 @@ class Attack extends State {
   }
 
   input = (keys: AllowedKeysObject) => {
-    this.player.setState(STATES.ATTACK);
+    this.player.setState(STATES.ATTACK)
 
     // Sprawdź, czy gracz nie jest już w trakcie ataku
     if (this.player.isAttacking) {
-      this.player.attack(); // Wywołaj atak
-      this.player.isAttacking = false;
+      this.player.attack() // Wywołaj atak
+      this.player.isAttacking = false
     }
 
     // Jeśli gracz porusza się podczas ataku, przejdź do stanu RUNNING
     if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
       // this.player.isAttacking = false; // Resetuj flagę ataku
-      this.player.setState(STATES.RUNNING);
+      this.player.setState(STATES.RUNNING)
     } else {
       // Po zakończeniu ataku wróć do stanu IDLE
       // this.player.isAttacking = false; // Resetuj flagę ataku
-      this.player.setState(STATES.IDLE);
+      this.player.setState(STATES.IDLE)
     }
   }
 }

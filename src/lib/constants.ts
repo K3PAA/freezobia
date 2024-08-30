@@ -145,3 +145,5 @@ export const allowedKeys = {
   KeyW: false,
   Space: false,
 }
+
+export const TIME_LIMIT = 13 * 1000

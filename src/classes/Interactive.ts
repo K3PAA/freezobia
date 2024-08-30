@@ -1,5 +1,10 @@
 import { Box, Point, ResourceTypes } from '../lib/types'
-import { assets, RESOURCE_SIZE, resourcesMapping } from '../lib/constants'
+import {
+  assets,
+  RESOURCE_SIZE,
+  resourcesMapping,
+  TIME_LIMIT,
+} from '../lib/constants'
 import Frame from './Frame'
 
 export class Interactive {
@@ -7,8 +12,7 @@ export class Interactive {
   tileSize: number
   position: Point
 
-  fullActiveTime = 13 * 1000
-  activeTime = this.fullActiveTime
+  activeTime = TIME_LIMIT
 
   constructor({ tileSize, position }: { tileSize: number; position: Point }) {
     this.tileSize = tileSize
@@ -105,7 +109,7 @@ export class Campfire extends Interactive {
     c.fillRect(
       this.position.x + this.width / 4 + this.shift.x,
       this.position.y - this.tileSize / 4 + this.shift.y,
-      Math.max(((this.activeTime / this.fullActiveTime) * this.width) / 2, 0),
+      Math.max(((this.activeTime / TIME_LIMIT) * this.width) / 2, 0),
       15
     )
   }
