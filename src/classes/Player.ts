@@ -3,12 +3,15 @@ import Sprite from './Sprite'
 import { SPRITES, STATES, Idle, Running, Attack } from './PlayerState'
 import Frame from './Frame'
 import Gun from './Gun'
+import { TIME_LIMIT } from '../lib/constants'
 
 class Player extends Sprite {
   canvas: HTMLCanvasElement
   centerBox: Box
   velocity: Point = { x: 0, y: 0 }
-  health = 100
+  inCampfireRange = false
+  healthInMs = TIME_LIMIT
+  health = this.healthInMs / TIME_LIMIT
   collision = { left: false, right: false, top: false, bottom: false }
   aboutToCollide = false
   playerHitBoxRadius: any
@@ -89,6 +92,14 @@ class Player extends Sprite {
     offset: Point
     time: number
   }) => {
+    if (this.inCampfireRange) {
+      if (this.healthInMs < TIME_LIMIT) this.healthInMs += time * 4
+    } else {
+      if (this.healthInMs > 0) this.healthInMs -= time
+      else '' //! add dead
+    }
+    this.health = this.healthInMs / TIME_LIMIT
+
     if (this.frame.timeElapsed(time)) {
       this.frame.updateFrame()
       this.animateFrames()

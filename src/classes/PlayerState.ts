@@ -113,11 +113,9 @@ class Attack extends State {
         this.player.attack()
         this.player.isAttacking = false
       }
-      return
     }
 
     if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
-      console.log("cos")
       this.player.isAttacking = false
       this.player.setState(STATES.RUNNING)
     } else {
