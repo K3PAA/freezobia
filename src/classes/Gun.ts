@@ -36,7 +36,7 @@ class Gun extends Sprite {
     this.targetAngle = 0
     this.bullets = []
     this.bulletsAmount = 6
-    this.attackFrame = new Frame({ fps: 2 })
+    this.attackFrame = new Frame({ fps: 2, currentFrame: 0, maxFrame: 10 })
     this.direction = direction
     this.canvas = canvas
   }
@@ -106,7 +106,7 @@ class Gun extends Sprite {
         scale: 1,
         angle: this.gunAngle,
       })
-
+      this.gunAngle -= this.player.direction / 2
       this.bulletsAmount -= 1
       this.bullets.push(bullet)
     }
@@ -114,6 +114,7 @@ class Gun extends Sprite {
 
   reload() {
     this.attackFrame.setFPS(0.75)
+    this.attackFrame.currentFrame = 0
     this.bulletsAmount = 6
   }
 

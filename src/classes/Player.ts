@@ -18,7 +18,7 @@ class Player extends Sprite {
   state: any
   previousState: any
   states: any[]
-  frame = new Frame({ fps: 15 })
+  frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   moveFrame = new Frame({ fps: 60 })
   gun: Gun
   isAttacking: boolean
@@ -90,6 +90,7 @@ class Player extends Sprite {
     time: number
   }) => {
     if (this.frame.timeElapsed(time)) {
+      this.frame.updateFrame()
       this.animateFrames()
     }
 
@@ -98,6 +99,7 @@ class Player extends Sprite {
     if (this.gun.attackFrame.timeElapsed(time)) {
       this.isAttacking = true
       this.gun.attackFrame.setFPS(2)
+      this.gun.attackFrame.updateFrame()
     }
 
     if (!this.moveFrame.timeElapsed(time)) return
