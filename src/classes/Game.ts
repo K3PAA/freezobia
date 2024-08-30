@@ -69,8 +69,9 @@ class Game {
   }
 
   draw(c: CanvasRenderingContext2D) {
-    this.background.draw(c)
+    this.background.drawTileWithCampfire(c)
     this.player.draw(c)
+    this.background.drawInteractiveWithoutCampfire(c)
     this.drawEyeEffect(c)
     this.transition.draw(c)
   }

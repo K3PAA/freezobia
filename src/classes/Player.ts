@@ -11,6 +11,7 @@ class Player extends Sprite {
   centerBox: Box
 
   velocity: Point = { x: 0, y: 0 }
+  health = 100
 
   collision = {
     left: false,
