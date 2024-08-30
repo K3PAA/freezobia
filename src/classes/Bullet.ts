@@ -6,6 +6,8 @@ class Bullet extends Sprite {
   speed = 10
   direction = 1
   angle: any
+  centerPoint: Point
+  bulletHitBoxRadius: any
 
   constructor({
     canvas,
@@ -34,26 +36,35 @@ class Bullet extends Sprite {
     this.angle = angle
     this.velocity.x = Math.cos(this.angle) * this.speed
     this.velocity.y = Math.sin(this.angle) * this.speed
+
+    this.bulletHitBoxRadius = Math.max(this.width, this.height) / 3
+
+    this.centerPoint = {
+      x: this.position.x + this.width / 2,
+      y: this.position.y + this.height / 2,
+    }
   }
 
   update = () => {
     this.position.x += this.velocity.x
     this.position.y += this.velocity.y
+    this.centerPoint = {
+      x: this.position.x + this.width / 2,
+      y: this.position.y + this.height / 2,
+    }
   }
 
   draw = (c: CanvasRenderingContext2D) => {
-    c.save()
-
-    c.translate(
-      this.position.x + this.width / 2,
-      this.position.y + this.height / 2
+    c.beginPath()
+    c.arc(
+      this.centerPoint.x,
+      this.centerPoint.y,
+      this.bulletHitBoxRadius,
+      0,
+      2 * Math.PI
     )
-    c.rotate(this.angle - Math.PI / 2)
-
-    c.fillStyle = '#fff'
-    c.fillRect(-this.width / 2, -this.height / 2, this.width, this.height)
-
-    c.restore()
+    c.fillStyle = 'rgba(255, 0, 0)'
+    c.fill()
   }
 }
 

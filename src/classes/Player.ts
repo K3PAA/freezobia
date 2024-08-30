@@ -1,6 +1,6 @@
 import { AllowedKeysObject, Box, Point, SpriteType } from '../lib/types'
 import Sprite from './Sprite'
-import gunImg from '../assets/gun_gun_0.png'
+import gunImg from '../assets/gun.png'
 import { lerp } from '../lib/functions'
 import { SPRITES, STATES, Idle, Running, Attack } from './PlayerState'
 import Frame from './Frame'
@@ -40,7 +40,7 @@ class Player extends Sprite {
   bulletsAmount: number
   isAttacking: boolean
 
-  attackFrame = new Frame({ fps: 4 })
+  attackFrame = new Frame({ fps: 6 })
   moveFrame = new Frame({ fps: 60 })
 
   constructor({
@@ -147,7 +147,7 @@ class Player extends Sprite {
     if (this.attackFrame.timeElapsed(time)) {
       this.isAttacking = true
       this.attackFrame.updateFrame(0)
-      this.attackFrame.setFPS(2)
+      this.attackFrame.setFPS(6)
     }
 
     if (!this.moveFrame.timeElapsed(time)) return
