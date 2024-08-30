@@ -7,6 +7,9 @@ export class Interactive {
   tileSize: number
   position: Point
 
+  fullActiveTime = 13 * 1000
+  activeTime = this.fullActiveTime
+
   constructor({ tileSize, position }: { tileSize: number; position: Point }) {
     this.tileSize = tileSize
     this.position = position
@@ -21,7 +24,7 @@ export class Campfire extends Interactive {
   construction = new Image()
   fire = new Image()
   wood = new Image()
-  active = true
+  active = false
 
   frame = new Frame({ fps: 5, maxFrame: 4, currentFrame: 0 })
 
@@ -57,6 +60,9 @@ export class Campfire extends Interactive {
   }
 
   update({ time }: { time: number }) {
+    if (this.activeTime <= 0) this.active = false
+    if (this.active && this.activeTime >= 0) this.activeTime -= time
+
     if (this.frame.timeElapsed(time)) {
       this.frame.updateFrame()
     }
@@ -64,12 +70,13 @@ export class Campfire extends Interactive {
 
   draw(c: CanvasRenderingContext2D) {
     this.drawFirePlace(c)
-    if (this.active) {
-      this.drawActiveIndicator(c)
-    }
-    this.drawCircleRangeIndicator(c)
     this.drawWood(c)
-    this.drawFire(c)
+
+    if (this.active) this.drawActiveIndicator(c)
+    if (this.activeTime > 0) this.drawFire(c)
+
+    this.drawCircleRangeIndicator(c)
+    this.activeTimeIndicator(c)
   }
 
   drawActiveIndicator(c: CanvasRenderingContext2D) {
@@ -81,8 +88,26 @@ export class Campfire extends Interactive {
       0,
       2 * Math.PI
     )
-    c.fillStyle = 'rgba(0, 255, 255, 0.05)'
+    c.fillStyle = 'rgba(255, 100, 100, 0.05)'
     c.fill()
+  }
+
+  activeTimeIndicator(c: CanvasRenderingContext2D) {
+    c.fillStyle = 'rgba(0, 20, 122, 0.9)'
+    c.fillRect(
+      this.position.x + this.width / 4 + this.shift.x,
+      this.position.y - this.tileSize / 4 + this.shift.y,
+      this.width / 2,
+      15
+    )
+
+    c.fillStyle = 'rgba(220, 50, 50, 1)'
+    c.fillRect(
+      this.position.x + this.width / 4 + this.shift.x,
+      this.position.y - this.tileSize / 4 + this.shift.y,
+      Math.max(((this.activeTime / this.fullActiveTime) * this.width) / 2, 0),
+      15
+    )
   }
 
   drawFirePlace(c: CanvasRenderingContext2D) {
