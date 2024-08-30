@@ -1,8 +1,8 @@
-import tiles from '../assets/compressed/tiles.png'
-import resources from '../assets/compressed/resources.png'
-import wood from '../assets/compressed/wood.png'
-import flames from '../assets/compressed/flames.png'
-import construction from '../assets/compressed/construction.png'
+import tiles from '../assets/compressed/background/tiles.webp'
+import resources from '../assets/compressed/background/resources.webp'
+import wood from '../assets/compressed/background/wood.png'
+import flames from '../assets/compressed/background/flames.webp'
+import construction from '../assets/compressed/background/construction.webp'
 
 export const assets = {
   tiles: tiles,
