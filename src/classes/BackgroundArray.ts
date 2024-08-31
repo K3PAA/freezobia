@@ -36,6 +36,15 @@ class BackgroundArray {
     this.shift = shift
   }
 
+  update() {
+    this.interactiveArray = this.interactiveArray.filter((tile) => {
+      if (tile instanceof Resource) {
+        return tile.hp > 0 ? true : false
+      }
+      return true
+    })
+  }
+
   generateFloorTiles() {
     const backgroundArray: number[][] = []
 

@@ -8,6 +8,7 @@ class Bullet extends Sprite {
   angle: any
   centerPoint: Point
   bulletHitBoxRadius: any
+  removeBullet: (index: number) => void
 
   constructor({
     canvas,
@@ -20,7 +21,8 @@ class Bullet extends Sprite {
     height,
     offSet,
     angle,
-  }: SpriteType & { angle: any }) {
+    removeBullet,
+  }: SpriteType & { angle: any; removeBullet: (index: number) => void }) {
     super({
       canvas,
       position,
@@ -43,6 +45,7 @@ class Bullet extends Sprite {
       x: this.position.x + this.width / 2,
       y: this.position.y + this.height / 2,
     }
+    this.removeBullet = removeBullet
   }
 
   update = () => {

@@ -177,6 +177,7 @@ export class Resource extends Interactive {
   mapping: (typeof resourcesMapping)[ResourceTypes]
 
   strictBox: Box
+  hp: number
 
   constructor({
     tileSize,
@@ -203,11 +204,30 @@ export class Resource extends Interactive {
       width: this.mapping.box.width,
       height: this.mapping.box.height,
     }
+    this.hp = this.mapping.hp
   }
 
   draw(c: CanvasRenderingContext2D) {
     this.drawResource(c)
-    this.drawResource(c)
+    this.drawHealthBar(c)
+  }
+
+  drawHealthBar(c: CanvasRenderingContext2D) {
+    c.fillStyle = 'rgba(255, 0, 0, 0.5)'
+    c.fillRect(
+      this.strictBox.position.x - 10 + this.shift.x,
+      this.strictBox.position.y + this.shift.y,
+      6,
+      this.strictBox.height
+    )
+
+    c.fillStyle = 'rgba(25, 25, 25, 0.8)'
+    c.fillRect(
+      this.strictBox.position.x - 10 + this.shift.x,
+      this.strictBox.position.y + this.shift.y,
+      6,
+      Math.max((this.hp / this.mapping.hp) * this.strictBox.height, 0)
+    )
   }
 
   drawResource(c: CanvasRenderingContext2D) {
