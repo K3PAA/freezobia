@@ -1,4 +1,5 @@
 import { rectangleCollision } from '../lib/utils'
+import Bullet from './Bullet'
 import { Campfire, Interactive, Resource } from './Interactive'
 import Player from './Player'
 
@@ -12,6 +13,7 @@ export default class Collision {
 
     if (tile instanceof Resource) {
       this.playerWithResource({ player, tile })
+      this.tileWithBullet({ tile, bullets: player.gun.bullets })
     }
   }
 
@@ -79,5 +81,33 @@ export default class Collision {
     } else {
       player.inCampfireRange = false
     }
+  }
+
+  tileWithBullet({ tile, bullets }: { tile: Resource; bullets: Bullet[] }) {
+    bullets.forEach((bullet, i) => {
+      if (
+        rectangleCollision(
+          {
+            position: {
+              x: tile.strictBox.position.x + tile.shift.x,
+              y: tile.strictBox.position.y + tile.shift.y,
+            },
+            width: tile.mapping.box.width,
+            height: tile.mapping.box.height,
+          },
+          {
+            position: {
+              x: bullet.position.x,
+              y: bullet.position.y,
+            },
+            width: bullet.bulletHitBoxRadius * 2,
+            height: bullet.bulletHitBoxRadius * 2,
+          }
+        )
+      ) {
+        bullet.removeBullet(i)
+        tile.hp--
+      }
+    })
   }
 }

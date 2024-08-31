@@ -29,6 +29,7 @@ export const resourcesMapping = {
       height: 10 * RESOURCE_RATIO,
       width: 10 * RESOURCE_RATIO,
     },
+    hp: 3,
     chance: 25,
   },
   tree_snow: {
@@ -41,6 +42,7 @@ export const resourcesMapping = {
       height: 10 * RESOURCE_RATIO,
       width: 10 * RESOURCE_RATIO,
     },
+    hp: 3,
     chance: 100,
   },
   giant_rock: {
@@ -53,6 +55,7 @@ export const resourcesMapping = {
       height: 16 * RESOURCE_RATIO,
       width: 18 * RESOURCE_RATIO,
     },
+    hp: 13,
     chance: 10,
   },
   rock: {
@@ -65,6 +68,7 @@ export const resourcesMapping = {
       height: 8 * RESOURCE_RATIO,
       width: 10 * RESOURCE_RATIO,
     },
+    hp: 5,
     chance: 25,
   },
   small_rock: {
@@ -77,6 +81,7 @@ export const resourcesMapping = {
       height: 10 * RESOURCE_RATIO,
       width: 10 * RESOURCE_RATIO,
     },
+    hp: 5,
     chance: 25,
   },
   rock_red: {
@@ -85,10 +90,11 @@ export const resourcesMapping = {
     height: 1 * RESOURCE_SIZE,
     box: {
       x: 2 * RESOURCE_RATIO,
-      y: 0 * RESOURCE_RATIO,
-      height: 12 * RESOURCE_RATIO,
+      y: 2 * RESOURCE_RATIO,
+      height: 10 * RESOURCE_RATIO,
       width: 10 * RESOURCE_RATIO,
     },
+    hp: 2,
     chance: 2,
   },
   rock_yellow: {
@@ -97,10 +103,11 @@ export const resourcesMapping = {
     height: 1 * RESOURCE_SIZE,
     box: {
       x: 2 * RESOURCE_RATIO,
-      y: 0 * RESOURCE_RATIO,
-      height: 12 * RESOURCE_RATIO,
+      y: 2 * RESOURCE_RATIO,
+      height: 10 * RESOURCE_RATIO,
       width: 10 * RESOURCE_RATIO,
     },
+    hp: 2,
     chance: 2,
   },
   rock_black: {
@@ -109,10 +116,11 @@ export const resourcesMapping = {
     height: 1 * RESOURCE_SIZE,
     box: {
       x: 2 * RESOURCE_RATIO,
-      y: 0 * RESOURCE_RATIO,
-      height: 12 * RESOURCE_RATIO,
+      y: 2 * RESOURCE_RATIO,
+      height: 10 * RESOURCE_RATIO,
       width: 10 * RESOURCE_RATIO,
     },
+    hp: 2,
     chance: 2,
   },
   rock_blue: {
@@ -121,10 +129,11 @@ export const resourcesMapping = {
     height: 1 * RESOURCE_SIZE,
     box: {
       x: 2 * RESOURCE_RATIO,
-      y: 0 * RESOURCE_RATIO,
-      height: 12 * RESOURCE_RATIO,
+      y: 2 * RESOURCE_RATIO,
+      height: 10 * RESOURCE_RATIO,
       width: 10 * RESOURCE_RATIO,
     },
+    hp: 2,
     chance: 2,
   },
 }

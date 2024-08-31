@@ -64,6 +64,7 @@ class Background {
         }
 
         singleArray.setShift(shift)
+        singleArray.update()
 
         singleArray.interactiveArray.forEach((tile) => {
           tile.setShift(shift)

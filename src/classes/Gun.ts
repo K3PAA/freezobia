@@ -37,7 +37,7 @@ class Gun extends Sprite {
     this.gunAngle = 0
     this.targetAngle = 0
     this.bullets = []
-    this.bulletsAmount = 6
+    this.bulletsAmount = 13
     this.isShooting = false
     this.attackFrame = new Frame({ fps: 6, currentFrame: 0, maxFrame: 2 })
     this.reloadFrame = new Frame({ fps: 1, currentFrame: 0, maxFrame: 2 })
@@ -68,7 +68,7 @@ class Gun extends Sprite {
       this.mouse.x - (this.playerPosition.x + this.width / 2)
     )
 
-    const lerpSpeed = 0.15
+    const lerpSpeed = 0.1
     this.gunAngle = lerp(this.gunAngle, this.targetAngle, lerpSpeed)
   }
 
@@ -121,6 +121,7 @@ class Gun extends Sprite {
           offSet: { x: 0, y: 0 },
           scale: 1,
           angle: this.gunAngle,
+          removeBullet: this.removeBullet.bind(this)
         })
         this.gunAngle -= this.player.direction / 2
         this.bulletsAmount -= 1
@@ -134,7 +135,7 @@ class Gun extends Sprite {
   }
 
   reload() {
-    this.bulletsAmount = 6
+    this.bulletsAmount = 13
   }
 
   updateBullets(c: CanvasRenderingContext2D, playerPosition: Point) {
@@ -147,6 +148,10 @@ class Gun extends Sprite {
 
       return distanceX <= 750 && distanceY <= 750
     })
+  }
+
+  removeBullet(index: number) {
+    this.bullets.splice(index, 1)
   }
 }
 
