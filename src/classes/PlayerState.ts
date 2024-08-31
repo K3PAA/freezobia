@@ -46,7 +46,8 @@ class Idle extends State {
       this.player.velocity.y = 0
     }
     if (keys.Space) {
-      this.player.attack()
+      this.player.grenade.isThrown = true
+      // this.player.attack()
       // this.player.setState(STATES.ATTACK)
     }
     if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {

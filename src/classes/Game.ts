@@ -72,7 +72,7 @@ class Game {
     this.background.drawTileWithCampfire(c)
     this.player.draw(c)
     this.background.drawInteractiveWithoutCampfire(c)
-    this.drawEyeEffect(c)
+    // this.drawEyeEffect(c)
     this.transition.draw(c)
   }
 

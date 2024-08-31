@@ -39,7 +39,7 @@ class Gun extends Sprite {
     this.bullets = []
     this.bulletsAmount = 13
     this.isShooting = false
-    this.attackFrame = new Frame({ fps: 6, currentFrame: 0, maxFrame: 2 })
+    this.attackFrame = new Frame({ fps: 4, currentFrame: 0, maxFrame: 2 })
     this.reloadFrame = new Frame({ fps: 1, currentFrame: 0, maxFrame: 2 })
     this.direction = direction
     this.canvas = canvas
@@ -105,6 +105,8 @@ class Gun extends Sprite {
     // }
     c.fillStyle = 'rgb(0, 0, 0, 0.15)'
     c.fill()
+
+    this.updateBullets(c, this.player.position)
   }
 
   async attack() {
@@ -123,7 +125,7 @@ class Gun extends Sprite {
           angle: this.gunAngle,
           removeBullet: this.removeBullet.bind(this)
         })
-        this.gunAngle -= this.player.direction / 2
+        this.gunAngle -= this.player.direction / 5
         this.bulletsAmount -= 1
         this.bullets.push(bullet)
         await this.attackFrame.startCounting()

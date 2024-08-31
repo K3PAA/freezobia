@@ -4,6 +4,7 @@ import { SPRITES, STATES, Idle, Running } from './PlayerState'
 import Frame from './Frame'
 import Gun from './Gun'
 import { TIME_LIMIT } from '../lib/constants'
+import Grenade from './Grenade'
 
 class Player extends Sprite {
   canvas: HTMLCanvasElement
@@ -25,7 +26,9 @@ class Player extends Sprite {
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   moveFrame = new Frame({ fps: 60 })
   gun: Gun
+  grenade: Grenade
   isAttacking: boolean
+  isThrowingGrenade: boolean
 
   constructor({
     canvas,
@@ -60,7 +63,9 @@ class Player extends Sprite {
     this.playerHitBoxRadius = Math.max(this.width, this.height) / 3
 
     this.gun = new Gun(this, this.canvas, this.direction)
+    this.grenade = new Grenade(this)
     this.isAttacking = false
+    this.isThrowingGrenade = false
 
     this.state = null
     this.previousState = null
@@ -108,6 +113,7 @@ class Player extends Sprite {
     }
 
     this.gun.updateGun(mousePos, time)
+    this.grenade.updateGrenade(mousePos)
 
     if (!this.moveFrame.timeElapsed(time)) return
 
@@ -154,10 +160,8 @@ class Player extends Sprite {
 
   setState = (state: any) => {
     //* setting player state
-    // console.log(this.states[state])
     this.previousState = this.state
     this.state = this.states[state]
-    // this.framesCurrent = 0
   }
 
   setSprite = (sprite: any) => {
@@ -204,25 +208,25 @@ class Player extends Sprite {
     // c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     //* hitbox of player
-    c.beginPath()
-    c.arc(
-      this.centerPoint.x,
-      this.centerPoint.y,
-      this.playerHitBoxRadius,
-      0,
-      2 * Math.PI
-    )
-    c.fillStyle = 'rgba(0, 255, 255)'
-    c.fill()
-
-    //! change directory
-    this.gun.updateBullets(c, this.position)
+    // c.beginPath()
+    // c.arc(
+    //   this.centerPoint.x,
+    //   this.centerPoint.y,
+    //   this.playerHitBoxRadius,
+    //   0,
+    //   2 * Math.PI
+    // )
+    // c.fillStyle = 'rgba(0, 255, 255)'
+    // c.fill()
 
     //* drawing player
     this.drawSprite(c)
 
-    //* gun movement
+    //* drawing gun
     this.gun.drawGun(c)
+
+    //* drawing grenade
+    this.grenade.drawGrenade(c)
   }
 
   attack = async () => {
@@ -231,6 +235,10 @@ class Player extends Sprite {
       await this.gun.attack()
       this.isAttacking = false
     }
+  }
+
+  generateGrenade = () => {
+    this.grenade = new Grenade(this)
   }
 
   drawCenterBox = (c: CanvasRenderingContext2D) => {
