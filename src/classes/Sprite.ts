@@ -7,8 +7,6 @@ class Sprite {
   columns: number
   maxFrames: number
   framesCurrent: number
-  framesElapsed: number
-  framesHold: number
   width: number
   height: number
   direction: number | undefined
@@ -33,8 +31,6 @@ class Sprite {
     this.columns = columns
     this.maxFrames = maxFrames
     this.framesCurrent = framesCurrent
-    this.framesElapsed = 0
-    this.framesHold = 5
     this.width = width
     this.height = height
     this.direction = direction

@@ -4,12 +4,12 @@ class Frame {
   ft: number
 
   maxFrame?: number
-  currentFrame?: number
+  currentFrame: number
 
   constructor({
     fps,
     maxFrame,
-    currentFrame,
+    currentFrame = 0,
   }: {
     fps: number
     maxFrame?: number
@@ -37,6 +37,18 @@ class Frame {
 
     this.currentFrame++
     if (this.currentFrame === this.maxFrame) this.currentFrame = startFrame
+  }
+
+  startCounting() {
+    this.updateFrame(0)
+    return new Promise((resolve) => {
+      const intervalId = setInterval(() => {
+        if (this.currentFrame === 0) {
+          resolve(true)
+          clearInterval(intervalId)
+        }
+      }, 100)
+    })
   }
 
   setFPS(fps: number) {

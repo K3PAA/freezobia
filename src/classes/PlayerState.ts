@@ -1,32 +1,24 @@
 import { AllowedKeysObject } from '../lib/types'
-import idle from '../assets/char_idle.png'
-import run from '../assets/compressed/player/char_run.webp'
+import animation from '../assets/compressed/player/char_animation.webp'
 
 const SPRITES = {
   IDLE: {
-    imageSrc: idle,
-    columns: 1,
-    maxFrames: 1,
-    fps: 1,
+    imageSrc: animation,
+    columns: 8,
+    maxFrames: 8,
+    fps: 0,
   },
   RUNNING: {
-    imageSrc: run,
+    imageSrc: animation,
     columns: 8,
     maxFrames: 8,
     fps: 8,
-  },
-  ATTACK: {
-    imageSrc: '',
-    columns: 1,
-    maxFrames: 1,
-    fps: 1,
   },
 }
 
 const STATES = {
   IDLE: 0,
   RUNNING: 1,
-  ATTACK: 2,
 }
 
 class State {
@@ -54,10 +46,12 @@ class Idle extends State {
       this.player.velocity.y = 0
     }
     if (keys.Space) {
-      this.player.setState(STATES.ATTACK)
+      this.player.attack()
+      // this.player.setState(STATES.ATTACK)
     }
     if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
       this.player.setState(STATES.RUNNING)
+      this.player.setSprite(SPRITES.RUNNING)
     }
   }
 }
@@ -72,7 +66,6 @@ class Running extends State {
 
   input = (keys: AllowedKeysObject) => {
     if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
-      this.player.setSprite(SPRITES.RUNNING)
 
       this.player.velocity.x = 0
       this.player.velocity.y = 0
@@ -91,7 +84,8 @@ class Running extends State {
       }
     }
     if (keys.Space) {
-      this.player.setState(STATES.ATTACK)
+      this.player.attack()
+      // this.player.setState(STATES.ATTACK)
     }
     if (!keys.KeyW && !keys.KeyA && !keys.KeyS && !keys.KeyD) {
       this.player.setState(STATES.IDLE)
@@ -99,30 +93,4 @@ class Running extends State {
   }
 }
 
-class Attack extends State {
-  constructor(player: any) {
-    super({
-      player,
-      state: 'ATTACK',
-    })
-  }
-
-  input = (keys: AllowedKeysObject) => {
-    if (keys.Space) {
-      if (this.player.isAttacking) {
-        this.player.attack()
-        this.player.isAttacking = false
-      }
-    }
-
-    if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
-      this.player.isAttacking = false
-      this.player.setState(STATES.RUNNING)
-    } else {
-      this.player.isAttacking = false
-      this.player.setState(STATES.IDLE)
-    }
-  }
-}
-
-export { SPRITES, STATES, Idle, Running, Attack }
+export { SPRITES, STATES, Idle, Running }

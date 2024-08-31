@@ -15,8 +15,10 @@ class Gun extends Sprite {
   bullets: Bullet[]
   bulletsAmount: number
   attackFrame: Frame
+  reloadFrame: Frame
   direction: number
   player: Player
+  isShooting: boolean
 
   constructor(player: Player, canvas: HTMLCanvasElement, direction: number) {
     super({
@@ -36,15 +38,28 @@ class Gun extends Sprite {
     this.targetAngle = 0
     this.bullets = []
     this.bulletsAmount = 6
-    this.attackFrame = new Frame({ fps: 2, currentFrame: 0, maxFrame: 10 })
+    this.isShooting = false
+    this.attackFrame = new Frame({ fps: 6, currentFrame: 0, maxFrame: 2 })
+    this.reloadFrame = new Frame({ fps: 1, currentFrame: 0, maxFrame: 2 })
     this.direction = direction
     this.canvas = canvas
   }
 
-  updateGun(mousePos: Point) {
-    if (this.bulletsAmount <= 0) {
-      this.reload()
+  updateGun(mousePos: Point, time: number) {
+    if (
+      this.attackFrame.currentFrame > 0 &&
+      this.attackFrame.timeElapsed(time)
+    ) {
+      this.attackFrame.updateFrame()
     }
+
+    if (
+      this.reloadFrame.currentFrame > 0 &&
+      this.reloadFrame.timeElapsed(time)
+    ) {
+      this.reloadFrame.updateFrame()
+    }
+
 
     this.mouse = mousePos
 
@@ -92,29 +107,33 @@ class Gun extends Sprite {
     c.fill()
   }
 
-  attack() {
-    if (this.bulletsAmount >= 0) {
-      const bullet = new Bullet({
-        canvas: this.canvas,
-        position: {
-          x: this.playerPosition.x + this.width / 2,
-          y: this.playerPosition.y + this.height / 2,
-        },
-        width: 4,
-        height: 8,
-        offSet: { x: 0, y: 0 },
-        scale: 1,
-        angle: this.gunAngle,
-      })
-      this.gunAngle -= this.player.direction / 2
-      this.bulletsAmount -= 1
-      this.bullets.push(bullet)
+  async attack() {
+    if (this.bulletsAmount > 0) {
+      if (this.attackFrame.currentFrame === 0) {
+        const bullet = new Bullet({
+          canvas: this.canvas,
+          position: {
+            x: this.playerPosition.x + this.width / 2,
+            y: this.playerPosition.y + this.height / 2,
+          },
+          width: 4,
+          height: 8,
+          offSet: { x: 0, y: 0 },
+          scale: 1,
+          angle: this.gunAngle,
+        })
+        this.gunAngle -= this.player.direction / 2
+        this.bulletsAmount -= 1
+        this.bullets.push(bullet)
+        await this.attackFrame.startCounting()
+      }
+    } else if (this.reloadFrame.currentFrame === 0) {
+      await this.reloadFrame.startCounting()
+      this.reload()
     }
   }
 
   reload() {
-    this.attackFrame.setFPS(0.75)
-    this.attackFrame.currentFrame = 0
     this.bulletsAmount = 6
   }
 

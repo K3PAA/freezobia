@@ -1,6 +1,6 @@
 import { AllowedKeysObject, Box, Point, SpriteType } from '../lib/types'
 import Sprite from './Sprite'
-import { SPRITES, STATES, Idle, Running, Attack } from './PlayerState'
+import { SPRITES, STATES, Idle, Running } from './PlayerState'
 import Frame from './Frame'
 import Gun from './Gun'
 import { TIME_LIMIT } from '../lib/constants'
@@ -21,6 +21,7 @@ class Player extends Sprite {
   state: any
   previousState: any
   states: any[]
+  sprite: any
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   moveFrame = new Frame({ fps: 60 })
   gun: Gun
@@ -63,7 +64,8 @@ class Player extends Sprite {
 
     this.state = null
     this.previousState = null
-    this.states = [new Idle(this), new Running(this), new Attack(this)]
+    this.states = [new Idle(this), new Running(this)]
+    this.sprite = null
     this.setState(STATES.IDLE)
     this.setSprite(SPRITES.IDLE)
 
@@ -105,13 +107,7 @@ class Player extends Sprite {
       this.animateFrames()
     }
 
-    this.gun.updateGun(mousePos)
-
-    if (this.gun.attackFrame.timeElapsed(time)) {
-      this.isAttacking = true
-      this.gun.attackFrame.setFPS(2)
-      this.gun.attackFrame.updateFrame()
-    }
+    this.gun.updateGun(mousePos, time)
 
     if (!this.moveFrame.timeElapsed(time)) return
 
@@ -158,16 +154,22 @@ class Player extends Sprite {
 
   setState = (state: any) => {
     //* setting player state
+    // console.log(this.states[state])
     this.previousState = this.state
     this.state = this.states[state]
+    // this.framesCurrent = 0
   }
 
   setSprite = (sprite: any) => {
     //* setting player sprite
-    this.image.src = sprite.imageSrc
-    this.columns = sprite.columns
-    this.maxFrames = sprite.maxFrames
-    this.frame.setFPS(sprite.fps)
+    if (this.sprite !== sprite) {
+      this.sprite = sprite
+      this.framesCurrent = 0
+      this.image.src = sprite.imageSrc
+      this.columns = sprite.columns
+      this.maxFrames = sprite.maxFrames
+      this.frame.setFPS(sprite.fps)
+    }
   }
 
   inCenterBox = () => {
@@ -198,8 +200,8 @@ class Player extends Sprite {
 
   draw = (c: CanvasRenderingContext2D) => {
     //* hitbox of player
-    c.fillStyle = '#fff'
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+    // c.fillStyle = '#fff'
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     //* hitbox of player
     c.beginPath()
@@ -223,9 +225,11 @@ class Player extends Sprite {
     this.gun.drawGun(c)
   }
 
-  attack = () => {
-    if (this.isAttacking) {
-      this.gun.attack()
+  attack = async () => {
+    if (!this.isAttacking) {
+      this.isAttacking = true
+      await this.gun.attack()
+      this.isAttacking = false
     }
   }
 
