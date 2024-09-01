@@ -8,7 +8,8 @@ class Grenade {
   gravity: number
   wind: number
   isThrown: boolean
-  mousePosition: Point
+  startPoint: Point
+  endPoint: Point
   t: number
 
   constructor(player: Player) {
@@ -22,37 +23,54 @@ class Grenade {
     this.isThrown = false
 
     this.velocity = { x: 0, y: 0 }
-    this.mousePosition = { x: 0, y: 0 }
+    this.startPoint = { x: 0, y: 0 } // Punkt początkowy lotu
+    this.endPoint = { x: 0, y: 0 }   // Punkt końcowy lotu
     this.t = 0
   }
 
   updateGrenade(mousePos: Point) {
-    this.mousePosition = mousePos
-
+    this.position = { x: this.player.position.x, y: this.player.position.y }
     if (!this.isThrown) {
-      this.position.x = this.player.position.x + this.player.width / 2
-      this.position.y = this.player.position.y + this.player.height / 2
-    }
+      // Ustaw punkt początkowy na aktualną pozycję gracza
+      this.startPoint = {
+        x: this.player.position.x + this.player.width / 2,
+        y: this.player.position.y + this.player.height / 2,
+      }
 
+      // Ustaw punkt końcowy na pozycję kursora w momencie rzutu
+      this.endPoint = { x: mousePos.x, y: mousePos.y }
+      this.t = 0 // Reset czasu lotu
+    }
     if (this.isThrown) {
-      this.t += 0.02 // Speed
+      this.t += 0.02 // Prędkość lotu
 
       if (this.t > 1) {
         this.t = 1
-        this.player.generateGrenade()
-        this.isThrown = false
+        this.isThrown = false // Koniec lotu
+        this.player.generateGrenade() // Generowanie nowego granatu po rzucie
       }
 
-      const startX = this.player.position.x
-      const startY = this.player.position.y
-      const controlX =
-        this.player.position.x +
-        Math.abs(this.player.position.x - this.mousePosition.x) *
-          this.player.direction
-      const controlY = this.player.position.y - 250
-      const endX = this.mousePosition.x
-      const endY = this.mousePosition.y
+      // Parametryzacja krzywej kwadratowej Béziera
+      const startX = this.startPoint.x
+      const startY = this.startPoint.y
+      
+      // Zmniejszamy odległość `controlX` od gracza, aby był bliżej
+      const controlX = this.startPoint.x + Math.abs(this.startPoint.x - this.endPoint.x) * 0.5 * this.player.direction
 
+      // Logika dla ustawienia `controlY`
+      let controlY: number;
+      if (this.endPoint.y < this.startPoint.y) {
+        // Jeśli kursor jest nad graczem, umieść punkt kontrolny wyżej
+        controlY = this.startPoint.y - Math.abs(this.startPoint.y - this.endPoint.y) * 1.5;
+      } else {
+        // Jeśli kursor jest poniżej gracza, umieść punkt kontrolny na połowie różnicy wysokości
+        controlY = this.startPoint.y - Math.abs(this.startPoint.y - this.endPoint.y) * 0.5;
+      }
+
+      const endX = this.endPoint.x
+      const endY = this.endPoint.y
+
+      // Aktualizacja pozycji granatu
       this.position.x =
         (1 - this.t) * (1 - this.t) * startX +
         2 * (1 - this.t) * this.t * controlX +
@@ -65,29 +83,20 @@ class Grenade {
   }
 
   drawGrenade(c: CanvasRenderingContext2D) {
-    let positionBetween = {
-      x:
-        this.player.position.x +
-        Math.abs(this.player.position.x - this.mousePosition.x) *
-          this.player.direction,
-      y:
-        Math.abs(this.mousePosition.y - this.player.position.y) *
-        this.player.direction,
-    }
     if (this.isThrown) {
       c.beginPath()
-      c.moveTo(
-        this.player.position.x + this.player.width / 2,
-        this.player.position.y + this.player.height / 2
-      )
+      c.moveTo(this.startPoint.x, this.startPoint.y)
       c.quadraticCurveTo(
-        positionBetween.x,
-        this.player.position.y - 250,
-        this.mousePosition.x,
-        this.mousePosition.y
+        this.startPoint.x + Math.abs(this.startPoint.x - this.endPoint.x) * 0.5 * this.player.direction,
+        this.endPoint.y < this.startPoint.y ? 
+            this.startPoint.y - Math.abs(this.startPoint.y - this.endPoint.y) * 1.5 : 
+            this.startPoint.y - Math.abs(this.startPoint.y - this.endPoint.y) * 0.5,
+        this.endPoint.x,
+        this.endPoint.y
       )
       c.stroke()
     }
+
     c.fillStyle = 'green'
     c.beginPath()
     c.arc(this.position.x, this.position.y, 25, 0, Math.PI * 2)
