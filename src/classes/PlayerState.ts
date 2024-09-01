@@ -46,7 +46,11 @@ class Idle extends State {
       this.player.velocity.y = 0
     }
     if (keys.Space) {
-      this.player.grenade.isThrown = true
+      if (this.player.hasGrenade) {
+        this.player.grenade.isThrown = true
+      } else {
+        this.player.generateGrenade()
+      }
       // this.player.attack()
       // this.player.setState(STATES.ATTACK)
     }
@@ -67,7 +71,6 @@ class Running extends State {
 
   input = (keys: AllowedKeysObject) => {
     if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
-
       this.player.velocity.x = 0
       this.player.velocity.y = 0
 

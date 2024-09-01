@@ -26,9 +26,9 @@ class Player extends Sprite {
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   moveFrame = new Frame({ fps: 60 })
   gun: Gun
-  grenade: Grenade
+  grenade?: Grenade
   isAttacking: boolean
-  isThrowingGrenade: boolean
+  hasGrenade: boolean
 
   constructor({
     canvas,
@@ -63,9 +63,9 @@ class Player extends Sprite {
     this.playerHitBoxRadius = Math.max(this.width, this.height) / 3
 
     this.gun = new Gun(this, this.canvas, this.direction)
-    this.grenade = new Grenade(this)
+    this.grenade = undefined
     this.isAttacking = false
-    this.isThrowingGrenade = false
+    this.hasGrenade = false
 
     this.state = null!
     this.previousState = null!
@@ -113,7 +113,7 @@ class Player extends Sprite {
     }
 
     this.gun.updateGun(mousePos, time)
-    this.grenade.updateGrenade(mousePos)
+    this.hasGrenade && this.grenade?.updateGrenade(mousePos)
 
     if (!this.moveFrame.timeElapsed(time)) return
 
@@ -218,15 +218,16 @@ class Player extends Sprite {
     // )
     // c.fillStyle = 'rgba(0, 255, 255)'
     // c.fill()
+    
 
     //* drawing player
     this.drawSprite(c)
 
+    //* drawing grenade
+    this.hasGrenade && this.grenade?.drawGrenade(c)
+
     //* drawing gun
     this.gun.drawGun(c)
-
-    //* drawing grenade
-    this.grenade.drawGrenade(c)
   }
 
   attack = async () => {
@@ -238,7 +239,13 @@ class Player extends Sprite {
   }
 
   generateGrenade = () => {
+    this.hasGrenade = true
     this.grenade = new Grenade(this)
+  }
+
+  deleteGrenade = () => {
+    this.hasGrenade = false
+    this.grenade = undefined
   }
 
   drawCenterBox = (c: CanvasRenderingContext2D) => {

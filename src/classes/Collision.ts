@@ -14,6 +14,7 @@ export default class Collision {
     if (tile instanceof Resource) {
       this.playerWithResource({ player, tile })
       this.tileWithBullet({ tile, bullets: player.gun.bullets })
+      player.hasGrenade && this.tileWithGrenade({ tile, grenade: player.grenade })
     }
   }
 
@@ -109,5 +110,30 @@ export default class Collision {
         tile.hp--
       }
     })
+  }
+
+  tileWithGrenade({ tile, grenade }: { tile: Resource; grenade: any }) {
+    if (
+      rectangleCollision(
+        {
+          position: {
+            x: tile.strictBox.position.x + tile.shift.x,
+            y: tile.strictBox.position.y + tile.shift.y,
+          },
+          width: tile.mapping.box.width,
+          height: tile.mapping.box.height,
+        },
+        {
+          position: {
+            x: grenade.position.x,
+            y: grenade.position.y,
+          },
+          width: grenade.grenadeHitBoxRadius * 2,
+          height: grenade.grenadeHitBoxRadius * 2,
+        }
+      )
+    ) {
+      tile.hp--
+    }
   }
 }

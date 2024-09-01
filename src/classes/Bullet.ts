@@ -5,9 +5,9 @@ class Bullet extends Sprite {
   velocity: Point = { x: 0, y: 0 }
   speed = 10
   direction = 1
-  angle: any
+  angle: number
   centerPoint: Point
-  bulletHitBoxRadius: any
+  bulletHitBoxRadius: number
   removeBullet: (index: number) => void
 
   constructor({

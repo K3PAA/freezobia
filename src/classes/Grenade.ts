@@ -11,6 +11,9 @@ class Grenade {
   startPoint: Point
   endPoint: Point
   t: number
+  flightDuration: number
+  rotation: number
+  grenadeHitBoxRadius: number
 
   constructor(player: Player) {
     this.player = player
@@ -23,54 +26,76 @@ class Grenade {
     this.isThrown = false
 
     this.velocity = { x: 0, y: 0 }
-    this.startPoint = { x: 0, y: 0 } // Punkt początkowy lotu
-    this.endPoint = { x: 0, y: 0 }   // Punkt końcowy lotu
+    this.startPoint = { x: 0, y: 0 }
+    this.endPoint = { x: 0, y: 0 }
     this.t = 0
+    this.flightDuration = 0.8
+    this.rotation = -0.5
+    this.grenadeHitBoxRadius = Math.max(30, 30) / 3
   }
 
   updateGrenade(mousePos: Point) {
-    this.position = { x: this.player.position.x, y: this.player.position.y }
+    const playerCenter = {
+      x: this.player.position.x + this.player.width / 2,
+      y: this.player.position.y + this.player.height / 2,
+    }
+    
+    this.position = {
+      x:
+        this.player.direction === 1
+          ? playerCenter.x - 15
+          : playerCenter.x + 15,
+      y: playerCenter.y,
+    }
     if (!this.isThrown) {
-      // Ustaw punkt początkowy na aktualną pozycję gracza
       this.startPoint = {
-        x: this.player.position.x + this.player.width / 2,
-        y: this.player.position.y + this.player.height / 2,
+        x: playerCenter.x,
+        y: playerCenter.y,
       }
 
-      // Ustaw punkt końcowy na pozycję kursora w momencie rzutu
       this.endPoint = { x: mousePos.x, y: mousePos.y }
-      this.t = 0 // Reset czasu lotu
+
+      const distance = Math.sqrt(
+        Math.pow(this.endPoint.x - this.startPoint.x, 2) +
+          Math.pow(this.endPoint.y - this.startPoint.y, 2)
+      )
+
+      this.flightDuration = Math.max(0.4, Math.min(0.8, distance / 300))
+
+      this.t = 0
     }
     if (this.isThrown) {
-      this.t += 0.02 // Prędkość lotu
+      this.t += 0.02 / this.flightDuration
 
       if (this.t > 1) {
         this.t = 1
-        this.isThrown = false // Koniec lotu
-        this.player.generateGrenade() // Generowanie nowego granatu po rzucie
+        this.isThrown = false
+        this.player.deleteGrenade()
       }
 
-      // Parametryzacja krzywej kwadratowej Béziera
       const startX = this.startPoint.x
       const startY = this.startPoint.y
-      
-      // Zmniejszamy odległość `controlX` od gracza, aby był bliżej
-      const controlX = this.startPoint.x + Math.abs(this.startPoint.x - this.endPoint.x) * 0.5 * this.player.direction
 
-      // Logika dla ustawienia `controlY`
-      let controlY: number;
-      if (this.endPoint.y < this.startPoint.y) {
-        // Jeśli kursor jest nad graczem, umieść punkt kontrolny wyżej
-        controlY = this.startPoint.y - Math.abs(this.startPoint.y - this.endPoint.y) * 1.5;
+      const controlX =
+        this.startPoint.x +
+        Math.abs(this.startPoint.x - this.endPoint.x) *
+          0.5 *
+          this.player.direction
+
+      let controlY: number
+      const yDistance = Math.abs(this.startPoint.y - this.endPoint.y)
+
+      if (yDistance < 50) {
+        controlY = this.startPoint.y - 150
+      } else if (this.endPoint.y < this.startPoint.y) {
+        controlY = this.startPoint.y - yDistance * 1.5
       } else {
-        // Jeśli kursor jest poniżej gracza, umieść punkt kontrolny na połowie różnicy wysokości
-        controlY = this.startPoint.y - Math.abs(this.startPoint.y - this.endPoint.y) * 0.5;
+        controlY = this.startPoint.y - yDistance * 0.5
       }
 
       const endX = this.endPoint.x
       const endY = this.endPoint.y
 
-      // Aktualizacja pozycji granatu
       this.position.x =
         (1 - this.t) * (1 - this.t) * startX +
         2 * (1 - this.t) * this.t * controlX +
@@ -79,18 +104,29 @@ class Grenade {
         (1 - this.t) * (1 - this.t) * startY +
         2 * (1 - this.t) * this.t * controlY +
         this.t * this.t * endY
+
+      this.rotation += 0.1
     }
   }
 
   drawGrenade(c: CanvasRenderingContext2D) {
     if (this.isThrown) {
+      const yDistance = Math.abs(this.startPoint.y - this.endPoint.y)
+      const controlY =
+        yDistance < 50
+          ? this.startPoint.y - 150
+          : this.endPoint.y < this.startPoint.y
+          ? this.startPoint.y - yDistance * 1.5
+          : this.startPoint.y - yDistance * 0.5
+
       c.beginPath()
       c.moveTo(this.startPoint.x, this.startPoint.y)
       c.quadraticCurveTo(
-        this.startPoint.x + Math.abs(this.startPoint.x - this.endPoint.x) * 0.5 * this.player.direction,
-        this.endPoint.y < this.startPoint.y ? 
-            this.startPoint.y - Math.abs(this.startPoint.y - this.endPoint.y) * 1.5 : 
-            this.startPoint.y - Math.abs(this.startPoint.y - this.endPoint.y) * 0.5,
+        this.startPoint.x +
+          Math.abs(this.startPoint.x - this.endPoint.x) *
+            0.5 *
+            this.player.direction,
+        controlY,
         this.endPoint.x,
         this.endPoint.y
       )
@@ -98,9 +134,35 @@ class Grenade {
     }
 
     c.fillStyle = 'green'
+    c.strokeStyle = 'black'
+    c.lineWidth = 2
+    c.save()
+
+    c.translate(this.position.x, this.position.y)
+    c.rotate(this.rotation * this.player.direction)
+    c.translate(-this.position.x, -this.position.y)
+
     c.beginPath()
-    c.arc(this.position.x, this.position.y, 25, 0, Math.PI * 2)
+
+    // c.ellipse(this.position.x, this.position.y, 8, 4, 0, 0, Math.PI * 2)
+
+    // c.ellipse(this.position.x, this.position.y + 20, 8, 4, 0, 0, Math.PI * 2)
+
+    c.rect(this.position.x - 6, this.position.y, 12, 20)
+
+    c.setLineDash([]);
+    c.lineWidth = 2.5
+
+    c.moveTo(this.position.x - 3, this.position.y - 10)
+    c.lineTo(this.position.x + 3, this.position.y - 10)
+    c.lineTo(this.position.x + 4, this.position.y)
+    c.lineTo(this.position.x - 4, this.position.y)
+    c.closePath()
+
     c.fill()
+    c.stroke()
+
+    c.restore()
   }
 }
 
