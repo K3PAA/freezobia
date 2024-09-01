@@ -1,4 +1,4 @@
-import { AllowedKeysObject, Box, Point, SpriteType } from '../lib/types'
+import { AllowedKeysObject, Box, Point, SpriteClassType, SpriteType, StateType } from '../lib/types'
 import Sprite from './Sprite'
 import { SPRITES, STATES, Idle, Running } from './PlayerState'
 import Frame from './Frame'
@@ -15,14 +15,14 @@ class Player extends Sprite {
   health = this.healthInMs / TIME_LIMIT
   collision = { left: false, right: false, top: false, bottom: false }
   aboutToCollide = false
-  playerHitBoxRadius: any
+  playerHitBoxRadius: number
   centerPoint: Point
   speed = 5
   direction = 1
-  state: any
-  previousState: any
-  states: any[]
-  sprite: any
+  state: StateType
+  previousState: StateType
+  states: StateType[]
+  sprite: SpriteType
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   moveFrame = new Frame({ fps: 60 })
   gun: Gun
@@ -41,7 +41,7 @@ class Player extends Sprite {
     height,
     offSet,
     direction,
-  }: SpriteType) {
+  }: SpriteClassType) {
     super({
       canvas,
       position,
@@ -67,10 +67,10 @@ class Player extends Sprite {
     this.isAttacking = false
     this.isThrowingGrenade = false
 
-    this.state = null
-    this.previousState = null
+    this.state = null!
+    this.previousState = null!
     this.states = [new Idle(this), new Running(this)]
-    this.sprite = null
+    this.sprite = null!
     this.setState(STATES.IDLE)
     this.setSprite(SPRITES.IDLE)
 

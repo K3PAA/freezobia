@@ -1,4 +1,4 @@
-import { Point, SpriteType } from '../lib/types'
+import { Point, SpriteClassType } from '../lib/types'
 import Sprite from './Sprite'
 
 class Bullet extends Sprite {
@@ -22,7 +22,7 @@ class Bullet extends Sprite {
     offSet,
     angle,
     removeBullet,
-  }: SpriteType & { angle: any, removeBullet: (index: number) => void }) {
+  }: SpriteClassType & { angle: any, removeBullet: (index: number) => void }) {
     super({
       canvas,
       position,

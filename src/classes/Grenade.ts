@@ -1,4 +1,3 @@
-import { interpolateArc } from '../lib/functions'
 import { Point } from '../lib/types'
 import Player from './Player'
 
@@ -36,15 +35,14 @@ class Grenade {
     }
 
     if (this.isThrown) {
-      this.t += 0.02 // Szybkość ruchu (możesz dostosować tę wartość)
+      this.t += 0.02 // Speed
 
       if (this.t > 1) {
         this.t = 1
         this.player.generateGrenade()
-        this.isThrown = false // Koniec lotu
+        this.isThrown = false
       }
 
-      // Parametryzacja krzywej kwadratowej
       const startX = this.player.position.x
       const startY = this.player.position.y
       const controlX =
@@ -55,7 +53,6 @@ class Grenade {
       const endX = this.mousePosition.x
       const endY = this.mousePosition.y
 
-      // Wzory dla krzywej kwadratowej Béziera
       this.position.x =
         (1 - this.t) * (1 - this.t) * startX +
         2 * (1 - this.t) * this.t * controlX +

@@ -1,4 +1,4 @@
-import { Point, SpriteType } from '../lib/types'
+import { Point, SpriteClassType } from '../lib/types'
 
 class Sprite {
   position: Point
@@ -23,7 +23,7 @@ class Sprite {
     height,
     offSet,
     direction,
-  }: SpriteType) {
+  }: SpriteClassType) {
     this.position = position
     this.image = new Image()
     this.image.src = imgSrc!
