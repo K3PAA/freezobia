@@ -14,8 +14,9 @@ class Grenade {
   flightDuration: number
   rotation: number
   grenadeHitBoxRadius: number
+  removeGrenade: (grenade: Grenade) => void
 
-  constructor(player: Player) {
+  constructor(player: Player, removeGrenade: (grenade: Grenade) => void) {
     this.player = player
     this.position = {
       x: this.player.position.x + this.player.width / 2,
@@ -32,6 +33,7 @@ class Grenade {
     this.flightDuration = 0.8
     this.rotation = -0.5
     this.grenadeHitBoxRadius = Math.max(30, 30) / 3
+    this.removeGrenade = removeGrenade
   }
 
   updateGrenade(mousePos: Point) {
@@ -39,12 +41,10 @@ class Grenade {
       x: this.player.position.x + this.player.width / 2,
       y: this.player.position.y + this.player.height / 2,
     }
-    
+
     this.position = {
       x:
-        this.player.direction === 1
-          ? playerCenter.x - 15
-          : playerCenter.x + 15,
+        this.player.direction === 1 ? playerCenter.x - 15 : playerCenter.x + 15,
       y: playerCenter.y,
     }
     if (!this.isThrown) {
@@ -63,14 +63,14 @@ class Grenade {
       this.flightDuration = Math.max(0.4, Math.min(0.8, distance / 300))
 
       this.t = 0
+      this.isThrown = true
     }
     if (this.isThrown) {
       this.t += 0.02 / this.flightDuration
 
       if (this.t > 1) {
         this.t = 1
-        this.isThrown = false
-        this.player.deleteGrenade()
+        this.removeGrenade(this)
       }
 
       const startX = this.startPoint.x
@@ -150,7 +150,7 @@ class Grenade {
 
     c.rect(this.position.x - 6, this.position.y, 12, 20)
 
-    c.setLineDash([]);
+    c.setLineDash([])
     c.lineWidth = 2.5
 
     c.moveTo(this.position.x - 3, this.position.y - 10)

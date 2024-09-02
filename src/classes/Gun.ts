@@ -20,7 +20,7 @@ class Gun extends Sprite {
   player: Player
   isShooting: boolean
 
-  constructor(player: Player, canvas: HTMLCanvasElement, direction: number) {
+  constructor(player: Player, canvas: HTMLCanvasElement) {
     super({
       canvas,
       position: { x: player.position.x, y: player.position.y },
@@ -41,7 +41,7 @@ class Gun extends Sprite {
     this.isShooting = false
     this.attackFrame = new Frame({ fps: 4, currentFrame: 0, maxFrame: 2 })
     this.reloadFrame = new Frame({ fps: 1, currentFrame: 0, maxFrame: 2 })
-    this.direction = direction
+    this.direction = this.player.direction
     this.canvas = canvas
   }
 
@@ -113,15 +113,10 @@ class Gun extends Sprite {
     if (this.bulletsAmount > 0) {
       if (this.attackFrame.currentFrame === 0) {
         const bullet = new Bullet({
-          canvas: this.canvas,
           position: {
             x: this.playerPosition.x + this.width / 2,
             y: this.playerPosition.y + this.height / 2,
           },
-          width: 4,
-          height: 8,
-          offSet: { x: 0, y: 0 },
-          scale: 1,
           angle: this.gunAngle,
           removeBullet: this.removeBullet.bind(this)
         })

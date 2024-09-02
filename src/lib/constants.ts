@@ -152,6 +152,7 @@ export const allowedKeys = {
   KeyD: false,
   KeyS: false,
   KeyW: false,
+  KeyQ: false,
   Space: false,
 }
 

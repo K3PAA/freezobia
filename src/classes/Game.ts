@@ -1,15 +1,18 @@
 import Background from './Background'
 import Player from './Player'
 import Input from './Input'
-import playerImg from '../assets/char_run.png'
+import playerImg from '../assets/compressed/player/char_animation.webp'
+import enemyImg from '../assets/compressed/enemy/slime_run.webp'
+import Frame from './Frame'
 import Transition from './Transition'
 import Collision from './Collision'
-import Frame from './Frame'
+import Enemy from './Enemy'
 
 class Game {
   canvas: HTMLCanvasElement
   background: Background
   player: Player
+  enemy: Enemy  //! temporary
   input: Input
   transition: Transition
   collision: Collision
@@ -41,6 +44,22 @@ class Game {
       scale: 3,
       imgSrc: playerImg,
     })
+    this.enemy = new Enemy({
+      canvas,
+      position: {
+        x: 375,
+        y: 275,
+      },
+      width: 14 * 3,
+      height: 11 * 3,
+      offSet: {
+        x: 4,
+        y: 12,
+      },
+      scale: 3,
+      imgSrc: enemyImg,
+      player: this.player,
+    })  //! temporary
     this.input = new Input()
     this.collision = new Collision()
   }
@@ -79,16 +98,29 @@ class Game {
       time: time,
     })
 
-    this.background.update({
-      time,
-      player: this.player,
-      isInMenu: this.isInMenu,
-    })
+    this.enemy.update({
+      time: time
+    }) //! temporary
+
+    this.background.update({ time, player: this.player, isInMenu: this.isInMenu, })
   }
+
+  // updateTransition(time: number) {
+  //   if (
+  //     !this.isPlaying &&
+  //     this.input.keys.Space &&
+  //     !this.transition.activeTransition
+  //   ) {
+  //     this.transition.start()
+  //   }
+  //   if (this.transition.activeTransition) this.transition.update(time)
+  //   if (this.transition.animationFinish) this.isPlaying = true
+  // }
 
   draw(c: CanvasRenderingContext2D) {
     this.background.drawTileWithCampfire(c)
     this.player.draw(c)
+    this.enemy.draw(c) //! temporary
     this.background.drawInteractiveWithoutCampfire(c)
     this.drawEyeEffect(c)
 

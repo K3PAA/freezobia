@@ -11,7 +11,7 @@ import { SPRITES, STATES, Idle, Running } from './PlayerState'
 import Frame from './Frame'
 import Gun from './Gun'
 import { TIME_LIMIT } from '../lib/constants'
-import Grenade from './Grenade'
+import Grenadier from './Grenadier'
 
 class Player extends Sprite {
   score = 0
@@ -34,9 +34,9 @@ class Player extends Sprite {
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   moveFrame = new Frame({ fps: 60 })
   gun: Gun
-  grenade?: Grenade
+  grenadier: Grenadier 
   isAttacking: boolean
-  hasGrenade: boolean
+  isThrowingGrenade: boolean
   isDead = false
 
   constructor({
@@ -71,10 +71,10 @@ class Player extends Sprite {
 
     this.playerHitBoxRadius = Math.max(this.width, this.height) / 3
 
-    this.gun = new Gun(this, this.canvas, this.direction)
-    this.grenade = undefined
+    this.gun = new Gun(this, this.canvas)
+    this.grenadier = new Grenadier(this, this.canvas)
     this.isAttacking = false
-    this.hasGrenade = false
+    this.isThrowingGrenade = false
 
     this.state = null!
     this.previousState = null!
@@ -126,7 +126,7 @@ class Player extends Sprite {
     }
 
     this.gun.updateGun(mousePos, time)
-    this.hasGrenade && this.grenade?.updateGrenade(mousePos)
+    this.grenadier.update(mousePos, time)
 
     if (!this.moveFrame.timeElapsed(time)) return
 
@@ -246,7 +246,7 @@ class Player extends Sprite {
     this.drawSprite(c)
 
     //* drawing grenade
-    this.hasGrenade && this.grenade?.drawGrenade(c)
+    this.grenadier.draw(c)
 
     //* drawing gun
     this.gun.drawGun(c)
@@ -264,7 +264,7 @@ class Player extends Sprite {
       50
     )
     c.fillText(`gun ammo: ${this.gun.bulletsAmount}`, 10, 70)
-    c.fillText(`granades: ${this.grenade ? 1 : 0}`, 10, 90)
+    c.fillText(`granades: ${this.grenadier.grenadesAmount}`, 10, 90)
   }
   attack = async () => {
     if (!this.isAttacking) {
@@ -274,14 +274,12 @@ class Player extends Sprite {
     }
   }
 
-  generateGrenade = () => {
-    this.hasGrenade = true
-    this.grenade = new Grenade(this)
-  }
-
-  deleteGrenade = () => {
-    this.hasGrenade = false
-    this.grenade = undefined
+  throwGrenade = async () => {
+    if (!this.isThrowingGrenade) {
+      this.isThrowingGrenade = true
+      await this.grenadier.attack()
+      this.isThrowingGrenade = false
+    }
   }
 
   drawCenterBox = (c: CanvasRenderingContext2D) => {

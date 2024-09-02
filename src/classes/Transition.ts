@@ -1,6 +1,3 @@
-import { lerp } from '../lib/functions'
-import Frame from './Frame'
-
 class Transition {
   canvas: HTMLCanvasElement
 
