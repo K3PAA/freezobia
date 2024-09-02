@@ -47,7 +47,15 @@ class Background {
     })
   }
 
-  update({ time, player }: { time: number; player: Player }) {
+  update({
+    time,
+    player,
+    isInMenu,
+  }: {
+    time: number
+    player: Player
+    isInMenu: boolean
+  }) {
     this.grid.update()
 
     for (let x = -1; x < this.gridSize - 1; x++) {
@@ -69,7 +77,8 @@ class Background {
         singleArray.interactiveArray.forEach((tile) => {
           tile.setShift(shift)
           if (tile instanceof Campfire) tile.update({ time })
-          this.collision.tileWithPlayer({ tile: tile, player: player })
+          if (!isInMenu)
+            this.collision.tileWithPlayer({ tile: tile, player: player })
         })
       }
     }

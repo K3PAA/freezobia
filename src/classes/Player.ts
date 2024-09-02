@@ -1,4 +1,11 @@
-import { AllowedKeysObject, Box, Point, SpriteClassType, SpriteType, StateType } from '../lib/types'
+import {
+  AllowedKeysObject,
+  Box,
+  Point,
+  SpriteClassType,
+  SpriteType,
+  StateType,
+} from '../lib/types'
 import Sprite from './Sprite'
 import { SPRITES, STATES, Idle, Running } from './PlayerState'
 import Frame from './Frame'
@@ -92,13 +99,17 @@ class Player extends Sprite {
     keys,
     mousePos,
     offset,
+    isInMenu,
     time,
   }: {
     keys: AllowedKeysObject
     mousePos: Point
     offset: Point
+    isInMenu: boolean
     time: number
   }) => {
+    if (isInMenu) return
+
     if (this.inCampfireRange) {
       if (this.healthInMs < TIME_LIMIT) this.healthInMs += time * 4
     } else {
@@ -218,7 +229,6 @@ class Player extends Sprite {
     // )
     // c.fillStyle = 'rgba(0, 255, 255)'
     // c.fill()
-    
 
     //* drawing player
     this.drawSprite(c)
