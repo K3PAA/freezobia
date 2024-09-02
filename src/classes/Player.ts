@@ -34,7 +34,7 @@ class Player extends Sprite {
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   moveFrame = new Frame({ fps: 60 })
   gun: Gun
-  grenadier: Grenadier 
+  grenadier: Grenadier
   isAttacking: boolean
   isThrowingGrenade: boolean
   isDead = false
@@ -154,6 +154,7 @@ class Player extends Sprite {
         this.position.x += this.velocity.x
       }
       offset.x += this.velocity.x
+      this.gun.updateBulletOffset('x', this.velocity.x)
     }
 
     //* player collision top and down
@@ -168,6 +169,7 @@ class Player extends Sprite {
         this.position.y += this.velocity.y
       }
       offset.y += this.velocity.y
+      this.gun.updateBulletOffset('y', this.velocity.y)
     }
   }
 
@@ -253,7 +255,7 @@ class Player extends Sprite {
   }
 
   drawInfo(c: CanvasRenderingContext2D) {
-    c.font = '20px serif'
+    c.font = '20px Courier New'
     c.fillStyle = 'black'
     c.textAlign = 'left'
 

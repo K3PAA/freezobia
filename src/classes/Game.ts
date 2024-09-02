@@ -12,7 +12,7 @@ class Game {
   canvas: HTMLCanvasElement
   background: Background
   player: Player
-  enemy: Enemy  //! temporary
+  enemy: Enemy //! temporary
   input: Input
   transition: Transition
   collision: Collision
@@ -59,7 +59,7 @@ class Game {
       scale: 3,
       imgSrc: enemyImg,
       player: this.player,
-    })  //! temporary
+    }) //! temporary
     this.input = new Input()
     this.collision = new Collision()
   }
@@ -99,10 +99,14 @@ class Game {
     })
 
     this.enemy.update({
-      time: time
+      time: time,
     }) //! temporary
 
-    this.background.update({ time, player: this.player, isInMenu: this.isInMenu, })
+    this.background.update({
+      time,
+      player: this.player,
+      isInMenu: this.isInMenu,
+    })
   }
 
   // updateTransition(time: number) {
@@ -134,13 +138,13 @@ class Game {
     c.fillStyle = 'rgba(0, 0, 0, 0.7)'
     c.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
-    c.font = '48px serif'
+    c.font = '48px Courier New'
     c.fillStyle = 'white'
     c.textAlign = 'center'
     c.fillText('Freezobia', this.canvas.width / 2, 50)
 
     if (this.score === 0) {
-      c.font = '20px serif'
+      c.font = '20px Courier New'
       c.fillText('Try to survive the longest,', this.canvas.width / 2, 90)
       c.fillText(
         'find campfire before you get freezed',
@@ -157,11 +161,11 @@ class Game {
       c.fillText('Shoot - mouse click', this.canvas.width / 2, 240)
       c.fillText('granade - Q', this.canvas.width / 2, 260)
     } else {
-      c.font = '24px serif'
+      c.font = '24px Courier New'
       c.fillText(`Final score: ${this.score}`, this.canvas.width / 2, 100)
     }
 
-    c.font = '20px serif'
+    c.font = '20px Courier New'
     if (this.showTextInfo) {
       c.fillText(
         'press space to play',

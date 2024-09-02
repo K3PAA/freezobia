@@ -67,25 +67,27 @@ class Enemy extends Sprite {
   }
 
   goTowardsPlayer = () => {
-    if(rectangleCollision(
-      {
-        position: {
-          x: this.position.x,
-          y: this.position.y,
+    if (
+      rectangleCollision(
+        {
+          position: {
+            x: this.position.x,
+            y: this.position.y,
+          },
+          width: this.width,
+          height: this.height,
         },
-        width: this.width,
-        height: this.height,
-      },
-      {
-        position: {
-          x: this.player.position.x + this.player.velocity.x,
-          y: this.player.position.y,
-        },
-        width: this.player.width - Math.abs(this.player.velocity.x),
-        height: this.player.height - Math.abs(this.player.velocity.y),
-      })
+        {
+          position: {
+            x: this.player.position.x + this.player.velocity.x,
+            y: this.player.position.y,
+          },
+          width: this.player.width - Math.abs(this.player.velocity.x),
+          height: this.player.height - Math.abs(this.player.velocity.y),
+        }
+      )
     ) {
-      this.player.health = 0
+      this.player.isDead = true
     }
   }
 }
