@@ -113,15 +113,10 @@ class Gun extends Sprite {
     if (this.bulletsAmount > 0) {
       if (this.attackFrame.currentFrame === 0) {
         const bullet = new Bullet({
-          canvas: this.canvas,
           position: {
             x: this.playerPosition.x + this.width / 2,
             y: this.playerPosition.y + this.height / 2,
           },
-          width: 4,
-          height: 8,
-          offSet: { x: 0, y: 0 },
-          scale: 1,
           angle: this.gunAngle,
           removeBullet: this.removeBullet.bind(this)
         })

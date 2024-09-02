@@ -1,7 +1,9 @@
-import { Point, SpriteClassType } from '../lib/types'
-import Sprite from './Sprite'
+import { Point } from '../lib/types'
 
-class Bullet extends Sprite {
+class Bullet {
+  position: Point
+  width: number
+  height: number
   velocity: Point = { x: 0, y: 0 }
   speed = 10
   direction = 1
@@ -11,30 +13,14 @@ class Bullet extends Sprite {
   removeBullet: (index: number) => void
 
   constructor({
-    canvas,
     position,
-    imgSrc,
-    scale,
-    columns = 8,
-    maxFrames = 8,
-    width,
-    height,
-    offSet,
     angle,
     removeBullet,
-  }: SpriteClassType & { angle: any, removeBullet: (index: number) => void }) {
-    super({
-      canvas,
-      position,
-      imgSrc,
-      scale,
-      columns,
-      maxFrames,
-      width,
-      height,
-      offSet,
-    })
+  }: any & { angle: any, removeBullet: (index: number) => void }) {
 
+    this.position = position
+    this.width = 4
+    this.height = 8
     this.angle = angle
     this.velocity.x = Math.cos(this.angle) * this.speed
     this.velocity.y = Math.sin(this.angle) * this.speed
