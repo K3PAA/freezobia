@@ -14,7 +14,7 @@ export default class Collision {
     if (tile instanceof Resource) {
       this.playerWithResource({ player, tile })
       this.tileWithBullet({ tile, bullets: player.gun.bullets })
-      player.hasGrenade && this.tileWithGrenade({ tile, grenade: player.grenade })
+      this.tileWithGrenade({ tile, grenade: player.grenadier.grenades[0] })
     }
   }
 
@@ -79,6 +79,7 @@ export default class Collision {
     ) {
       player.inCampfireRange = true
       tile.active = true
+      player.score += 1
     } else {
       player.inCampfireRange = false
     }
@@ -113,6 +114,7 @@ export default class Collision {
   }
 
   tileWithGrenade({ tile, grenade }: { tile: Resource; grenade: any }) {
+    if (!grenade) return
     if (
       rectangleCollision(
         {

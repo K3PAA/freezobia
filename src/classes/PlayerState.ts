@@ -49,11 +49,7 @@ class Idle extends State {
       this.player.attack()
     }
     if (keys.KeyQ) {
-      if (this.player.hasGrenade) {
-        this.player.grenade.isThrown = true
-      } else {
-        this.player.generateGrenade()
-      }
+      this.player.throwGrenade()
     }
     if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
       this.player.setState(STATES.RUNNING)
@@ -92,11 +88,7 @@ class Running extends State {
       this.player.attack()
     }
     if (keys.KeyQ) {
-      if (this.player.hasGrenade) {
-        this.player.grenade.isThrown = true
-      } else {
-        this.player.generateGrenade()
-      }
+      this.player.throwGrenade()
     }
     if (!keys.KeyW && !keys.KeyA && !keys.KeyS && !keys.KeyD) {
       this.player.setState(STATES.IDLE)

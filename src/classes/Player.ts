@@ -1,12 +1,20 @@
-import { AllowedKeysObject, Box, Point, SpriteClassType, SpriteType, StateType } from '../lib/types'
+import {
+  AllowedKeysObject,
+  Box,
+  Point,
+  SpriteClassType,
+  SpriteType,
+  StateType,
+} from '../lib/types'
 import Sprite from './Sprite'
 import { SPRITES, STATES, Idle, Running } from './PlayerState'
 import Frame from './Frame'
 import Gun from './Gun'
 import { TIME_LIMIT } from '../lib/constants'
-import Grenade from './Grenade'
+import Grenadier from './Grenadier'
 
 class Player extends Sprite {
+  score = 0
   canvas: HTMLCanvasElement
   centerBox: Box
   velocity: Point = { x: 0, y: 0 }
@@ -26,9 +34,10 @@ class Player extends Sprite {
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   moveFrame = new Frame({ fps: 60 })
   gun: Gun
-  grenade?: Grenade
+  grenadier: Grenadier 
   isAttacking: boolean
-  hasGrenade: boolean
+  isThrowingGrenade: boolean
+  isDead = false
 
   constructor({
     canvas,
@@ -62,10 +71,10 @@ class Player extends Sprite {
 
     this.playerHitBoxRadius = Math.max(this.width, this.height) / 3
 
-    this.gun = new Gun(this, this.canvas, this.direction)
-    this.grenade = undefined
+    this.gun = new Gun(this, this.canvas)
+    this.grenadier = new Grenadier(this, this.canvas)
     this.isAttacking = false
-    this.hasGrenade = false
+    this.isThrowingGrenade = false
 
     this.state = null!
     this.previousState = null!
@@ -92,18 +101,22 @@ class Player extends Sprite {
     keys,
     mousePos,
     offset,
+    isInMenu,
     time,
   }: {
     keys: AllowedKeysObject
     mousePos: Point
     offset: Point
+    isInMenu: boolean
     time: number
   }) => {
+    if (isInMenu) return
+
     if (this.inCampfireRange) {
       if (this.healthInMs < TIME_LIMIT) this.healthInMs += time * 4
     } else {
       if (this.healthInMs > 0) this.healthInMs -= time
-      else '' //! add dead
+      else this.isDead = true
     }
     this.health = this.healthInMs / TIME_LIMIT
 
@@ -113,7 +126,7 @@ class Player extends Sprite {
     }
 
     this.gun.updateGun(mousePos, time)
-    this.hasGrenade && this.grenade?.updateGrenade(mousePos)
+    this.grenadier.update(mousePos, time)
 
     if (!this.moveFrame.timeElapsed(time)) return
 
@@ -202,6 +215,16 @@ class Player extends Sprite {
     }
   }
 
+  resetValues() {
+    this.score = 0
+    this.healthInMs = TIME_LIMIT
+    this.health = this.healthInMs / TIME_LIMIT
+    this.position.x = this.canvas.width / 2 - this.width / 2
+    this.position.y = this.canvas.height / 2 - this.height / 2 - this.height
+    this.gun.bulletsAmount = 13
+    this.isDead = false
+  }
+
   draw = (c: CanvasRenderingContext2D) => {
     //* hitbox of player
     // c.fillStyle = '#fff'
@@ -218,18 +241,31 @@ class Player extends Sprite {
     // )
     // c.fillStyle = 'rgba(0, 255, 255)'
     // c.fill()
-    
 
     //* drawing player
     this.drawSprite(c)
 
     //* drawing grenade
-    this.hasGrenade && this.grenade?.drawGrenade(c)
+    this.grenadier.draw(c)
 
     //* drawing gun
     this.gun.drawGun(c)
   }
 
+  drawInfo(c: CanvasRenderingContext2D) {
+    c.font = '20px serif'
+    c.fillStyle = 'black'
+    c.textAlign = 'left'
+
+    c.fillText(`score: ${this.score}`, 10, 30)
+    c.fillText(
+      `time before freezing: ${(this.healthInMs / 1000).toFixed(1)}s`,
+      10,
+      50
+    )
+    c.fillText(`gun ammo: ${this.gun.bulletsAmount}`, 10, 70)
+    c.fillText(`granades: ${this.grenadier.grenadesAmount}`, 10, 90)
+  }
   attack = async () => {
     if (!this.isAttacking) {
       this.isAttacking = true
@@ -238,14 +274,12 @@ class Player extends Sprite {
     }
   }
 
-  generateGrenade = () => {
-    this.hasGrenade = true
-    this.grenade = new Grenade(this)
-  }
-
-  deleteGrenade = () => {
-    this.hasGrenade = false
-    this.grenade = undefined
+  throwGrenade = async () => {
+    if (!this.isThrowingGrenade) {
+      this.isThrowingGrenade = true
+      await this.grenadier.attack()
+      this.isThrowingGrenade = false
+    }
   }
 
   drawCenterBox = (c: CanvasRenderingContext2D) => {

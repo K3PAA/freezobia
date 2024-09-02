@@ -20,7 +20,7 @@ class Gun extends Sprite {
   player: Player
   isShooting: boolean
 
-  constructor(player: Player, canvas: HTMLCanvasElement, direction: number) {
+  constructor(player: Player, canvas: HTMLCanvasElement) {
     super({
       canvas,
       position: { x: player.position.x, y: player.position.y },
@@ -41,7 +41,7 @@ class Gun extends Sprite {
     this.isShooting = false
     this.attackFrame = new Frame({ fps: 4, currentFrame: 0, maxFrame: 2 })
     this.reloadFrame = new Frame({ fps: 1, currentFrame: 0, maxFrame: 2 })
-    this.direction = direction
+    this.direction = this.player.direction
     this.canvas = canvas
   }
 

@@ -1,8 +1,11 @@
 import { SpriteClassType } from '../lib/types'
+import { rectangleCollision } from '../lib/utils'
 import Frame from './Frame'
+import Player from './Player'
 import Sprite from './Sprite'
 
 class Enemy extends Sprite {
+  player: Player
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   attackFrame = new Frame({ fps: 0.5, currentFrame: 0, maxFrame: 2 })
 
@@ -17,7 +20,8 @@ class Enemy extends Sprite {
     height,
     offSet,
     direction,
-  }: SpriteClassType) {
+    player,
+  }: SpriteClassType & { player: Player }) {
     super({
       canvas,
       position,
@@ -30,6 +34,8 @@ class Enemy extends Sprite {
       offSet,
       direction,
     })
+
+    this.player = player
   }
 
   update = ({ time }: { time: number }) => {
@@ -44,6 +50,7 @@ class Enemy extends Sprite {
     ) {
       this.attackFrame.updateFrame()
     }
+    this.goTowardsPlayer()
   }
 
   draw = (c: CanvasRenderingContext2D) => {
@@ -56,6 +63,29 @@ class Enemy extends Sprite {
   attack = async () => {
     if (this.attackFrame.currentFrame === 0) {
       await this.attackFrame.startCounting()
+    }
+  }
+
+  goTowardsPlayer = () => {
+    if(rectangleCollision(
+      {
+        position: {
+          x: this.position.x,
+          y: this.position.y,
+        },
+        width: this.width,
+        height: this.height,
+      },
+      {
+        position: {
+          x: this.player.position.x + this.player.velocity.x,
+          y: this.player.position.y,
+        },
+        width: this.player.width - Math.abs(this.player.velocity.x),
+        height: this.player.height - Math.abs(this.player.velocity.y),
+      })
+    ) {
+      this.player.health = 0
     }
   }
 }
