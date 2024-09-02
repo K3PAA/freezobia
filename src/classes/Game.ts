@@ -55,12 +55,12 @@ class Game {
       this.startGame = false
       this.isInMenu = true
       this.player.resetValues()
+      this.background.resetValues()
       this.transition.transitionEnded = false
     }
 
     if (this.isInMenu && this.input.keys.Space) {
       this.transition.start()
-      this.background.resetValues()
     }
 
     if (this.transition.transitionEnded) {
