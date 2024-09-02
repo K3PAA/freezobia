@@ -128,7 +128,7 @@ class Player extends Sprite {
     }
 
     if (this.reloadAnimationFrame.timeElapsed(time) && this.reloadAnimation) {
-      //! do animation here
+      this.gun.gunAngle -= 0.2
       this.reloadAnimationFrame.updateFrame()
     }
 
