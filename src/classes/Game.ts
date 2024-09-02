@@ -140,7 +140,7 @@ class Game {
     c.fillText('Freezobia', this.canvas.width / 2, 50)
 
     if (this.score === 0) {
-      c.font = '20px serif'
+      c.font = '20px Courier New'
       c.fillText('Try to survive the longest,', this.canvas.width / 2, 90)
       c.fillText(
         'find campfire before you get freezed',

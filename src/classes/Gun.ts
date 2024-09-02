@@ -126,12 +126,14 @@ class Gun extends Sprite {
         await this.attackFrame.startCounting()
       }
     } else if (this.reloadFrame.currentFrame === 0) {
+      this.player.reloadAnimation = true
       await this.reloadFrame.startCounting()
       this.reload()
     }
   }
 
   reload() {
+    this.player.reloadAnimation = false
     this.bulletsAmount = 13
   }
 

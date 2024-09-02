@@ -32,6 +32,8 @@ class Player extends Sprite {
   states: StateType[]
   sprite: SpriteType
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
+  reloadAnimationFrame = new Frame({ fps: 8, currentFrame: 0, maxFrame: 2 })
+  reloadAnimation = false
   moveFrame = new Frame({ fps: 60 })
   gun: Gun
   grenadier: Grenadier 
@@ -123,6 +125,18 @@ class Player extends Sprite {
     if (this.frame.timeElapsed(time)) {
       this.frame.updateFrame()
       this.animateFrames()
+    }
+
+    if (this.reloadAnimationFrame.timeElapsed(time) && this.reloadAnimation) {
+      //! do animation here
+      this.reloadAnimationFrame.updateFrame()
+    }
+
+    if (
+      this.reloadAnimationFrame.currentFrame > 0 &&
+      this.reloadAnimationFrame.timeElapsed(time)
+    ) {
+      this.reloadAnimationFrame.updateFrame()
     }
 
     this.gun.updateGun(mousePos, time)

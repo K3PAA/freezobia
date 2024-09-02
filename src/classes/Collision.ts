@@ -135,6 +135,9 @@ export default class Collision {
         }
       )
     ) {
+      if (grenade.isBoom) {
+        console.log("cos")
+      }
       tile.hp--
     }
   }
