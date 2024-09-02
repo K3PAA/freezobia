@@ -23,14 +23,14 @@ class Transition {
     this.isPlaying = true
   }
 
-  update({ time, isMenu }: { time: number; isMenu: boolean }) {
+  update({ time }: { time: number }) {
     if (this.isPlaying) {
       this.position.x += 2 * time
     }
 
     if (this.position.x >= this.canvas.width + this.canvas.width / 2) {
       this.isPlaying = false
-      this.position.x = 0
+      this.position.x = -this.canvas.width / 2
       this.transitionEnded = true
     }
   }

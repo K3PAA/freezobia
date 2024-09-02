@@ -14,6 +14,7 @@ import { TIME_LIMIT } from '../lib/constants'
 import Grenade from './Grenade'
 
 class Player extends Sprite {
+  score = 0
   canvas: HTMLCanvasElement
   centerBox: Box
   velocity: Point = { x: 0, y: 0 }
@@ -36,6 +37,7 @@ class Player extends Sprite {
   grenade?: Grenade
   isAttacking: boolean
   hasGrenade: boolean
+  isDead = false
 
   constructor({
     canvas,
@@ -114,7 +116,7 @@ class Player extends Sprite {
       if (this.healthInMs < TIME_LIMIT) this.healthInMs += time * 4
     } else {
       if (this.healthInMs > 0) this.healthInMs -= time
-      else '' //! add dead
+      else this.isDead = true
     }
     this.health = this.healthInMs / TIME_LIMIT
 
@@ -213,6 +215,16 @@ class Player extends Sprite {
     }
   }
 
+  resetValues() {
+    this.score = 0
+    this.healthInMs = TIME_LIMIT
+    this.health = this.healthInMs / TIME_LIMIT
+    this.position.x = this.canvas.width / 2 - this.width / 2
+    this.position.y = this.canvas.height / 2 - this.height / 2 - this.height
+    this.gun.bulletsAmount = 13
+    this.isDead = false
+  }
+
   draw = (c: CanvasRenderingContext2D) => {
     //* hitbox of player
     // c.fillStyle = '#fff'
@@ -240,6 +252,20 @@ class Player extends Sprite {
     this.gun.drawGun(c)
   }
 
+  drawInfo(c: CanvasRenderingContext2D) {
+    c.font = '20px serif'
+    c.fillStyle = 'black'
+    c.textAlign = 'left'
+
+    c.fillText(`score: ${this.score}`, 10, 30)
+    c.fillText(
+      `time before freezing: ${(this.healthInMs / 1000).toFixed(1)}s`,
+      10,
+      50
+    )
+    c.fillText(`gun ammo: ${this.gun.bulletsAmount}`, 10, 70)
+    c.fillText(`granades: ${this.grenade ? 1 : 0}`, 10, 90)
+  }
   attack = async () => {
     if (!this.isAttacking) {
       this.isAttacking = true

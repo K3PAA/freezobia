@@ -16,6 +16,7 @@ class Game {
 
   frame = new Frame({ fps: 2 })
   showTextInfo: boolean = false
+  score = 0
 
   isInMenu = true
   startGame = false
@@ -49,16 +50,26 @@ class Game {
       this.showTextInfo = !this.showTextInfo
     }
 
+    if (this.player.isDead) {
+      this.score = this.player.score
+      this.startGame = false
+      this.isInMenu = true
+      this.player.resetValues()
+      this.transition.transitionEnded = false
+    }
+
     if (this.isInMenu && this.input.keys.Space) {
       this.transition.start()
+      this.background.resetValues()
     }
 
     if (this.transition.transitionEnded) {
       this.startGame = true
       this.isInMenu = false
+      this.transition.isPlaying = false
     }
 
-    this.transition.update({ time, isMenu: this.isInMenu })
+    this.transition.update({ time })
 
     this.player.update({
       keys: this.input.keys,
@@ -82,6 +93,8 @@ class Game {
     this.drawEyeEffect(c)
 
     if (this.isInMenu) this.drawMenuOverlay(c)
+    if (!this.isInMenu) this.player.drawInfo(c)
+
     this.transition.draw(c)
   }
 
@@ -94,22 +107,32 @@ class Game {
     c.textAlign = 'center'
     c.fillText('Freezobia', this.canvas.width / 2, 50)
 
+    if (this.score === 0) {
+      c.font = '20px serif'
+      c.fillText('Try to survive the longest,', this.canvas.width / 2, 90)
+      c.fillText(
+        'find campfire before you get freezed',
+        this.canvas.width / 2,
+        110
+      )
+      c.fillText(
+        'and avoid enemies or you will get killed',
+        this.canvas.width / 2,
+        130
+      )
+
+      c.fillText('Move - WSAD', this.canvas.width / 2, 220)
+      c.fillText('Shoot - mouse click', this.canvas.width / 2, 240)
+      c.fillText('granade - Q', this.canvas.width / 2, 260)
+    } else {
+      c.font = '24px serif'
+      c.fillText(`Final score: ${this.score}`, this.canvas.width / 2, 100)
+    }
+
     c.font = '20px serif'
-
-    c.fillText('Try to survive the longest,', this.canvas.width / 2, 100)
-    c.fillText(
-      'find campfire before you get freezed',
-      this.canvas.width / 2,
-      120
-    )
-
-    c.fillText('Move - WSAD', this.canvas.width / 2, 180)
-    c.fillText('Shoot - mouse click', this.canvas.width / 2, 200)
-    c.fillText('granade - Q', this.canvas.width / 2, 220)
-
     if (this.showTextInfo) {
       c.fillText(
-        'press space to start',
+        'press space to play',
         this.canvas.width / 2,
         this.canvas.height - 50
       )

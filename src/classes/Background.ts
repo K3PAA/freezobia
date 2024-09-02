@@ -84,6 +84,11 @@ class Background {
     }
   }
 
+  resetValues() {
+    this.grid.tilesArray = this.grid.generateTiles()
+    this.grid.offset = { x: 0, y: 0 }
+  }
+
   drawTileWithCampfire(c: CanvasRenderingContext2D) {
     for (let x = -1; x < this.gridSize - 1; x++) {
       for (let y = -1; y < this.gridSize - 1; y++) {
