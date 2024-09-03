@@ -15,6 +15,8 @@ class Grenade {
   rotation: number
   grenadeHitBoxRadius: number
   removeGrenade: (grenade: Grenade) => void
+  boom = false
+  boomRange = 140
 
   constructor(player: Player, removeGrenade: (grenade: Grenade) => void) {
     this.player = player
@@ -33,6 +35,7 @@ class Grenade {
     this.flightDuration = 0.8
     this.rotation = -0.5
     this.grenadeHitBoxRadius = Math.max(30, 30) / 3
+
     this.removeGrenade = removeGrenade
   }
 
@@ -70,7 +73,7 @@ class Grenade {
 
       if (this.t > 1) {
         this.t = 1
-        this.removeGrenade(this)
+        this.boom = true
       }
 
       const startX = this.startPoint.x
@@ -144,11 +147,16 @@ class Grenade {
 
     c.beginPath()
 
-    // c.ellipse(this.position.x, this.position.y, 8, 4, 0, 0, Math.PI * 2)
-
-    // c.ellipse(this.position.x, this.position.y + 20, 8, 4, 0, 0, Math.PI * 2)
-
     c.rect(this.position.x - 6, this.position.y, 12, 20)
+
+    // draw boom range
+    c.fillStyle = 'red'
+    c.fillRect(
+      this.position.x - this.boomRange / 2,
+      this.position.y - this.boomRange / 2,
+      this.boomRange,
+      this.boomRange
+    )
 
     c.setLineDash([])
     c.lineWidth = 2.5

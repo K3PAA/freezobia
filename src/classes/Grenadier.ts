@@ -14,10 +14,22 @@ class Grenadier {
     this.canvas = canvas
     this.player = player
     this.grenades = []
-    this.grenadesAmount = 3
+    this.grenadesAmount = 10
+  }
+
+  updateBulletOffset(axis: 'x' | 'y', velocity: number) {
+    this.grenades.forEach((grenade) => {
+      grenade.endPoint[axis] -= velocity
+    })
   }
 
   update = (mousePos: Point, time: number) => {
+    this.grenades.forEach((grenade) => {
+      if (grenade.boom) {
+        this.removeGrenade(grenade)
+      }
+    })
+
     if (
       this.grenadeFrame.currentFrame > 0 &&
       this.grenadeFrame.timeElapsed(time)
@@ -25,7 +37,7 @@ class Grenadier {
       this.grenadeFrame.updateFrame()
     }
 
-    this.grenades.map(grenade => grenade.updateGrenade(mousePos))
+    this.grenades.map((grenade) => grenade.updateGrenade(mousePos))
   }
 
   draw = (c: CanvasRenderingContext2D) => {
@@ -48,7 +60,7 @@ class Grenadier {
   }
 
   removeGrenade = (grenade: Grenade) => {
-    this.grenades = this.grenades.filter(g => g !== grenade)
+    this.grenades = this.grenades.filter((g) => g !== grenade)
   }
 }
 

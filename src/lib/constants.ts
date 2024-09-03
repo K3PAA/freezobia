@@ -156,4 +156,4 @@ export const allowedKeys = {
   Space: false,
 }
 
-export const TIME_LIMIT = 13 * 1000
+export const TIME_LIMIT = 60 * 1000

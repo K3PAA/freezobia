@@ -155,6 +155,7 @@ class Player extends Sprite {
       }
       offset.x += this.velocity.x
       this.gun.updateBulletOffset('x', this.velocity.x)
+      this.grenadier.updateBulletOffset('x', this.velocity.x)
     }
 
     //* player collision top and down
@@ -170,6 +171,7 @@ class Player extends Sprite {
       }
       offset.y += this.velocity.y
       this.gun.updateBulletOffset('y', this.velocity.y)
+      this.grenadier.updateBulletOffset('y', this.velocity.y)
     }
   }
 

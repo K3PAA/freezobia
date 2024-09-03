@@ -1,5 +1,6 @@
 import { rectangleCollision } from '../lib/utils'
 import Bullet from './Bullet'
+import Grenade from './Grenade'
 import { Campfire, Interactive, Resource } from './Interactive'
 import Player from './Player'
 
@@ -14,7 +15,7 @@ export default class Collision {
     if (tile instanceof Resource) {
       this.playerWithResource({ player, tile })
       this.tileWithBullet({ tile, bullets: player.gun.bullets })
-      this.tileWithGrenade({ tile, grenade: player.grenadier.grenades[0] })
+      this.tileWithGrenade({ tile, grenades: player.grenadier.grenades })
     }
   }
 
@@ -113,29 +114,31 @@ export default class Collision {
     })
   }
 
-  tileWithGrenade({ tile, grenade }: { tile: Resource; grenade: any }) {
-    if (!grenade) return
-    if (
-      rectangleCollision(
-        {
-          position: {
-            x: tile.strictBox.position.x + tile.shift.x,
-            y: tile.strictBox.position.y + tile.shift.y,
+  tileWithGrenade({ tile, grenades }: { tile: Resource; grenades: Grenade[] }) {
+    grenades.forEach((grenade) => {
+      if (
+        grenade.boom &&
+        rectangleCollision(
+          {
+            position: {
+              x: tile.strictBox.position.x + tile.shift.x,
+              y: tile.strictBox.position.y + tile.shift.y,
+            },
+            width: tile.mapping.box.width,
+            height: tile.mapping.box.height,
           },
-          width: tile.mapping.box.width,
-          height: tile.mapping.box.height,
-        },
-        {
-          position: {
-            x: grenade.position.x,
-            y: grenade.position.y,
-          },
-          width: grenade.grenadeHitBoxRadius * 2,
-          height: grenade.grenadeHitBoxRadius * 2,
-        }
-      )
-    ) {
-      tile.hp--
-    }
+          {
+            position: {
+              x: grenade.position.x - grenade.boomRange / 2,
+              y: grenade.position.y - grenade.boomRange / 2,
+            },
+            width: grenade.boomRange,
+            height: grenade.boomRange,
+          }
+        )
+      ) {
+        tile.hp -= 3
+      }
+    })
   }
 }
