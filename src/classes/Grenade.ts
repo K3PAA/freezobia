@@ -144,10 +144,6 @@ class Grenade {
 
     c.beginPath()
 
-    // c.ellipse(this.position.x, this.position.y, 8, 4, 0, 0, Math.PI * 2)
-
-    // c.ellipse(this.position.x, this.position.y + 20, 8, 4, 0, 0, Math.PI * 2)
-
     c.rect(this.position.x - 6, this.position.y, 12, 20)
 
     c.setLineDash([])

@@ -32,11 +32,11 @@ class Player extends Sprite {
   states: StateType[]
   sprite: SpriteType
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
-  reloadAnimationFrame = new Frame({ fps: 8, currentFrame: 0, maxFrame: 2 })
+  reloadAnimationFrame = new Frame({ fps: 10, currentFrame: 0, maxFrame: 2 })
   reloadAnimation = false
   moveFrame = new Frame({ fps: 60 })
   gun: Gun
-  grenadier: Grenadier 
+  grenadier: Grenadier
   isAttacking: boolean
   isThrowingGrenade: boolean
   isDead = false
@@ -128,7 +128,11 @@ class Player extends Sprite {
     }
 
     if (this.reloadAnimationFrame.timeElapsed(time) && this.reloadAnimation) {
-      this.gun.gunAngle -= 0.2
+      if (this.reloadAnimationFrame.currentFrame % 2 === 0) {
+        this.gun.gunAngle -= 0.2
+      } else {
+        this.gun.gunAngle += 0.2
+      }
       this.reloadAnimationFrame.updateFrame()
     }
 
@@ -168,6 +172,7 @@ class Player extends Sprite {
         this.position.x += this.velocity.x
       }
       offset.x += this.velocity.x
+      this.gun.updateBulletOffset('x', this.velocity.x)
     }
 
     //* player collision top and down
@@ -182,6 +187,7 @@ class Player extends Sprite {
         this.position.y += this.velocity.y
       }
       offset.y += this.velocity.y
+      this.gun.updateBulletOffset('y', this.velocity.y)
     }
   }
 
@@ -267,7 +273,7 @@ class Player extends Sprite {
   }
 
   drawInfo(c: CanvasRenderingContext2D) {
-    c.font = '20px serif'
+    c.font = '20px Courier New'
     c.fillStyle = 'black'
     c.textAlign = 'left'
 

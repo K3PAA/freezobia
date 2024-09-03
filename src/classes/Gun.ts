@@ -39,10 +39,16 @@ class Gun extends Sprite {
     this.bullets = []
     this.bulletsAmount = 13
     this.isShooting = false
-    this.attackFrame = new Frame({ fps: 4, currentFrame: 0, maxFrame: 2 })
+    this.attackFrame = new Frame({ fps: 6, currentFrame: 0, maxFrame: 2 })
     this.reloadFrame = new Frame({ fps: 1, currentFrame: 0, maxFrame: 2 })
     this.direction = this.player.direction
     this.canvas = canvas
+  }
+
+  updateBulletOffset(axis: 'x' | 'y', velocity: number) {
+    this.bullets.forEach((bullet) => {
+      bullet.position[axis] -= velocity
+    })
   }
 
   updateGun(mousePos: Point, time: number) {
@@ -59,7 +65,6 @@ class Gun extends Sprite {
     ) {
       this.reloadFrame.updateFrame()
     }
-
 
     this.mouse = mousePos
 
@@ -118,7 +123,7 @@ class Gun extends Sprite {
             y: this.playerPosition.y + this.height / 2,
           },
           angle: this.gunAngle,
-          removeBullet: this.removeBullet.bind(this)
+          removeBullet: this.removeBullet.bind(this),
         })
         this.gunAngle -= this.player.direction / 5
         this.bulletsAmount -= 1

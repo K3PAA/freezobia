@@ -1,12 +1,22 @@
 import { rectangleCollision } from '../lib/utils'
 import Bullet from './Bullet'
+import Enemy from './Enemy'
+import Grenade from './Grenade'
 import { Campfire, Interactive, Resource } from './Interactive'
 import Player from './Player'
 
 export default class Collision {
   constructor() {}
 
-  tileWithPlayer({ tile, player }: { tile: Interactive; player: Player }) {
+  tileWithPlayer({
+    tile,
+    player,
+    enemies,
+  }: {
+    tile: Interactive
+    player: Player
+    enemies: Enemy[]
+  }) {
     if (tile instanceof Campfire) {
       this.playerWithCampfire({ player, tile })
     }
@@ -15,6 +25,7 @@ export default class Collision {
       this.playerWithResource({ player, tile })
       this.tileWithBullet({ tile, bullets: player.gun.bullets })
       this.tileWithGrenade({ tile, grenade: player.grenadier.grenades[0] })
+      this.enemyWithBullet({ enemies, bullets: player.gun.bullets })
     }
   }
 
@@ -113,7 +124,7 @@ export default class Collision {
     })
   }
 
-  tileWithGrenade({ tile, grenade }: { tile: Resource; grenade: any }) {
+  tileWithGrenade({ tile, grenade }: { tile: Resource; grenade: Grenade }) {
     if (!grenade) return
     if (
       rectangleCollision(
@@ -135,10 +146,43 @@ export default class Collision {
         }
       )
     ) {
-      if (grenade.isBoom) {
-        console.log("cos")
-      }
       tile.hp--
     }
+  }
+
+  enemyWithBullet({
+    enemies,
+    bullets,
+  }: {
+    enemies: Enemy[]
+    bullets: Bullet[]
+  }) {
+    bullets.forEach((bullet, i) => {
+      enemies.forEach((enemy, j) => {
+        if (
+          rectangleCollision(
+            {
+              position: {
+                x: enemy.position.x,
+                y: enemy.position.y,
+              },
+              width: enemy.width,
+              height: enemy.height,
+            },
+            {
+              position: {
+                x: bullet.position.x,
+                y: bullet.position.y,
+              },
+              width: bullet.bulletHitBoxRadius * 2,
+              height: bullet.bulletHitBoxRadius * 2,
+            }
+          )
+        ) {
+          bullet.removeBullet(i)
+          enemy.health--
+        }
+      })
+    })
   }
 }

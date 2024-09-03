@@ -12,12 +12,13 @@ class Game {
   canvas: HTMLCanvasElement
   background: Background
   player: Player
-  enemy: Enemy  //! temporary
+  enemies: Enemy[]
   input: Input
   transition: Transition
   collision: Collision
 
   frame = new Frame({ fps: 2 })
+  enemySpawnFrame = new Frame({ fps: 0.50 })
   showTextInfo: boolean = false
   score = 0
 
@@ -44,22 +45,7 @@ class Game {
       scale: 3,
       imgSrc: playerImg,
     })
-    this.enemy = new Enemy({
-      canvas,
-      position: {
-        x: 375,
-        y: 275,
-      },
-      width: 14 * 3,
-      height: 11 * 3,
-      offSet: {
-        x: 4,
-        y: 12,
-      },
-      scale: 3,
-      imgSrc: enemyImg,
-      player: this.player,
-    })  //! temporary
+    this.enemies = []
     this.input = new Input()
     this.collision = new Collision()
   }
@@ -69,17 +55,38 @@ class Game {
       this.showTextInfo = !this.showTextInfo
     }
 
+    if (this.enemySpawnFrame.timeElapsed(time)) {
+      const enemy = new Enemy({
+        canvas: this.canvas,
+        position: {
+          x: 175,
+          y: 175,
+        },
+        width: 14 * 3,
+        height: 11 * 3,
+        offSet: {
+          x: 4,
+          y: 12,
+        },
+        scale: 3,
+        imgSrc: enemyImg,
+        player: this.player,
+        removeEnemy: this.removeEnemy
+      })
+      this.enemies.push(enemy)
+    }
+
     if (this.player.isDead) {
       this.score = this.player.score
       this.startGame = false
       this.isInMenu = true
       this.player.resetValues()
+      this.background.resetValues()
       this.transition.transitionEnded = false
     }
 
     if (this.isInMenu && this.input.keys.Space) {
       this.transition.start()
-      this.background.resetValues()
     }
 
     if (this.transition.transitionEnded) {
@@ -98,11 +105,20 @@ class Game {
       time: time,
     })
 
-    this.enemy.update({
-      time: time
-    }) //! temporary
+    this.enemies.map(enemy => enemy.update({
+      time: time,
+    }))
 
-    this.background.update({ time, player: this.player, isInMenu: this.isInMenu, })
+    this.background.update({
+      time,
+      player: this.player,
+      enemies: this.enemies,
+      isInMenu: this.isInMenu,
+    })
+  }
+
+  removeEnemy = (enemy: Enemy) => {
+    this.enemies = this.enemies.filter(e => e !== enemy)
   }
 
   // updateTransition(time: number) {
@@ -120,7 +136,7 @@ class Game {
   draw(c: CanvasRenderingContext2D) {
     this.background.drawTileWithCampfire(c)
     this.player.draw(c)
-    this.enemy.draw(c) //! temporary
+    this.enemies.map(enemy => enemy.draw(c))
     this.background.drawInteractiveWithoutCampfire(c)
     this.drawEyeEffect(c)
 
@@ -134,7 +150,7 @@ class Game {
     c.fillStyle = 'rgba(0, 0, 0, 0.7)'
     c.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
-    c.font = '48px serif'
+    c.font = '48px Courier New'
     c.fillStyle = 'white'
     c.textAlign = 'center'
     c.fillText('Freezobia', this.canvas.width / 2, 50)
@@ -157,11 +173,11 @@ class Game {
       c.fillText('Shoot - mouse click', this.canvas.width / 2, 240)
       c.fillText('granade - Q', this.canvas.width / 2, 260)
     } else {
-      c.font = '24px serif'
+      c.font = '24px Courier New'
       c.fillText(`Final score: ${this.score}`, this.canvas.width / 2, 100)
     }
 
-    c.font = '20px serif'
+    c.font = '20px Courier New'
     if (this.showTextInfo) {
       c.fillText(
         'press space to play',

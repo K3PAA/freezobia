@@ -7,6 +7,7 @@ import {
 import { Box, Point } from '../lib/types'
 import BackgroundGrid from './BackgroundGrid'
 import Collision from './Collision'
+import Enemy from './Enemy'
 import { Campfire, Resource } from './Interactive'
 import Player from './Player'
 
@@ -50,10 +51,12 @@ class Background {
   update({
     time,
     player,
+    enemies,
     isInMenu,
   }: {
     time: number
     player: Player
+    enemies: Enemy[]
     isInMenu: boolean
   }) {
     this.grid.update()
@@ -78,7 +81,7 @@ class Background {
           tile.setShift(shift)
           if (tile instanceof Campfire) tile.update({ time })
           if (!isInMenu)
-            this.collision.tileWithPlayer({ tile: tile, player: player })
+            this.collision.tileWithPlayer({ tile: tile, enemies: enemies, player: player })
         })
       }
     }
