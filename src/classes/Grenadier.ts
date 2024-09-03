@@ -8,13 +8,13 @@ class Grenadier {
   player: Player
   grenades: Grenade[]
   grenadesAmount: number
-  grenadeFrame = new Frame({ fps: 1, currentFrame: 0, maxFrame: 3 })
+  grenadeFrame = new Frame({ fps: 1, currentFrame: 0, maxFrame: 2 })
 
   constructor(player: Player, canvas: HTMLCanvasElement) {
     this.canvas = canvas
     this.player = player
     this.grenades = []
-    this.grenadesAmount = 10
+    this.grenadesAmount = 6
   }
 
   updateBulletOffset(axis: 'x' | 'y', velocity: number) {

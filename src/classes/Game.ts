@@ -7,17 +7,19 @@ import Frame from './Frame'
 import Transition from './Transition'
 import Collision from './Collision'
 import Enemy from './Enemy'
+import { FreezobiaWord, FirstWords, SecondWords } from '../lib/letters'
 
 class Game {
   canvas: HTMLCanvasElement
   background: Background
   player: Player
-  enemy: Enemy //! temporary
+  enemies: Enemy[]
   input: Input
   transition: Transition
   collision: Collision
 
   frame = new Frame({ fps: 2 })
+  enemySpawnFrame = new Frame({ fps: 0.5 })
   showTextInfo: boolean = false
   score = 0
 
@@ -44,22 +46,7 @@ class Game {
       scale: 3,
       imgSrc: playerImg,
     })
-    this.enemy = new Enemy({
-      canvas,
-      position: {
-        x: 375,
-        y: 275,
-      },
-      width: 14 * 3,
-      height: 11 * 3,
-      offSet: {
-        x: 4,
-        y: 12,
-      },
-      scale: 3,
-      imgSrc: enemyImg,
-      player: this.player,
-    }) //! temporary
+    this.enemies = []
     this.input = new Input()
     this.collision = new Collision()
   }
@@ -67,6 +54,27 @@ class Game {
   update(time: number) {
     if (this.frame.timeElapsed(time)) {
       this.showTextInfo = !this.showTextInfo
+    }
+
+    if (this.enemySpawnFrame.timeElapsed(time)) {
+      const enemy = new Enemy({
+        canvas: this.canvas,
+        position: {
+          x: 175,
+          y: 175,
+        },
+        width: 14 * 3,
+        height: 11 * 3,
+        offSet: {
+          x: 4,
+          y: 12,
+        },
+        scale: 3,
+        imgSrc: enemyImg,
+        player: this.player,
+        removeEnemy: this.removeEnemy,
+      })
+      this.enemies.push(enemy)
     }
 
     if (this.player.isDead) {
@@ -98,15 +106,22 @@ class Game {
       time: time,
     })
 
-    this.enemy.update({
-      time: time,
-    }) //! temporary
+    this.enemies.map((enemy) =>
+      enemy.update({
+        time: time,
+      })
+    )
 
     this.background.update({
       time,
       player: this.player,
+      enemies: this.enemies,
       isInMenu: this.isInMenu,
     })
+  }
+
+  removeEnemy = (enemy: Enemy) => {
+    this.enemies = this.enemies.filter((e) => e !== enemy)
   }
 
   // updateTransition(time: number) {
@@ -124,7 +139,7 @@ class Game {
   draw(c: CanvasRenderingContext2D) {
     this.background.drawTileWithCampfire(c)
     this.player.draw(c)
-    this.enemy.draw(c) //! temporary
+    this.enemies.map((enemy) => enemy.draw(c))
     this.background.drawInteractiveWithoutCampfire(c)
     this.drawEyeEffect(c)
 
@@ -141,16 +156,14 @@ class Game {
     c.font = '48px Courier New'
     c.fillStyle = 'white'
     c.textAlign = 'center'
-    c.fillText('Freezobia', this.canvas.width / 2, 50)
+    FreezobiaWord(c, this.canvas.width / 2 - 55, 50)
 
     if (this.score === 0) {
       c.font = '20px Courier New'
-      c.fillText('Try to survive the longest,', this.canvas.width / 2, 90)
-      c.fillText(
-        'find campfire before you get freezed',
-        this.canvas.width / 2,
-        110
-      )
+
+      FirstWords(c, this.canvas.width / 2 - 182, 80)
+      SecondWords(c, this.canvas.width / 2 - 255, 100)
+
       c.fillText(
         'and avoid enemies or you will get killed',
         this.canvas.width / 2,
