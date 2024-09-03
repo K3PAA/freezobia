@@ -7,6 +7,7 @@ import Frame from './Frame'
 import Transition from './Transition'
 import Collision from './Collision'
 import Enemy from './Enemy'
+import { FreezobiaWord, FirstWords, SecondWords } from '../lib/letters'
 
 class Game {
   canvas: HTMLCanvasElement
@@ -18,7 +19,7 @@ class Game {
   collision: Collision
 
   frame = new Frame({ fps: 2 })
-  enemySpawnFrame = new Frame({ fps: 0.50 })
+  enemySpawnFrame = new Frame({ fps: 0.5 })
   showTextInfo: boolean = false
   score = 0
 
@@ -71,7 +72,7 @@ class Game {
         scale: 3,
         imgSrc: enemyImg,
         player: this.player,
-        removeEnemy: this.removeEnemy
+        removeEnemy: this.removeEnemy,
       })
       this.enemies.push(enemy)
     }
@@ -105,9 +106,11 @@ class Game {
       time: time,
     })
 
-    this.enemies.map(enemy => enemy.update({
-      time: time,
-    }))
+    this.enemies.map((enemy) =>
+      enemy.update({
+        time: time,
+      })
+    )
 
     this.background.update({
       time,
@@ -118,7 +121,7 @@ class Game {
   }
 
   removeEnemy = (enemy: Enemy) => {
-    this.enemies = this.enemies.filter(e => e !== enemy)
+    this.enemies = this.enemies.filter((e) => e !== enemy)
   }
 
   // updateTransition(time: number) {
@@ -136,7 +139,7 @@ class Game {
   draw(c: CanvasRenderingContext2D) {
     this.background.drawTileWithCampfire(c)
     this.player.draw(c)
-    this.enemies.map(enemy => enemy.draw(c))
+    this.enemies.map((enemy) => enemy.draw(c))
     this.background.drawInteractiveWithoutCampfire(c)
     this.drawEyeEffect(c)
 
@@ -153,16 +156,14 @@ class Game {
     c.font = '48px Courier New'
     c.fillStyle = 'white'
     c.textAlign = 'center'
-    c.fillText('Freezobia', this.canvas.width / 2, 50)
+    FreezobiaWord(c, this.canvas.width / 2 - 55, 50)
 
     if (this.score === 0) {
       c.font = '20px Courier New'
-      c.fillText('Try to survive the longest,', this.canvas.width / 2, 90)
-      c.fillText(
-        'find campfire before you get freezed',
-        this.canvas.width / 2,
-        110
-      )
+
+      FirstWords(c, this.canvas.width / 2 - 182, 80)
+      SecondWords(c, this.canvas.width / 2 - 255, 100)
+
       c.fillText(
         'and avoid enemies or you will get killed',
         this.canvas.width / 2,

@@ -158,7 +158,7 @@ export default class Collision {
     bullets: Bullet[]
   }) {
     bullets.forEach((bullet, i) => {
-      enemies.forEach((enemy, j) => {
+      enemies.forEach((enemy) => {
         if (
           rectangleCollision(
             {
