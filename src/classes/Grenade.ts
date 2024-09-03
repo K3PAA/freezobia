@@ -150,7 +150,7 @@ class Grenade {
     c.rect(this.position.x - 6, this.position.y, 12, 20)
 
     // draw boom range
-    c.fillStyle = 'red'
+    c.fillStyle = 'rgba(255,0,0,0.2)'
     c.fillRect(
       this.position.x - this.boomRange / 2,
       this.position.y - this.boomRange / 2,

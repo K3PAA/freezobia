@@ -11,7 +11,6 @@ export default class Collision {
   tileWithPlayer({
     tile,
     player,
-    enemies,
   }: {
     tile: Interactive
     player: Player
@@ -25,7 +24,6 @@ export default class Collision {
       this.playerWithResource({ player, tile })
       this.tileWithBullet({ tile, bullets: player.gun.bullets })
       this.tileWithGrenade({ tile, grenades: player.grenadier.grenades })
-      this.enemyWithBullet({ enemies, bullets: player.gun.bullets })
     }
   }
 
@@ -90,7 +88,6 @@ export default class Collision {
     ) {
       player.inCampfireRange = true
       tile.active = true
-      player.score += 1
     } else {
       player.inCampfireRange = false
     }
@@ -183,6 +180,43 @@ export default class Collision {
         ) {
           bullet.removeBullet(i)
           enemy.health--
+        }
+      })
+    })
+  }
+
+  enemiesWithGrenade({
+    enemies,
+    grenades,
+  }: {
+    enemies: Enemy[]
+    grenades: Grenade[]
+  }) {
+    grenades.forEach((grenade) => {
+      enemies.forEach((enemy) => {
+        if (
+          grenade.boom &&
+          rectangleCollision(
+            {
+              position: {
+                x: enemy.position.x,
+                y: enemy.position.y,
+              },
+              width: enemy.width,
+              height: enemy.height,
+            },
+            {
+              position: {
+                x: grenade.position.x - grenade.boomRange / 2,
+                y: grenade.position.y - grenade.boomRange / 2,
+              },
+              width: grenade.boomRange,
+              height: grenade.boomRange,
+            }
+          )
+        ) {
+          enemy.health--
+          console.log('boom')
         }
       })
     })

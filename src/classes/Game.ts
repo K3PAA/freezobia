@@ -56,7 +56,7 @@ class Game {
       this.showTextInfo = !this.showTextInfo
     }
 
-    if (this.enemySpawnFrame.timeElapsed(time)) {
+    if (this.enemySpawnFrame.timeElapsed(time) && this.startGame) {
       const enemy = new Enemy({
         canvas: this.canvas,
         position: {
@@ -106,11 +106,20 @@ class Game {
       time: time,
     })
 
-    this.enemies.map((enemy) =>
+    this.enemies.forEach((enemy) => {
       enemy.update({
         time: time,
+        player: this.player,
       })
-    )
+      this.collision.enemyWithBullet({
+        enemies: this.enemies,
+        bullets: this.player.gun.bullets,
+      })
+      this.collision.enemiesWithGrenade({
+        enemies: this.enemies,
+        grenades: this.player.grenadier.grenades,
+      })
+    })
 
     this.background.update({
       time,

@@ -25,7 +25,10 @@ class Enemy extends Sprite {
     direction,
     player,
     removeEnemy,
-  }: SpriteClassType & { player: Player, removeEnemy: (enemy: Enemy) => void }) {
+  }: SpriteClassType & {
+    player: Player
+    removeEnemy: (enemy: Enemy) => void
+  }) {
     super({
       canvas,
       position,
@@ -45,9 +48,10 @@ class Enemy extends Sprite {
     this.removeEnemy = removeEnemy
   }
 
-  update = ({ time }: { time: number }) => {
+  update = ({ time, player }: { time: number; player: Player }) => {
     if (this.health <= 0) {
       this.isDead = true
+      player.score++
       this.removeEnemy(this)
     }
     if (this.frame.timeElapsed(time)) {
@@ -82,35 +86,35 @@ class Enemy extends Sprite {
       { x: 0, y: -1 },
       { x: 0, y: 1 },
       { x: -1, y: 0 },
-      { x: 1, y: 0 }
+      { x: 1, y: 0 },
     ]
-  
+
     let shortestDistance = Infinity
     let bestDirection = { x: 0, y: 0 }
-  
-    directions.forEach(direction => {
+
+    directions.forEach((direction) => {
       const newPos = {
         x: this.position.x + direction.x,
         y: this.position.y + direction.y,
       }
-  
+
       const distanceToPlayer = Math.hypot(
         newPos.x - this.player.position.x,
         newPos.y - this.player.position.y
       )
-  
+
       // Sprawdź, czy nowa pozycja nie koliduje z przeszkodą
       // if (!this.checkCollision(newPos)) {
-        if (distanceToPlayer < shortestDistance) {
-          shortestDistance = distanceToPlayer
-          bestDirection = direction
-        }
+      if (distanceToPlayer < shortestDistance) {
+        shortestDistance = distanceToPlayer
+        bestDirection = direction
+      }
       // }
     })
-  
+
     this.position.x += bestDirection.x
     this.position.y += bestDirection.y
-  
+
     if (
       rectangleCollision(
         {
@@ -128,7 +132,7 @@ class Enemy extends Sprite {
       this.player.isDead = true
     }
   }
-  
+
   // Funkcja pomocnicza do sprawdzania kolizji z przeszkodami
   // checkCollision = (newPos: Point): boolean => {
   //   // Tutaj dodaj logikę sprawdzania kolizji z przeszkodami.
