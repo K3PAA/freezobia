@@ -59,6 +59,7 @@ class Background {
     enemies: Enemy[]
     isInMenu: boolean
   }) {
+    console.log(this.grid.offset)
     this.grid.update()
 
     for (let x = -1; x < this.gridSize - 1; x++) {
@@ -81,7 +82,11 @@ class Background {
           tile.setShift(shift)
           if (tile instanceof Campfire) tile.update({ time })
           if (!isInMenu)
-            this.collision.tileWithPlayer({ tile: tile, enemies: enemies, player: player })
+            this.collision.tileWithPlayer({
+              tile: tile,
+              enemies: enemies,
+              player: player,
+            })
         })
       }
     }

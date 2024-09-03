@@ -12,6 +12,7 @@ import Frame from './Frame'
 import Gun from './Gun'
 import { TIME_LIMIT } from '../lib/constants'
 import Grenadier from './Grenadier'
+import Enemy from './Enemy'
 
 class Player extends Sprite {
   score = 0
@@ -104,12 +105,14 @@ class Player extends Sprite {
     mousePos,
     offset,
     isInMenu,
+    enemies,
     time,
   }: {
     keys: AllowedKeysObject
     mousePos: Point
     offset: Point
     isInMenu: boolean
+    enemies: Enemy[]
     time: number
   }) => {
     if (isInMenu) return
@@ -174,6 +177,9 @@ class Player extends Sprite {
       offset.x += this.velocity.x
       this.gun.updateBulletOffset('x', this.velocity.x)
       this.grenadier.updateBulletOffset('x', this.velocity.x)
+      enemies.forEach((enemy) => {
+        enemy.updateEnemiesOffset('x', this.velocity.x)
+      })
     }
 
     //* player collision top and down
@@ -190,6 +196,9 @@ class Player extends Sprite {
       offset.y += this.velocity.y
       this.gun.updateBulletOffset('y', this.velocity.y)
       this.grenadier.updateBulletOffset('y', this.velocity.y)
+      enemies.forEach((enemy) => {
+        enemy.updateEnemiesOffset('y', this.velocity.y)
+      })
     }
   }
 

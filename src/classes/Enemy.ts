@@ -68,6 +68,10 @@ class Enemy extends Sprite {
     this.goTowardsPlayer()
   }
 
+  updateEnemiesOffset(direction: 'x' | 'y', value: number) {
+    this.position[direction] -= value
+  }
+
   draw = (c: CanvasRenderingContext2D) => {
     c.fillStyle = '#fff'
     c.fillRect(this.position.x, this.position.y, this.width, this.height)

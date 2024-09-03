@@ -100,6 +100,7 @@ class Game {
 
     this.player.update({
       keys: this.input.keys,
+      enemies: this.enemies,
       mousePos: this.input.mousePos,
       offset: this.background.grid.offset,
       isInMenu: this.isInMenu,
@@ -132,18 +133,6 @@ class Game {
   removeEnemy = (enemy: Enemy) => {
     this.enemies = this.enemies.filter((e) => e !== enemy)
   }
-
-  // updateTransition(time: number) {
-  //   if (
-  //     !this.isPlaying &&
-  //     this.input.keys.Space &&
-  //     !this.transition.activeTransition
-  //   ) {
-  //     this.transition.start()
-  //   }
-  //   if (this.transition.activeTransition) this.transition.update(time)
-  //   if (this.transition.animationFinish) this.isPlaying = true
-  // }
 
   draw(c: CanvasRenderingContext2D) {
     this.background.drawTileWithCampfire(c)
