@@ -59,7 +59,6 @@ class Background {
     enemies: Enemy[]
     isInMenu: boolean
   }) {
-    console.log(this.grid.offset)
     this.grid.update()
 
     for (let x = -1; x < this.gridSize - 1; x++) {

@@ -100,14 +100,16 @@ class Gun extends Sprite {
       this.player.position.y + this.player.height / 2
     )
 
-    c.arc(
-      this.player.position.x + this.player.width / 2,
-      this.player.position.y + this.player.height / 2,
-      200,
-      this.gunAngle - 0.15,
-      this.gunAngle + 0.15
-    )
-    // }
+    if (this.bulletsAmount > 0) {
+      c.arc(
+        this.player.position.x + this.player.width / 2,
+        this.player.position.y + this.player.height / 2,
+        200,
+        this.gunAngle - 0.15,
+        this.gunAngle + 0.15
+      )
+    }
+
     c.fillStyle = 'rgb(0, 0, 0, 0.15)'
     c.fill()
 
@@ -115,22 +117,25 @@ class Gun extends Sprite {
   }
 
   async attack() {
-    if (this.bulletsAmount > 0) {
+    const bullet = new Bullet({
+      position: {
+        x: this.playerPosition.x + this.width / 2,
+        y: this.playerPosition.y + this.height / 2,
+      },
+      angle: this.gunAngle,
+      removeBullet: this.removeBullet.bind(this),
+    })
+    if (this.bulletsAmount > 1) {
       if (this.attackFrame.currentFrame === 0) {
-        const bullet = new Bullet({
-          position: {
-            x: this.playerPosition.x + this.width / 2,
-            y: this.playerPosition.y + this.height / 2,
-          },
-          angle: this.gunAngle,
-          removeBullet: this.removeBullet.bind(this),
-        })
         this.gunAngle -= this.player.direction / 5
         this.bulletsAmount -= 1
         this.bullets.push(bullet)
         await this.attackFrame.startCounting()
       }
     } else if (this.reloadFrame.currentFrame === 0) {
+      this.gunAngle -= this.player.direction / 5
+      this.bulletsAmount -= 1
+      this.bullets.push(bullet)
       this.player.reloadAnimation = true
       await this.reloadFrame.startCounting()
       this.reload()

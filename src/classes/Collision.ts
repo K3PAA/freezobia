@@ -11,6 +11,7 @@ export default class Collision {
   tileWithPlayer({
     tile,
     player,
+    enemies,
   }: {
     tile: Interactive
     player: Player
@@ -24,6 +25,7 @@ export default class Collision {
       this.playerWithResource({ player, tile })
       this.tileWithBullet({ tile, bullets: player.gun.bullets })
       this.tileWithGrenade({ tile, grenades: player.grenadier.grenades })
+      this.tileWithEnemy({ tile, enemies: enemies })
     }
   }
 
@@ -216,9 +218,32 @@ export default class Collision {
           )
         ) {
           enemy.health--
-          console.log('boom')
         }
       })
+    })
+  }
+
+  tileWithEnemy({ tile, enemies }: { tile: Resource; enemies: Enemy[] }) {
+    enemies.forEach((enemy) => {
+      if (rectangleCollision(        {
+          position: {
+            x: tile.strictBox.position.x + tile.shift.x,
+            y: tile.strictBox.position.y + tile.shift.y,
+          },
+          width: tile.mapping.box.width,
+          height: tile.mapping.box.height,
+        },
+        {
+          position: {
+            x: enemy.position.x,
+            y: enemy.position.y,
+          },
+          width: enemy.width,
+          height: enemy.height,
+        }
+      )) {
+        enemy.collision = true
+      }
     })
   }
 }

@@ -7,7 +7,8 @@ import Frame from './Frame'
 import Transition from './Transition'
 import Collision from './Collision'
 import Enemy from './Enemy'
-import { FreezobiaWord, FirstWords, SecondWords } from '../lib/letters'
+import { FreezobiaWord } from '../lib/letters'
+import { randomCanvasSide } from '../lib/functions'
 
 class Game {
   canvas: HTMLCanvasElement
@@ -19,7 +20,8 @@ class Game {
   collision: Collision
 
   frame = new Frame({ fps: 2 })
-  enemySpawnFrame = new Frame({ fps: 0.5 })
+  enemySpawnFrame = new Frame({ fps: 0.1 })
+  miniBossSpawnFrame = new Frame({ fps: 0.025 })
   showTextInfo: boolean = false
   score = 0
 
@@ -51,18 +53,17 @@ class Game {
     this.collision = new Collision()
   }
 
+  
   update(time: number) {
     if (this.frame.timeElapsed(time)) {
       this.showTextInfo = !this.showTextInfo
     }
 
     if (this.enemySpawnFrame.timeElapsed(time) && this.startGame) {
+      const position = randomCanvasSide(this.canvas)
       const enemy = new Enemy({
         canvas: this.canvas,
-        position: {
-          x: 175,
-          y: 175,
-        },
+        position: position,
         width: 14 * 3,
         height: 11 * 3,
         offSet: {
@@ -73,6 +74,29 @@ class Game {
         imgSrc: enemyImg,
         player: this.player,
         removeEnemy: this.removeEnemy,
+        speed: 2,
+        health: 1,
+      })
+      this.enemies.push(enemy)
+    }
+
+    if (this.miniBossSpawnFrame.timeElapsed(time) && this.startGame) {
+      const position = randomCanvasSide(this.canvas)
+      const enemy = new Enemy({
+        canvas: this.canvas,
+        position: position,
+        width: 14 * 6,
+        height: 11 * 6,
+        offSet: {
+          x: 8,
+          y: 24,
+        },
+        scale: 6,
+        imgSrc: enemyImg,
+        player: this.player,
+        removeEnemy: this.removeEnemy,
+        speed: 1,
+        health: 8
       })
       this.enemies.push(enemy)
     }
@@ -158,9 +182,6 @@ class Game {
 
     if (this.score === 0) {
       c.font = '20px Courier New'
-
-      FirstWords(c, this.canvas.width / 2 - 182, 80)
-      SecondWords(c, this.canvas.width / 2 - 255, 100)
 
       c.fillText(
         'and avoid enemies or you will get killed',

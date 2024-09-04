@@ -16,7 +16,7 @@ class Grenade {
   grenadeHitBoxRadius: number
   removeGrenade: (grenade: Grenade) => void
   boom = false
-  boomRange = 140
+  boomRange = 280
 
   constructor(player: Player, removeGrenade: (grenade: Grenade) => void) {
     this.player = player

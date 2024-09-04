@@ -10,6 +10,8 @@ class Enemy extends Sprite {
   attackFrame = new Frame({ fps: 0.5, currentFrame: 0, maxFrame: 2 })
   health: number
   isDead: boolean
+  speed: number
+  collision: boolean
   removeEnemy: (enemy: Enemy) => void
 
   constructor({
@@ -25,9 +27,13 @@ class Enemy extends Sprite {
     direction,
     player,
     removeEnemy,
+    speed,
+    health,
   }: SpriteClassType & {
     player: Player
     removeEnemy: (enemy: Enemy) => void
+    speed: number
+    health: number
   }) {
     super({
       canvas,
@@ -43,12 +49,15 @@ class Enemy extends Sprite {
     })
 
     this.player = player
-    this.health = 1
+    this.health = health
     this.isDead = false
+    this.speed = speed
     this.removeEnemy = removeEnemy
+    this.collision = false
   }
 
   update = ({ time, player }: { time: number; player: Player }) => {
+    console.log(this.collision)
     if (this.health <= 0) {
       this.isDead = true
       player.score++
@@ -87,10 +96,10 @@ class Enemy extends Sprite {
 
   goTowardsPlayer = () => {
     const directions = [
-      { x: 0, y: -1 },
-      { x: 0, y: 1 },
-      { x: -1, y: 0 },
-      { x: 1, y: 0 },
+      { x: 0, y: -this.speed },
+      { x: 0, y: this.speed },
+      { x: -this.speed, y: 0 },
+      { x: this.speed, y: 0 },
     ]
 
     let shortestDistance = Infinity
@@ -98,22 +107,23 @@ class Enemy extends Sprite {
 
     directions.forEach((direction) => {
       const newPos = {
-        x: this.position.x + direction.x,
-        y: this.position.y + direction.y,
+        x: this.position.x + this.width / 2 + direction.x,
+        y: this.position.y + this.height / 2 + direction.y,
       }
 
       const distanceToPlayer = Math.hypot(
-        newPos.x - this.player.position.x,
-        newPos.y - this.player.position.y
+        newPos.x - this.player.position.x + this.player.width / 2,
+        newPos.y - this.player.position.y + this.player.height / 2
       )
 
-      // Sprawdź, czy nowa pozycja nie koliduje z przeszkodą
-      // if (!this.checkCollision(newPos)) {
-      if (distanceToPlayer < shortestDistance) {
-        shortestDistance = distanceToPlayer
-        bestDirection = direction
+      if (!this.collision) {
+        if (distanceToPlayer < shortestDistance) {
+          shortestDistance = distanceToPlayer
+          bestDirection = direction
+        }
+      } else {
+        this.collision = false
       }
-      // }
     })
 
     this.position.x += bestDirection.x
@@ -136,28 +146,6 @@ class Enemy extends Sprite {
       this.player.isDead = true
     }
   }
-
-  // Funkcja pomocnicza do sprawdzania kolizji z przeszkodami
-  // checkCollision = (newPos: Point): boolean => {
-  //   // Tutaj dodaj logikę sprawdzania kolizji z przeszkodami.
-  //   // Można iterować przez listę przeszkód i sprawdzić, czy nowa pozycja wroga koliduje z którąkolwiek z nich.
-  //   // Poniższy kod to przykład, który należy dostosować do konkretnej implementacji:
-  //   for (let obstacle of this.canvas.obstacles) {
-  //     if (
-  //       rectangleCollision(
-  //         {
-  //           position: newPos,
-  //           width: this.width,
-  //           height: this.height,
-  //         },
-  //         obstacle
-  //       )
-  //     ) {
-  //       return true
-  //     }
-  //   }
-  //   return false
-  // }
 }
 
 export default Enemy
