@@ -20,8 +20,8 @@ class Game {
   collision: Collision
 
   frame = new Frame({ fps: 2 })
-  enemySpawnFrame = new Frame({ fps: 0.1 })
-  miniBossSpawnFrame = new Frame({ fps: 0.025 })
+  enemySpawnFrame = new Frame({ fps: 1 })
+  miniBossSpawnFrame = new Frame({ fps: 0.1 })
   showTextInfo: boolean = false
   score = 0
 
@@ -53,7 +53,6 @@ class Game {
     this.collision = new Collision()
   }
 
-  
   update(time: number) {
     if (this.frame.timeElapsed(time)) {
       this.showTextInfo = !this.showTextInfo
@@ -74,7 +73,7 @@ class Game {
         imgSrc: enemyImg,
         player: this.player,
         removeEnemy: this.removeEnemy,
-        speed: 2,
+        speed: 1,
         health: 1,
       })
       this.enemies.push(enemy)
@@ -95,8 +94,8 @@ class Game {
         imgSrc: enemyImg,
         player: this.player,
         removeEnemy: this.removeEnemy,
-        speed: 1,
-        health: 8
+        speed: 0.5,
+        health: 25,
       })
       this.enemies.push(enemy)
     }
@@ -108,6 +107,9 @@ class Game {
       this.player.resetValues()
       this.background.resetValues()
       this.transition.transitionEnded = false
+      this.miniBossSpawnFrame.ft = 0
+      this.enemySpawnFrame.ft = 0
+      this.enemies = []
     }
 
     if (this.isInMenu && this.input.keys.Space) {

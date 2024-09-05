@@ -20,6 +20,8 @@ class Gun extends Sprite {
   player: Player
   isShooting: boolean
 
+  bulletDamage = 1
+
   constructor(player: Player, canvas: HTMLCanvasElement) {
     super({
       canvas,
@@ -117,12 +119,16 @@ class Gun extends Sprite {
   }
 
   async attack() {
+    const damage = this.bulletDamage === 1 ? 1 : this.bulletDamage
+    this.bulletDamage = 1
+
     const bullet = new Bullet({
       position: {
         x: this.playerPosition.x + this.width / 2,
         y: this.playerPosition.y + this.height / 2,
       },
       angle: this.gunAngle,
+      damage: damage,
       removeBullet: this.removeBullet.bind(this),
     })
     if (this.bulletsAmount > 1) {

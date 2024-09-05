@@ -9,6 +9,7 @@ class Enemy extends Sprite {
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   attackFrame = new Frame({ fps: 0.5, currentFrame: 0, maxFrame: 2 })
   health: number
+  fullHealth: number
   isDead: boolean
   speed: number
   collision: boolean
@@ -48,6 +49,7 @@ class Enemy extends Sprite {
       direction,
     })
 
+    this.fullHealth = health
     this.player = player
     this.health = health
     this.isDead = false
@@ -57,7 +59,6 @@ class Enemy extends Sprite {
   }
 
   update = ({ time, player }: { time: number; player: Player }) => {
-    console.log(this.collision)
     if (this.health <= 0) {
       this.isDead = true
       player.score++
@@ -86,6 +87,16 @@ class Enemy extends Sprite {
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     this.drawSprite(c)
+    if (this.fullHealth > 1) this.drawHealthBar(c)
+  }
+
+  drawHealthBar(c: CanvasRenderingContext2D) {
+    const ratio = this.health / this.fullHealth
+
+    c.fillStyle = 'red'
+    c.fillRect(this.position.x, this.position.y, this.width, 10)
+    c.fillStyle = 'green'
+    c.fillRect(this.position.x, this.position.y, this.width * ratio, 10)
   }
 
   attack = async () => {
@@ -112,8 +123,8 @@ class Enemy extends Sprite {
       }
 
       const distanceToPlayer = Math.hypot(
-        newPos.x - this.player.position.x + this.player.width / 2,
-        newPos.y - this.player.position.y + this.player.height / 2
+        newPos.x - this.player.centerPoint.x,
+        newPos.y - this.player.centerPoint.y
       )
 
       if (!this.collision) {

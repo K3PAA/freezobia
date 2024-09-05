@@ -6,6 +6,7 @@ import {
 } from '../lib/constants'
 import { Point, ResourceTypes } from '../lib/types'
 import { Campfire, Resource } from './Interactive'
+import Player from './Player'
 
 class BackgroundArray {
   boardDimensions: Point
@@ -36,10 +37,14 @@ class BackgroundArray {
     this.shift = shift
   }
 
-  update() {
+  update({ player }: { player: Player }) {
     this.interactiveArray = this.interactiveArray.filter((tile) => {
       if (tile instanceof Resource) {
-        return tile.hp > 0 ? true : false
+        if (tile.hp > 0) return true
+
+        player.bonusAction(tile.mapping.super)
+
+        return false
       }
       return true
     })

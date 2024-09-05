@@ -1,4 +1,4 @@
-import Player from '../classes/Player';
+import Player from '../classes/Player'
 import { allowedKeys, resourcesMapping } from './constants'
 
 export type Point = { x: number; y: number }
@@ -28,6 +28,8 @@ export type SpriteType = {
   fps: number
 }
 export type ResourceTypes = keyof typeof resourcesMapping
+export type SuperType =
+  (typeof resourcesMapping)[keyof typeof resourcesMapping]['super']
 
 export type AllowedKeysObject = typeof allowedKeys
 export type AllowedKeysValues = keyof typeof allowedKeys
