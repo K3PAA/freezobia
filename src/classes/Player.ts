@@ -5,6 +5,7 @@ import {
   SpriteClassType,
   SpriteType,
   StateType,
+  SuperType,
 } from '../lib/types'
 import Sprite from './Sprite'
 import { SPRITES, STATES, Idle, Running } from './PlayerState'
@@ -41,6 +42,9 @@ class Player extends Sprite {
   isAttacking: boolean
   isThrowingGrenade: boolean
   isDead = false
+
+  bonusSpeedTimeInMs = 0
+  bonusSpeedStaticTime = 2000
 
   constructor({
     canvas,
@@ -116,6 +120,10 @@ class Player extends Sprite {
     time: number
   }) => {
     if (isInMenu) return
+
+    if (this.bonusSpeedTimeInMs > 0) {
+      this.bonusSpeedTimeInMs -= time
+    }
 
     if (this.inCampfireRange) {
       if (this.healthInMs < TIME_LIMIT) this.healthInMs += time * 4
@@ -252,14 +260,33 @@ class Player extends Sprite {
     this.health = this.healthInMs / TIME_LIMIT
     this.position.x = this.canvas.width / 2 - this.width / 2
     this.position.y = this.canvas.height / 2 - this.height / 2 - this.height
+    this.gun.bullets = []
     this.gun.bulletsAmount = 13
     this.isDead = false
   }
 
+  bonusAction = (superType: SuperType) => {
+    if (superType === 'speed') {
+      this.bonusSpeedTimeInMs = this.bonusSpeedStaticTime
+    } else if (superType === 'health') {
+      if (this.healthInMs < TIME_LIMIT) {
+        const missingHealthAmount = TIME_LIMIT - this.healthInMs
+        this.healthInMs += Math.min(missingHealthAmount, 5000)
+      }
+      this.health = this.healthInMs / TIME_LIMIT
+    } else if (superType === 'damage') {
+      this.gun.bulletDamage = 13
+    } else if (superType === 'granade') {
+      this.grenadier.grenadesAmount += 1
+    }
+
+    this.score += 1
+  }
+
   draw = (c: CanvasRenderingContext2D) => {
     //* hitbox of player
-    // c.fillStyle = '#fff'
-    // c.fillRect(this.position.x, this.position.y, this.width, this.height)
+    c.fillStyle = '#fff'
+    c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     //* hitbox of player
     // c.beginPath()

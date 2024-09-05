@@ -70,18 +70,19 @@ class Running extends State {
     if (keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD) {
       this.player.velocity.x = 0
       this.player.velocity.y = 0
+      const bonusSpeed = this.player.bonusSpeedTimeInMs > 0 ? 1.3 : 1
 
       if (keys.KeyA) {
-        this.player.velocity.x = -this.player.speed
+        this.player.velocity.x = -this.player.speed * bonusSpeed
       }
       if (keys.KeyD) {
-        this.player.velocity.x = this.player.speed
+        this.player.velocity.x = this.player.speed * bonusSpeed
       }
       if (keys.KeyW) {
-        this.player.velocity.y = -this.player.speed
+        this.player.velocity.y = -this.player.speed * bonusSpeed
       }
       if (keys.KeyS) {
-        this.player.velocity.y = this.player.speed
+        this.player.velocity.y = this.player.speed * bonusSpeed
       }
     }
     if (keys.Space) {

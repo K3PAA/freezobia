@@ -118,7 +118,7 @@ export default class Collision {
         )
       ) {
         bullet.removeBullet(i)
-        tile.hp--
+        tile.hp -= bullet.damage
       }
     })
   }
@@ -181,7 +181,7 @@ export default class Collision {
           )
         ) {
           bullet.removeBullet(i)
-          enemy.health--
+          enemy.health -= bullet.damage
         }
       })
     })
@@ -225,23 +225,26 @@ export default class Collision {
 
   tileWithEnemy({ tile, enemies }: { tile: Resource; enemies: Enemy[] }) {
     enemies.forEach((enemy) => {
-      if (rectangleCollision(        {
-          position: {
-            x: tile.strictBox.position.x + tile.shift.x,
-            y: tile.strictBox.position.y + tile.shift.y,
+      if (
+        rectangleCollision(
+          {
+            position: {
+              x: tile.strictBox.position.x + tile.shift.x,
+              y: tile.strictBox.position.y + tile.shift.y,
+            },
+            width: tile.mapping.box.width,
+            height: tile.mapping.box.height,
           },
-          width: tile.mapping.box.width,
-          height: tile.mapping.box.height,
-        },
-        {
-          position: {
-            x: enemy.position.x,
-            y: enemy.position.y,
-          },
-          width: enemy.width,
-          height: enemy.height,
-        }
-      )) {
+          {
+            position: {
+              x: enemy.position.x,
+              y: enemy.position.y,
+            },
+            width: enemy.width,
+            height: enemy.height,
+          }
+        )
+      ) {
         enemy.collision = true
       }
     })

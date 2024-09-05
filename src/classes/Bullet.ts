@@ -10,14 +10,20 @@ class Bullet {
   angle: number
   centerPoint: Point
   bulletHitBoxRadius: number
+  damage: number
+
   removeBullet: (index: number) => void
 
   constructor({
     position,
     angle,
     removeBullet,
-  }: any & { angle: any, removeBullet: (index: number) => void }) {
-
+    damage,
+  }: any & {
+    angle: any
+    removeBullet: (index: number) => void
+    damage: number
+  }) {
     this.position = position
     this.width = 4
     this.height = 8
@@ -26,6 +32,7 @@ class Bullet {
     this.velocity.y = Math.sin(this.angle) * this.speed
 
     this.bulletHitBoxRadius = Math.max(this.width, this.height) / 3
+    this.damage = damage
 
     this.centerPoint = {
       x: this.position.x + this.width / 2,

@@ -14,7 +14,7 @@ class Grenadier {
     this.canvas = canvas
     this.player = player
     this.grenades = []
-    this.grenadesAmount = 100
+    this.grenadesAmount = 3
   }
 
   updateBulletOffset(axis: 'x' | 'y', velocity: number) {
