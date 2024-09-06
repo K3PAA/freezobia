@@ -51,16 +51,7 @@ class Game {
     this.enemies = []
     this.input = new Input()
     this.collision = new Collision()
-  }
-
-  
-  update(time: number) {
-    if (this.frame.timeElapsed(time)) {
-      this.showTextInfo = !this.showTextInfo
-    }
-
-    if (this.enemySpawnFrame.timeElapsed(time) && this.startGame) {
-      const position = randomCanvasSide(this.canvas)
+    const position = randomCanvasSide(this.canvas)
       const enemy = new Enemy({
         canvas: this.canvas,
         position: position,
@@ -76,30 +67,42 @@ class Game {
         removeEnemy: this.removeEnemy,
         speed: 2,
         health: 1,
+        background: this.background
       })
       this.enemies.push(enemy)
+  }
+
+  
+  update(time: number) {
+    if (this.frame.timeElapsed(time)) {
+      this.showTextInfo = !this.showTextInfo
     }
 
-    if (this.miniBossSpawnFrame.timeElapsed(time) && this.startGame) {
-      const position = randomCanvasSide(this.canvas)
-      const enemy = new Enemy({
-        canvas: this.canvas,
-        position: position,
-        width: 14 * 6,
-        height: 11 * 6,
-        offSet: {
-          x: 8,
-          y: 24,
-        },
-        scale: 6,
-        imgSrc: enemyImg,
-        player: this.player,
-        removeEnemy: this.removeEnemy,
-        speed: 1,
-        health: 8
-      })
-      this.enemies.push(enemy)
+    if (this.enemySpawnFrame.timeElapsed(time) && this.startGame) {
+      
     }
+
+    // if (this.miniBossSpawnFrame.timeElapsed(time) && this.startGame) {
+    //   const position = randomCanvasSide(this.canvas)
+    //   const enemy = new Enemy({
+    //     canvas: this.canvas,
+    //     position: position,
+    //     width: 14 * 6,
+    //     height: 11 * 6,
+    //     offSet: {
+    //       x: 8,
+    //       y: 24,
+    //     },
+    //     scale: 6,
+    //     imgSrc: enemyImg,
+    //     player: this.player,
+    //     removeEnemy: this.removeEnemy,
+    //     speed: 1,
+    //     health: 8,
+    //     background: this.background
+    //   })
+    //   this.enemies.push(enemy)
+    // }
 
     if (this.player.isDead) {
       this.score = this.player.score

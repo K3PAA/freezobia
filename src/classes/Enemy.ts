@@ -1,5 +1,6 @@
-import { SpriteClassType } from '../lib/types'
+import { Point, SpriteClassType } from '../lib/types'
 import { rectangleCollision } from '../lib/utils'
+import Background from './Background'
 import Frame from './Frame'
 import Player from './Player'
 import Sprite from './Sprite'
@@ -8,11 +9,14 @@ class Enemy extends Sprite {
   player: Player
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   attackFrame = new Frame({ fps: 0.5, currentFrame: 0, maxFrame: 2 })
+  moveFrame = new Frame({ fps: 4, currentFrame: 0, maxFrame: 8 })
   health: number
   isDead: boolean
   speed: number
   collision: boolean
   removeEnemy: (enemy: Enemy) => void
+  background: Background
+  directionInCollision?: Point
 
   constructor({
     canvas,
@@ -29,11 +33,13 @@ class Enemy extends Sprite {
     removeEnemy,
     speed,
     health,
+    background,
   }: SpriteClassType & {
     player: Player
     removeEnemy: (enemy: Enemy) => void
     speed: number
     health: number
+    background: Background
   }) {
     super({
       canvas,
@@ -54,10 +60,10 @@ class Enemy extends Sprite {
     this.speed = speed
     this.removeEnemy = removeEnemy
     this.collision = false
+    this.background = background
   }
 
   update = ({ time, player }: { time: number; player: Player }) => {
-    console.log(this.collision)
     if (this.health <= 0) {
       this.isDead = true
       player.score++
@@ -103,28 +109,47 @@ class Enemy extends Sprite {
     ]
 
     let shortestDistance = Infinity
-    let bestDirection = { x: 0, y: 0 }
+    let bestDirection = { x: 0, y: 1 }
+    let hasCollision = false
 
     directions.forEach((direction) => {
       const newPos = {
-        x: this.position.x + this.width / 2 + direction.x,
-        y: this.position.y + this.height / 2 + direction.y,
+        x: this.position.x + direction.x,
+        y: this.position.y + direction.y,
       }
 
       const distanceToPlayer = Math.hypot(
-        newPos.x - this.player.position.x + this.player.width / 2,
-        newPos.y - this.player.position.y + this.player.height / 2
+        newPos.x - this.player.position.x - this.player.width / 2,
+        newPos.y - this.player.position.y - this.player.height / 2
       )
 
-      if (!this.collision) {
+      if (!this.background.checkTileCollision(newPos, this)) {
         if (distanceToPlayer < shortestDistance) {
           shortestDistance = distanceToPlayer
           bestDirection = direction
         }
       } else {
-        this.collision = false
+        hasCollision = true
       }
     })
+    if (hasCollision) {
+      if (this.directionInCollision) {
+        if (
+          !this.background.checkTileCollision(
+            {
+              x: this.position.x + this.directionInCollision.x,
+              y: this.position.y + this.directionInCollision.y,
+            },
+            this
+          )
+        ) {
+          bestDirection = this.directionInCollision
+        }
+      }
+      this.directionInCollision = bestDirection
+    } else {
+      this.directionInCollision = undefined
+    }
 
     this.position.x += bestDirection.x
     this.position.y += bestDirection.y

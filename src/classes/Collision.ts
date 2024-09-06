@@ -242,7 +242,7 @@ export default class Collision {
           height: enemy.height,
         }
       )) {
-        enemy.collision = true
+        // enemy.collision = true
       }
     })
   }

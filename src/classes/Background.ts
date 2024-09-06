@@ -5,6 +5,7 @@ import {
   RESOURCE_SIZE,
 } from '../lib/constants'
 import { Box, Point } from '../lib/types'
+import { rectangleCollision } from '../lib/utils'
 import BackgroundGrid from './BackgroundGrid'
 import Collision from './Collision'
 import Enemy from './Enemy'
@@ -146,6 +147,58 @@ class Background {
         }
       }
     }
+  }
+
+  checkTileCollision(position: Point, object: any) {
+    for (let x = -1; x < this.gridSize - 1; x++) {
+      for (let y = -1; y < this.gridSize - 1; y++) {
+        const shouldRender = this.grid.tilesArray[x + 1][y + 1].render
+
+        if (!shouldRender) continue
+        const singleArray = this.grid.tilesArray[x + 1][y + 1].backgroundArray
+
+        const { board } = this.grid
+        const shift = {
+          x: board.position.x + board.width * y - this.grid.offset.x,
+          y: board.position.y + board.height * x - this.grid.offset.y,
+        }
+
+        singleArray.setShift(shift)
+        singleArray.update()
+
+        const collisionTile = singleArray.interactiveArray.find((tile) => {
+          tile.setShift(shift)
+          
+          if (!(tile instanceof Campfire)) {
+            const collision = rectangleCollision(
+              {
+                position: {
+                  x: tile.strictBox.position.x + tile.shift.x,
+                  y: tile.strictBox.position.y + tile.shift.y,
+                },
+                width: tile.mapping.box.width,
+                height: tile.mapping.box.height,
+              },
+              {
+                position: {
+                  x: position.x,
+                  y: position.y,
+                },
+                width: object.width,
+                height: object.height,
+              }
+            )
+            if (collision) {
+
+              return true
+            }
+          }
+        })
+
+        if (collisionTile) return true
+      }
+    }
+    return false
   }
 }
 
