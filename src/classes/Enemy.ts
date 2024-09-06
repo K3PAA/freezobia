@@ -11,12 +11,14 @@ class Enemy extends Sprite {
   attackFrame = new Frame({ fps: 0.5, currentFrame: 0, maxFrame: 2 })
   moveFrame = new Frame({ fps: 4, currentFrame: 0, maxFrame: 8 })
   health: number
+  fullHealth: number
   isDead: boolean
   speed: number
   collision: boolean
   removeEnemy: (enemy: Enemy) => void
   background: Background
   directionInCollision?: Point
+  score = 1
 
   constructor({
     canvas,
@@ -34,12 +36,14 @@ class Enemy extends Sprite {
     speed,
     health,
     background,
+    score,
   }: SpriteClassType & {
     player: Player
     removeEnemy: (enemy: Enemy) => void
     speed: number
     health: number
     background: Background
+    score: number
   }) {
     super({
       canvas,
@@ -54,6 +58,8 @@ class Enemy extends Sprite {
       direction,
     })
 
+    this.score = score
+    this.fullHealth = health
     this.player = player
     this.health = health
     this.isDead = false
@@ -66,7 +72,7 @@ class Enemy extends Sprite {
   update = ({ time, player }: { time: number; player: Player }) => {
     if (this.health <= 0) {
       this.isDead = true
-      player.score++
+      player.score += this.score
       this.removeEnemy(this)
     }
     if (this.frame.timeElapsed(time)) {
@@ -92,6 +98,16 @@ class Enemy extends Sprite {
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     this.drawSprite(c)
+    if (this.fullHealth > 1) this.drawHealthBar(c)
+  }
+
+  drawHealthBar(c: CanvasRenderingContext2D) {
+    const ratio = this.health / this.fullHealth
+
+    c.fillStyle = 'red'
+    c.fillRect(this.position.x, this.position.y, this.width, 10)
+    c.fillStyle = 'green'
+    c.fillRect(this.position.x, this.position.y, this.width * ratio, 10)
   }
 
   attack = async () => {

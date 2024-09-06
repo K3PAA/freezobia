@@ -20,8 +20,8 @@ class Game {
   collision: Collision
 
   frame = new Frame({ fps: 2 })
-  enemySpawnFrame = new Frame({ fps: 0.1 })
-  miniBossSpawnFrame = new Frame({ fps: 0.025 })
+  enemySpawnFrame = new Frame({ fps: 1 })
+  miniBossSpawnFrame = new Frame({ fps: 0.1 })
   showTextInfo: boolean = false
   score = 0
 
@@ -51,25 +51,6 @@ class Game {
     this.enemies = []
     this.input = new Input()
     this.collision = new Collision()
-    const position = randomCanvasSide(this.canvas)
-      const enemy = new Enemy({
-        canvas: this.canvas,
-        position: position,
-        width: 14 * 3,
-        height: 11 * 3,
-        offSet: {
-          x: 4,
-          y: 12,
-        },
-        scale: 3,
-        imgSrc: enemyImg,
-        player: this.player,
-        removeEnemy: this.removeEnemy,
-        speed: 2,
-        health: 1,
-        background: this.background
-      })
-      this.enemies.push(enemy)
   }
 
   
@@ -79,30 +60,50 @@ class Game {
     }
 
     if (this.enemySpawnFrame.timeElapsed(time) && this.startGame) {
-      
-    }
+      const position = randomCanvasSide(this.canvas)
+      const enemy = new Enemy({
+        canvas: this.canvas,
+        position: position,
+        width: 14 * 3,
+        height: 11 * 3,
+        offSet: {
+          x: 4,
+          y: 12,
+        },
+        score: 1,
+        scale: 3,
+        imgSrc: enemyImg,
+        player: this.player,
+        removeEnemy: this.removeEnemy,
+        speed: 1,
+        health: 1,
+        background: this.background
+      })
+      this.enemies.push(enemy)
+  }
 
-    // if (this.miniBossSpawnFrame.timeElapsed(time) && this.startGame) {
-    //   const position = randomCanvasSide(this.canvas)
-    //   const enemy = new Enemy({
-    //     canvas: this.canvas,
-    //     position: position,
-    //     width: 14 * 6,
-    //     height: 11 * 6,
-    //     offSet: {
-    //       x: 8,
-    //       y: 24,
-    //     },
-    //     scale: 6,
-    //     imgSrc: enemyImg,
-    //     player: this.player,
-    //     removeEnemy: this.removeEnemy,
-    //     speed: 1,
-    //     health: 8,
-    //     background: this.background
-    //   })
-    //   this.enemies.push(enemy)
-    // }
+    if (this.miniBossSpawnFrame.timeElapsed(time) && this.startGame) {
+      const position = randomCanvasSide(this.canvas)
+      const enemy = new Enemy({
+        canvas: this.canvas,
+        position: position,
+        width: 14 * 6,
+        height: 11 * 6,
+        offSet: {
+          x: 8,
+          y: 24,
+        },
+        scale: 6,
+        imgSrc: enemyImg,
+        player: this.player,
+        removeEnemy: this.removeEnemy,
+        speed: 1,
+        health: 8,
+        background: this.background,
+        score: 1,
+      })
+      this.enemies.push(enemy)
+    }
 
     if (this.player.isDead) {
       this.score = this.player.score
@@ -111,6 +112,9 @@ class Game {
       this.player.resetValues()
       this.background.resetValues()
       this.transition.transitionEnded = false
+      this.miniBossSpawnFrame.ft = 0
+      this.enemySpawnFrame.ft = 0
+      this.enemies = []
     }
 
     if (this.isInMenu && this.input.keys.Space) {

@@ -118,7 +118,7 @@ export default class Collision {
         )
       ) {
         bullet.removeBullet(i)
-        tile.hp--
+        tile.hp -= bullet.damage
       }
     })
   }
@@ -181,7 +181,7 @@ export default class Collision {
           )
         ) {
           bullet.removeBullet(i)
-          enemy.health--
+          enemy.health -= bullet.damage
         }
       })
     })

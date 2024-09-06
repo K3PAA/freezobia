@@ -76,7 +76,7 @@ class Background {
         }
 
         singleArray.setShift(shift)
-        singleArray.update()
+        singleArray.update({ player })
 
         singleArray.interactiveArray.forEach((tile) => {
           tile.setShift(shift)
@@ -164,7 +164,7 @@ class Background {
         }
 
         singleArray.setShift(shift)
-        singleArray.update()
+        // singleArray.update()
 
         const collisionTile = singleArray.interactiveArray.find((tile) => {
           tile.setShift(shift)
