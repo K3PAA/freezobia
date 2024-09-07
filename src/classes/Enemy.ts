@@ -6,7 +6,6 @@ import Player from './Player'
 import Sprite from './Sprite'
 
 class Enemy extends Sprite {
-  player: Player
   frame = new Frame({ fps: 15, currentFrame: 0, maxFrame: 10 })
   attackFrame = new Frame({ fps: 0.5, currentFrame: 0, maxFrame: 2 })
   moveFrame = new Frame({ fps: 4, currentFrame: 0, maxFrame: 8 })
@@ -31,14 +30,12 @@ class Enemy extends Sprite {
     height,
     offSet,
     direction,
-    player,
     removeEnemy,
     speed,
     health,
     background,
     score,
   }: SpriteClassType & {
-    player: Player
     removeEnemy: (enemy: Enemy) => void
     speed: number
     health: number
@@ -60,7 +57,6 @@ class Enemy extends Sprite {
 
     this.score = score
     this.fullHealth = health
-    this.player = player
     this.health = health
     this.isDead = false
     this.speed = speed
@@ -86,7 +82,7 @@ class Enemy extends Sprite {
     ) {
       this.attackFrame.updateFrame()
     }
-    this.goTowardsPlayer()
+    this.goTowardsPlayer({ player })
   }
 
   updateEnemiesOffset(direction: 'x' | 'y', value: number) {
@@ -116,7 +112,7 @@ class Enemy extends Sprite {
     }
   }
 
-  goTowardsPlayer = () => {
+  goTowardsPlayer = ({ player }: { player: Player }) => {
     const directions = [
       { x: 0, y: -this.speed },
       { x: 0, y: this.speed },
@@ -135,8 +131,8 @@ class Enemy extends Sprite {
       }
 
       const distanceToPlayer = Math.hypot(
-        newPos.x - this.player.position.x - this.player.width / 2,
-        newPos.y - this.player.position.y - this.player.height / 2
+        newPos.x - player.position.x - player.width / 2,
+        newPos.y - player.position.y - player.height / 2
       )
 
       if (!this.background.checkTileCollision(newPos, this)) {
@@ -178,13 +174,13 @@ class Enemy extends Sprite {
           height: this.height,
         },
         {
-          position: this.player.position,
-          width: this.player.width,
-          height: this.player.height,
+          position: player.position,
+          width: player.width,
+          height: player.height,
         }
       )
     ) {
-      this.player.isDead = true
+      player.isDead = true
     }
   }
 }

@@ -263,6 +263,7 @@ class Player extends Sprite {
     this.gun.bullets = []
     this.gun.bulletsAmount = 13
     this.isDead = false
+    this.grenadier.grenades = []
   }
 
   bonusAction = (superType: SuperType) => {
@@ -308,6 +309,8 @@ class Player extends Sprite {
 
     //* drawing gun
     this.gun.drawGun(c)
+
+    c.fillStyle = 'rgba(0, 0, 0, 1)'
   }
 
   drawInfo(c: CanvasRenderingContext2D) {

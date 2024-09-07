@@ -20,8 +20,8 @@ class Game {
   collision: Collision
 
   frame = new Frame({ fps: 2 })
-  enemySpawnFrame = new Frame({ fps: 1 })
-  miniBossSpawnFrame = new Frame({ fps: 0.1 })
+  enemySpawnFrame = new Frame({ fps: 0.3 })
+  miniBossSpawnFrame = new Frame({ fps: 0.05 })
   showTextInfo: boolean = false
   score = 0
 
@@ -53,7 +53,6 @@ class Game {
     this.collision = new Collision()
   }
 
-  
   update(time: number) {
     if (this.frame.timeElapsed(time)) {
       this.showTextInfo = !this.showTextInfo
@@ -73,14 +72,14 @@ class Game {
         score: 1,
         scale: 3,
         imgSrc: enemyImg,
-        player: this.player,
+
         removeEnemy: this.removeEnemy,
         speed: 1,
         health: 1,
-        background: this.background
+        background: this.background,
       })
       this.enemies.push(enemy)
-  }
+    }
 
     if (this.miniBossSpawnFrame.timeElapsed(time) && this.startGame) {
       const position = randomCanvasSide(this.canvas)
@@ -95,7 +94,6 @@ class Game {
         },
         scale: 6,
         imgSrc: enemyImg,
-        player: this.player,
         removeEnemy: this.removeEnemy,
         speed: 1,
         health: 8,
@@ -109,8 +107,7 @@ class Game {
       this.score = this.player.score
       this.startGame = false
       this.isInMenu = true
-      this.player.resetValues()
-      this.background.resetValues()
+      this.resetValues()
       this.transition.transitionEnded = false
       this.miniBossSpawnFrame.ft = 0
       this.enemySpawnFrame.ft = 0
@@ -159,6 +156,25 @@ class Game {
       enemies: this.enemies,
       isInMenu: this.isInMenu,
     })
+  }
+
+  resetValues() {
+    this.player = new Player({
+      canvas: this.canvas,
+      position: {
+        x: 0,
+        y: 0,
+      },
+      width: 2 * 8 * 3,
+      height: 3 * 8 * 3,
+      offSet: {
+        x: 0,
+        y: 32,
+      },
+      scale: 3,
+      imgSrc: playerImg,
+    })
+    this.background = new Background({ canvas: this.canvas })
   }
 
   removeEnemy = (enemy: Enemy) => {
