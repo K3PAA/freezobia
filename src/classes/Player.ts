@@ -286,8 +286,8 @@ class Player extends Sprite {
 
   draw = (c: CanvasRenderingContext2D) => {
     //* hitbox of player
-    c.fillStyle = '#fff'
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+    // c.fillStyle = '#fff'
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     //* hitbox of player
     // c.beginPath()

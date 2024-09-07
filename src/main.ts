@@ -2,8 +2,8 @@ import Game from './classes/Game'
 import './style.css'
 
 const canvas = document.querySelector('canvas')!
-canvas.width = 1024
-canvas.height = 512
+canvas.width = Math.min(Math.max(1000, window.innerWidth), 2000)
+canvas.height = Math.min(Math.max(500, window.innerHeight), 1200)
 const c = canvas.getContext('2d')!
 c.imageSmoothingEnabled = false
 

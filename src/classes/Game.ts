@@ -20,8 +20,8 @@ class Game {
   collision: Collision
 
   frame = new Frame({ fps: 2 })
-  enemySpawnFrame = new Frame({ fps: 0.3 })
-  miniBossSpawnFrame = new Frame({ fps: 0.05 })
+  enemySpawnFrame = new Frame({ fps: 0.5 })
+  miniBossSpawnFrame = new Frame({ fps: 0.1 })
   showTextInfo: boolean = false
   score = 0
 
@@ -49,7 +49,7 @@ class Game {
       imgSrc: playerImg,
     })
     this.enemies = []
-    this.input = new Input()
+    this.input = new Input({ canvas: this.canvas })
     this.collision = new Collision()
   }
 
@@ -74,7 +74,7 @@ class Game {
         imgSrc: enemyImg,
 
         removeEnemy: this.removeEnemy,
-        speed: 1,
+        speed: 1.25,
         health: 1,
         background: this.background,
       })
@@ -95,10 +95,10 @@ class Game {
         scale: 6,
         imgSrc: enemyImg,
         removeEnemy: this.removeEnemy,
-        speed: 1,
-        health: 8,
+        speed: 0.8,
+        health: 20,
         background: this.background,
-        score: 1,
+        score: 3,
       })
       this.enemies.push(enemy)
     }
