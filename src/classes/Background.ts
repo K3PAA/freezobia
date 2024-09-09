@@ -164,7 +164,6 @@ class Background {
         }
 
         singleArray.setShift(shift)
-        // singleArray.update()
 
         const collisionTile = singleArray.interactiveArray.find((tile) => {
           tile.setShift(shift)

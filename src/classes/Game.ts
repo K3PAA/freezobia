@@ -185,16 +185,10 @@ class Game {
     c.font = '48px Courier New'
     c.fillStyle = 'white'
     c.textAlign = 'center'
-    FreezobiaWord(c, this.canvas.width / 2 - 55, 50)
-
+    FreezobiaWord(c, this.canvas.width / 2 - 230, 50)
+    
     if (this.score === 0) {
       c.font = '20px Courier New'
-
-      c.fillText(
-        'and avoid enemies or you will get killed',
-        this.canvas.width / 2,
-        130
-      )
 
       c.fillText('Move - WSAD', this.canvas.width / 2, 220)
       c.fillText('Shoot - mouse click', this.canvas.width / 2, 240)

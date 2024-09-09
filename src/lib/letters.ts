@@ -1,4 +1,4 @@
-const pixelSize = 2 // Rozmiar pojedynczego piksela
+const pixelSize = 10 // Rozmiar pojedynczego piksela
 
 const drawPixel = (c: CanvasRenderingContext2D, x: number, y: number) => {
   c.fillRect(x, y, pixelSize, pixelSize)
@@ -215,12 +215,12 @@ export const drawZ = (c: CanvasRenderingContext2D, x: number, y: number) => {
 
 export const FreezobiaWord = (c: CanvasRenderingContext2D, x: number, y: number) => {
     drawF(c, x, y)
-    drawR(c, x + 15, y)
-    drawE(c, x + 30, y)
-    drawE(c, x + 45, y)
-    drawZ(c, x + 60, y)
-    drawO(c, x + 75, y)
-    drawB(c, x + 90, y)
-    drawI(c, x + 100, y)
-    drawA(c, x + 110, y)
+    drawR(c, x + 60, y)
+    drawE(c, x + 120, y)
+    drawE(c, x + 180, y)
+    drawZ(c, x + 240, y)
+    drawO(c, x + 300, y)
+    drawB(c, x + 360, y)
+    drawI(c, x + 410, y)
+    drawA(c, x + 460, y)
 }
