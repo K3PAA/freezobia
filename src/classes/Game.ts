@@ -202,7 +202,7 @@ class Game {
     c.fillStyle = 'white'
     c.textAlign = 'center'
     FreezobiaWord(c, this.canvas.width / 2 - 230, 50)
-    
+
     if (this.score === 0) {
       c.font = '20px Courier New'
 
@@ -211,7 +211,7 @@ class Game {
       c.fillText('granade - Q', this.canvas.width / 2, 260)
     } else {
       c.font = '24px Courier New'
-      c.fillText(`Final score: ${this.score}`, this.canvas.width / 2, 100)
+      c.fillText(`Final score: ${this.score}`, this.canvas.width / 2, 220)
     }
 
     c.font = '20px Courier New'
