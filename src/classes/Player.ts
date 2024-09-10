@@ -263,6 +263,7 @@ class Player extends Sprite {
     this.gun.bullets = []
     this.gun.bulletsAmount = 13
     this.isDead = false
+    this.grenadier.grenades = []
   }
 
   bonusAction = (superType: SuperType) => {
@@ -285,8 +286,8 @@ class Player extends Sprite {
 
   draw = (c: CanvasRenderingContext2D) => {
     //* hitbox of player
-    c.fillStyle = '#fff'
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+    // c.fillStyle = '#fff'
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     //* hitbox of player
     // c.beginPath()
@@ -308,6 +309,8 @@ class Player extends Sprite {
 
     //* drawing gun
     this.gun.drawGun(c)
+
+    c.fillStyle = 'rgba(0, 0, 0, 1)'
   }
 
   drawInfo(c: CanvasRenderingContext2D) {
