@@ -342,16 +342,6 @@ class Player extends Sprite {
       this.isThrowingGrenade = false
     }
   }
-
-  drawCenterBox = (c: CanvasRenderingContext2D) => {
-    c.fillStyle = 'rgba(155, 155, 0, 0.2)'
-    c.fillRect(
-      this.centerBox.position.x,
-      this.centerBox.position.y,
-      this.centerBox.width,
-      this.centerBox.height
-    )
-  }
 }
 
 export default Player

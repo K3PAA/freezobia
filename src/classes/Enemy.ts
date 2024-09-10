@@ -90,9 +90,6 @@ class Enemy extends Sprite {
   }
 
   draw = (c: CanvasRenderingContext2D) => {
-    // c.fillStyle = '#fff'
-    // c.fillRect(this.position.x, this.position.y, this.width, this.height)
-
     this.drawSprite(c)
     if (this.fullHealth > 1) this.drawHealthBar(c)
   }
