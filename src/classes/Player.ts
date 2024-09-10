@@ -20,7 +20,7 @@ class Player extends Sprite {
   canvas: HTMLCanvasElement
   centerBox: Box
   velocity: Point = { x: 0, y: 0 }
-  inCampfireRange = false
+  inCampfireRange: boolean[] = []
   healthInMs = TIME_LIMIT
   health = this.healthInMs / TIME_LIMIT
   collision = { left: false, right: false, top: false, bottom: false }
@@ -125,12 +125,14 @@ class Player extends Sprite {
       this.bonusSpeedTimeInMs -= time
     }
 
-    if (this.inCampfireRange) {
+    if (this.inCampfireRange.includes(true)) {
       if (this.healthInMs < TIME_LIMIT) this.healthInMs += time * 4
     } else {
       if (this.healthInMs > 0) this.healthInMs -= time
       else this.isDead = true
     }
+    this.inCampfireRange = []
+
     this.health = this.healthInMs / TIME_LIMIT
 
     if (this.frame.timeElapsed(time)) {

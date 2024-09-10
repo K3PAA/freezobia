@@ -88,10 +88,10 @@ export default class Collision {
       player.playerHitBoxRadius + tile.radius >= distance &&
       tile.activeTime > 0
     ) {
-      player.inCampfireRange = true
+      player.inCampfireRange.push(true)
       tile.active = true
     } else {
-      player.inCampfireRange = false
+      player.inCampfireRange.push(false)
     }
   }
 
